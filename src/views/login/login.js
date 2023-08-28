@@ -38,6 +38,7 @@ const Login = () => {
     localStorage.removeItem("lastName")
     localStorage.removeItem("user-token")
     localStorage.removeItem("admin")
+    localStorage.removeItem("modules")
     if (!isLog) {
       const savedEmail = localStorage.getItem("savedEmail")
       if (savedEmail) {
@@ -133,7 +134,7 @@ const Login = () => {
     return (
       <Redirect
         className="text-light"
-        to={process.env.PUBLIC_URL + "/admin/index"}
+        to={process.env.PUBLIC_URL + "/auth/select-client"}
       />
     )
   } else if (nvaPass) {

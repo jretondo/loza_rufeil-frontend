@@ -19,7 +19,7 @@ const Header = ({
         dataPage,
         errorList,
     } = useAxiosGetList(
-        UrlNodeServer.usersDir.users,
+        UrlNodeServer.activityDir.activity,
         0,
         modal,
         [{ query: "" }]
