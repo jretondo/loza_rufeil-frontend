@@ -5,23 +5,30 @@ import ButtonOpenCollapse from "components/Buttons/buttonOpenCollapse";
 import { useWindowSize } from "hooks/UseWindowSize";
 import PurchasesEntriesCharge from "./charge";
 import PurchasesEntriesList from "./list";
-import ClientActiveContext from "context/clientActive";
+import LoadingContext from "context/loading";
 
 const Index = () => {
     const [confirmedPeriod, setConfirmedPeriod] = useState(false)
     const [periodMonth, setPeriodMonth] = useState(new Date().getMonth())
     const [periodYear, setPeriodYear] = useState(new Date().getFullYear())
     const [activeTab, setActiveTab] = useState(0)
-
+    const [activeClient, setActiveClient] = useState()
     const width = useWindowSize()
-    const { activeClient } = useContext(ClientActiveContext)
+
+    const { setIsLoading } = useContext(LoadingContext)
 
     useEffect(() => {
-        setConfirmedPeriod(false)
+        setIsLoading(true)
+        setTimeout(() => {
+            setIsLoading(false)
+        }, 500);
     }, [activeClient])
 
     return (
-        <PurchasesLayout >
+        <PurchasesLayout
+            activeClient={activeClient}
+            setActiveClient={setActiveClient}
+        >
             <Card className="mt-2">
                 <CardBody className="py-2">
                     {

@@ -11,7 +11,6 @@ import AlertsProvider from 'context/alerts/provider';
 import SecureRoutesProvider from "context/secureRoutes/provider";
 import ActionsBackendProvider from 'context/actionsBackend/provider';
 import LoadingProvider from "context/loading/provider";
-import ClientActiveContext from "context/clientActive/provider";
 
 window.process = {};
 
@@ -21,18 +20,16 @@ ReactDOM.render(
       <AlertsProvider>
         <SecureRoutesProvider>
           <ActionsBackendProvider>
-            <ClientActiveContext>
-              <Switch>
-                <Route path={process.env.PUBLIC_URL + "/auth"} render={props => <AuthLayout {...props} />} />
-                <Route path={process.env.PUBLIC_URL + "/admin"} render={props => <AdminLayout {...props} />} />
+            <Switch>
+              <Route path={process.env.PUBLIC_URL + "/auth"} render={props => <AuthLayout {...props} />} />
+              <Route path={process.env.PUBLIC_URL + "/admin"} render={props => <AdminLayout {...props} />} />
 
-                <Redirect from={process.env.PUBLIC_URL + "/"} to={process.env.PUBLIC_URL + "/auth/login"} />
-                {
-                  process.env.NODE_ENV === "development" ?
-                    <Redirect to={process.env.PUBLIC_URL + "/auth/login"} /> : null
-                }
-              </Switch>
-            </ClientActiveContext>
+              <Redirect from={process.env.PUBLIC_URL + "/"} to={process.env.PUBLIC_URL + "/auth/login"} />
+              {
+                process.env.NODE_ENV === "development" ?
+                  <Redirect to={process.env.PUBLIC_URL + "/auth/login"} /> : null
+              }
+            </Switch>
           </ActionsBackendProvider>
         </SecureRoutesProvider>
       </AlertsProvider>

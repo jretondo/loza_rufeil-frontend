@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { FormGroup, Input, Label } from "reactstrap";
+import { Card, CardBody, FormGroup, Input, Label } from "reactstrap";
 import ActionsBackend from "context/actionsBackend";
 import AlertsContext from "context/alerts";
 import apiRoutes from "../../../api/routes";
@@ -36,17 +36,21 @@ const ClientSelectionCard = ({ activeClient, setActiveClient }) => {
     }, [loadingActions, setIsLoading])
 
     return (
-        <FormGroup className="mb-0" style={{ fontSize: "10px" }}>
-            <Label className="mb-0">Empresa Activa</Label>
-            <Input style={{ background: "#073863", fontWeight: "bold", fontSize: "10px", color: "white" }} className="p-0" type="select" value={JSON.stringify(activeClient)} onChange={e => changeClient(e.target.value)}>
-                {
-                    clientsList.length > 0 && clientsList.map((client, key) => {
-                        !activeClient && changeClient(JSON.stringify(client))
-                        return <option value={JSON.stringify(client)} key={key}>{client.business_name} (CUIT: {client.document_number})</option>
-                    })
-                }
-            </Input>
-        </FormGroup>
+        <Card>
+            <CardBody className="pb-0 pt-2">
+                <FormGroup  >
+                    <Label >Empresa Activa</Label>
+                    <Input type="select" value={JSON.stringify(activeClient)} onChange={e => changeClient(e.target.value)}>
+                        {
+                            clientsList.length > 0 && clientsList.map((client, key) => {
+                                !activeClient && changeClient(JSON.stringify(client))
+                                return <option value={JSON.stringify(client)} key={key}>{client.business_name} (CUIT: {client.document_number})</option>
+                            })
+                        }
+                    </Input>
+                </FormGroup>
+            </CardBody>
+        </Card>
     )
 }
 

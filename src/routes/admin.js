@@ -25,14 +25,14 @@ var routes = [
     icon: "ni ni-single-02 text-blue",
     component: userAdmin,
     layout: process.env.PUBLIC_URL + "/admin",
-    id: 1
+    id: 6
   }, {
     path: "/business",
     name: "Empresas",
     icon: "ni ni-briefcase-24 text-red",
     component: clients,
     layout: process.env.PUBLIC_URL + "/admin",
-    id: 2
+    id: 7
   },
   {
     path: "/certificates",
@@ -40,7 +40,7 @@ var routes = [
     icon: "ni ni-key-25 text-green",
     component: certificates,
     layout: process.env.PUBLIC_URL + "/admin",
-    id: 3
+    id: 8
   },
   {
     sub: [
@@ -63,7 +63,7 @@ var routes = [
     name: "Compras",
     icon: "ni ni-shop text-blue",
     layout: process.env.PUBLIC_URL + "/admin",
-    id: 4
+    id: 9
   },
   {
     path: "/sells",
@@ -71,7 +71,7 @@ var routes = [
     icon: "ni ni-money-coins text-red",
     component: sells,
     layout: process.env.PUBLIC_URL + "/admin",
-    id: 5
+    id: 10
   },
   {
     sub: [
@@ -94,7 +94,7 @@ var routes = [
     name: "Contabilidad",
     icon: "ni ni-briefcase-24 text-blue",
     layout: process.env.PUBLIC_URL + "/admin",
-    id: 6
+    id: 11
   }
 ];
 export default routes;
