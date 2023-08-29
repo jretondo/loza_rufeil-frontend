@@ -12,23 +12,13 @@ const Index = () => {
     const [periodMonth, setPeriodMonth] = useState(new Date().getMonth())
     const [periodYear, setPeriodYear] = useState(new Date().getFullYear())
     const [activeTab, setActiveTab] = useState(0)
-    const [activeClient, setActiveClient] = useState()
+    const activeClient = localStorage.getItem("activeClient")
     const width = useWindowSize()
 
     const { setIsLoading } = useContext(LoadingContext)
 
-    useEffect(() => {
-        setIsLoading(true)
-        setTimeout(() => {
-            setIsLoading(false)
-        }, 500);
-    }, [activeClient])
-
     return (
-        <PurchasesLayout
-            activeClient={activeClient}
-            setActiveClient={setActiveClient}
-        >
+        <PurchasesLayout  >
             <Card className="mt-2">
                 <CardBody className="py-2">
                     {

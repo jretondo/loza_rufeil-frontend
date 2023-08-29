@@ -5,34 +5,41 @@ import {
   CardBody,
   FormGroup,
   Form,
-  Input,
-  InputGroupAddon,
-  InputGroupText,
-  InputGroup,
   Row,
   Col,
-  NavLink,
-  Spinner
+  NavLink
 } from "reactstrap";
 import { Link, Redirect } from "react-router-dom";
-import UrlNodeServer from '../../api/routes'
-import axios from 'axios'
-import alertsContext from 'context/alerts';
 import ClientSelectionCard from "components/Cards/ClientSelection";
+import ActionsBackend from "context/actionsBackend";
+import API_ROUTES from '../../api/routes';
+import LoadingContext from "context/loading";
 
 const ClientSelection = () => {
-  const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
   const [activeClient, setActiveClient] = useState()
   const [activeButton, setActiveButton] = useState(true)
 
-  const { newAlert } = useContext(alertsContext)
+  const { axiosGetQuery } = useContext(ActionsBackend)
+  const { setIsLoading } = useContext(LoadingContext)
 
   useEffect(() => {
     if (!activeClient && !localStorage.getItem("admin")) {
       setActiveButton(false)
+    } else {
+      setActiveButton(true)
     }
   }, [activeClient])
+
+  const init = async () => {
+    setIsLoading(true)
+    localStorage.setItem("activeClient", JSON.stringify(activeClient))
+    const response = await axiosGetQuery(API_ROUTES.usersDir.sub.modules, [{ clientId: activeClient.id }])
+    setIsLoading(false)
+    if (!response.error) {
+      localStorage.setItem("modules", JSON.stringify(response.data))
+    }
+  }
 
   if (done) {
     return (
@@ -50,31 +57,28 @@ const ClientSelection = () => {
               <div className="text-center text-muted mb-4">
                 <span style={{ fontWeight: "bold" }}>Seleccione Empresa:</span>
               </div>
-              {
-                loading ?
-                  <Col md="12" style={{ textAlign: "center" }}>
-                    <Spinner color="primary" style={{ width: "250px", height: "250px" }} />
-                  </Col> :
-                  <Form onSubmit={e => {
-                    e.preventDefault()
-                  }}>
-                    <FormGroup className="mb-3">
-                      <ClientSelectionCard
-                        activeClient={activeClient}
-                        setActiveClient={setActiveClient}
-                      />
-                    </FormGroup>
+              <Form onSubmit={e => {
+                e.preventDefault()
+              }}>
+                <FormGroup className="mb-3">
+                  <ClientSelectionCard
+                    activeClient={activeClient}
+                    setActiveClient={setActiveClient}
+                  />
+                </FormGroup>
 
-                    <div className="text-center">
-                      <Button
-                        disabled={!activeButton}
-                        onClick={() => setDone(true)}
-                        style={{ marginTop: "3em" }} color="primary" type="submit">
-                        Ingresar
-                      </Button>
-                    </div>
-                  </Form>
-              }
+                <div className="text-center">
+                  <Button
+                    disabled={!activeButton}
+                    onClick={async () => {
+                      await init()
+                      setDone(true)
+                    }}
+                    style={{ marginTop: "3em" }} color="primary" type="submit">
+                    Ingresar
+                  </Button>
+                </div>
+              </Form>
             </CardBody>
           </Card>
           <Row className="mt-3">

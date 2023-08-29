@@ -21,7 +21,6 @@ const UserRow = ({
     page,
     setPage,
     setPermissionsBool,
-    setModulePermissionsBool,
     setIdUser,
     setUserName
 }) => {
@@ -77,13 +76,6 @@ const UserRow = ({
         setPermissionsBool(true)
     }
 
-    const giveModulePermissions = (e, id, name) => {
-        e.preventDefault()
-        setUserName(name)
-        setIdUser(id)
-        setModulePermissionsBool(true)
-    }
-
     return (
         <tr key={id} className={loadingActions ? "shimmer" : ""} >
             <td style={{ textAlign: "center" }}>
@@ -125,15 +117,7 @@ const UserRow = ({
                             disabled={item.admin}
                         >
                             <i className="fas fa-id-card"></i>
-                            Permisos en clientes
-                        </DropdownItem>
-                        <DropdownItem
-                            href="#pablo"
-                            onClick={e => giveModulePermissions(e, item.id, item.name + " " + item.lastname)}
-                            disabled={item.admin}
-                        >
-                            <i className="fas fa-window-restore"></i>
-                            Permisos en módulos
+                            Permisos
                         </DropdownItem>
                         <DropdownItem
                             href="#pablo"

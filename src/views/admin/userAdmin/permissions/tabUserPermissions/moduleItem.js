@@ -10,18 +10,29 @@ const ModuleItem = ({ module, changePermission, clientId }) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
     const changePermissionGrade = (grade) => {
-        console.log('grade :>> ', grade);
         switch (grade) {
             case 0:
                 setPermissionGrade({
-                    color: "gray",
+                    color: "danger",
                     text: "Deshabilitado"
                 })
                 break;
             case 1:
                 setPermissionGrade({
+                    color: "info",
+                    text: "Sólo lectura"
+                })
+                break;
+            case 2:
+                setPermissionGrade({
                     color: "success",
-                    text: "Habilitado"
+                    text: "Lectura e inserción"
+                })
+                break;
+            case 3:
+                setPermissionGrade({
+                    color: "warning",
+                    text: "Control Total"
                 })
                 break;
             default:
@@ -57,7 +68,21 @@ const ModuleItem = ({ module, changePermission, clientId }) => {
                                 e.preventDefault()
                                 changePermission(1, clientId, module)
                             }}
-                        >Habilitar</DropdownItem>
+                        >Sólo lectura</DropdownItem>
+                        <DropdownItem
+                            style={{ cursor: "pointer" }}
+                            onClick={e => {
+                                e.preventDefault()
+                                changePermission(2, clientId, module)
+                            }}
+                        >Lectura e inserción</DropdownItem>
+                        <DropdownItem
+                            style={{ cursor: "pointer" }}
+                            onClick={e => {
+                                e.preventDefault()
+                                changePermission(3, clientId, module)
+                            }}
+                        >Control total</DropdownItem>
                     </DropdownMenu>
                 </InputGroupButtonDropdown>
             </InputGroup>

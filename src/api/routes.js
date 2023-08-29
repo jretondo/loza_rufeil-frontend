@@ -4,7 +4,7 @@ const API_PRODUCTION_ADDRESS = "https://api-prod.nekoadmin.com.ar"
 let host = ""
 let publicFiles = ""
 
-if (process.env.NODE_ENV !== "development") {
+if (process.env.NODE_ENV === "development") {
     host = `http://192.168.100.8:${LOCAL_PORT}/api`
     publicFiles = `http://192.168.100.8:${LOCAL_PORT}/static`
 } else {
@@ -43,7 +43,7 @@ const usersDir = {
         mydata: users + "/mydata",
         permissions: users + "/permissions",
         clients: users + "/clients",
-        modulesPermissions: users + "/modulesPermissions"
+        modules: users + "/modules"
     }
 }
 

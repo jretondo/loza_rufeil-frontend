@@ -32,8 +32,10 @@ class Sidebar extends React.Component {
     isAdmin: localStorage.getItem("admin"),
     modalProfile: false,
     modalAct: false,
-    modules: JSON.parse(localStorage.getItem("modules"))
+    modules: JSON.parse(localStorage.getItem("modules")),
+    activeClient: localStorage.getItem("activeClient")
   };
+
   constructor(props) {
     super(props);
     this.activeRoute.bind(this);
@@ -73,7 +75,8 @@ class Sidebar extends React.Component {
         // eslint-disable-next-line
         routes.map((prop, key) => {
           const find = this.state.modules.filter(module => module.module_id === prop.id && module.permission_grade > 0)
-          if (this.state.isAdmin || prop.id === 0 || find.length > 0) {
+
+          if ((this.state.isAdmin && this.state.activeClient) || (prop.id === 0 && this.state.activeClient) || (find.length > 0 && this.state.activeClient) || (prop.id < 9 && !this.state.activeClient)) {
             if (!prop.path) {
               return (
                 <UncontrolledDropdown nav inNavbar key={key}>
@@ -173,7 +176,6 @@ class Sidebar extends React.Component {
                 <img alt="..." src={logo_transparent} style={{ width: "180px", height: "50px" }} />
               </NavbarBrand>
             ) : null}
-
             {/* User */}
             <Nav className="align-items-center d-md-none">
               <UncontrolledDropdown nav>
@@ -205,6 +207,10 @@ class Sidebar extends React.Component {
                   <DropdownItem to="/admin/user-profile" >
                     <i className="ni ni-support-16" />
                     <a href="https://api.whatsapp.com/send?phone=5493512009913&text=Hola%20Javier%2C%20estoy%20teniendo%20problemas%20con%20la%20aplicaci%C3%B3n.%20Solicito%20asistencia%20para%20solucionarlo.%20Gracias!%0AAplicaci%C3%B3n%3A%20%22Municipalidad%20de%20La%20Calera%22" target="_blank" rel="noreferrer" style={{ color: "black" }}><span>Soporte</span></a>
+                  </DropdownItem>
+                  <DropdownItem href={process.env.PUBLIC_URL + "/auth/select-client"}>
+                    <i className="ni ni-building" />
+                    <span>Cambiar empresa</span>
                   </DropdownItem>
                   <DropdownItem divider />
                   <DropdownItem divider />
@@ -247,6 +253,7 @@ class Sidebar extends React.Component {
                 </Row>
               </div>
               {/* Navigation */}
+              <h6 style={{ color: "#0081c9" }}><i className="ni ni-building" /> {" "} {this.state.activeClient && JSON.parse(this.state.activeClient).business_name.slice(0, 40)}</h6>
               <Nav navbar>{this.state.data}</Nav>
               {/* Divider */}
               <hr className="my-3" />

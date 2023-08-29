@@ -15,7 +15,6 @@ const ClientSelectionCard = ({ activeClient, setActiveClient }) => {
     const getClientsList = async () => {
         const response = await axiosGetQuery(apiRoutes.clientsDir.clients, [])
         if (!response.error) {
-            console.log('response.data :>> ', response.data);
             setClientsList(response.data)
         } else {
             newAlert("danger", "Hubo un error!", "Puede que aún no haya clientes cargados en la base de datos!")

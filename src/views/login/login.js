@@ -39,6 +39,7 @@ const Login = () => {
     localStorage.removeItem("user-token")
     localStorage.removeItem("admin")
     localStorage.removeItem("modules")
+    localStorage.removeItem("activeClient")
     if (!isLog) {
       const savedEmail = localStorage.getItem("savedEmail")
       if (savedEmail) {
@@ -80,7 +81,6 @@ const Login = () => {
           const userData = res.data.body.userData
           localStorage.setItem("name", userData.name)
           localStorage.setItem("lastName", userData.lastname)
-          localStorage.setItem("modules", JSON.stringify(res.data.body.modules))
           if (!userData.admin) {
           } else if (userData.admin) {
             localStorage.setItem("admin", true)

@@ -3,10 +3,9 @@ import Header from "components/Headers/Header.js";
 import secureContext from 'context/secureRoutes';
 import apiRoutes from "../../../api/routes";
 import { Container } from "reactstrap";
-import ClientSelectionCard from "components/Cards/ClientSelection";
 
 
-const PurchasesLayout = ({ children, activeClient, setActiveClient }) => {
+const PurchasesLayout = ({ children }) => {
     const { setUrlRoute } = useContext(secureContext)
 
     useEffect(() => {
@@ -17,10 +16,6 @@ const PurchasesLayout = ({ children, activeClient, setActiveClient }) => {
         <>
             <Header />
             <Container className="mt--9" fluid>
-                <ClientSelectionCard
-                    activeClient={activeClient}
-                    setActiveClient={setActiveClient}
-                />
                 {children}
             </Container>
         </>

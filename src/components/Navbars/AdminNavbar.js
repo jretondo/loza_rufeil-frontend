@@ -29,7 +29,7 @@ const AdminNavbar = (props) => {
     setIsAdmin(localStorage.getItem("admin"))
   }, [])
 
-  const SalirBtn = (e) => {
+  const exitBtn = (e) => {
     e.preventDefault()
     setExit(true)
   }
@@ -94,8 +94,12 @@ const AdminNavbar = (props) => {
                     <i className="ni ni-support-16" />
                     <a href="https://api.whatsapp.com/send?phone=5493512009913&text=Hola%20Javier%2C%20estoy%20teniendo%20problemas%20con%20la%20aplicaci%C3%B3n.%20Solicito%20asistencia%20para%20solucionarlo.%20Gracias!%0AAplicaci%C3%B3n%3A%20%22Municipalidad%20de%20La%20Calera%22" target="_blank" rel="noreferrer" style={{ color: "black" }}><span>Soporte</span></a>
                   </DropdownItem>
+                  <DropdownItem href={process.env.PUBLIC_URL + "/auth/select-client"}>
+                    <i className="ni ni-building" />
+                    <span>Cambiar empresa</span>
+                  </DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem href="#pablo" onClick={e => SalirBtn(e)}>
+                  <DropdownItem href="#pablo" onClick={e => exitBtn(e)}>
                     <i className="ni ni-user-run" />
                     <span>Salir</span>
                   </DropdownItem>
