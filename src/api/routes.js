@@ -20,6 +20,7 @@ const activity = host + "/activity"
 const clients = host + "/clients"
 const providers = host + "/providers"
 const certificates = host + "/certificates"
+const accounting = host + "/accounting"
 
 const authDir = {
     auth
@@ -84,6 +85,13 @@ const routesDir = {
     }
 }
 
+const accountingDir = {
+    accounting,
+    sub: {
+        period: accounting + "/period"
+    }
+}
+
 const API_ROUTES = {
     publicFiles,
     authDir,
@@ -93,7 +101,8 @@ const API_ROUTES = {
     activityDir,
     clientsDir,
     certificatesDir,
-    providersDir
+    providersDir,
+    accountingDir
 }
 
 export default API_ROUTES

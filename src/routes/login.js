@@ -3,6 +3,7 @@ import Login from "views/login/login.js";
 import ForgotPass from 'views/login/forgotPass';
 import NvaPass from 'views/login/newPass';
 import ClientSelection from 'views/login/clientSelection';
+import PeriodSelection from 'views/login/periodSelection';
 
 var routes = [
   {
@@ -31,6 +32,13 @@ var routes = [
     name: "Selección de Empresa",
     icon: "ni ni-circle-08 text-pink",
     component: ClientSelection,
+    layout: process.env.PUBLIC_URL + "/auth"
+  },
+  {
+    path: "/select-period",
+    name: "Selección de Ejercicio",
+    icon: "ni ni-circle-08 text-pink",
+    component: PeriodSelection,
     layout: process.env.PUBLIC_URL + "/auth"
   },
   {
