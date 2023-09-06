@@ -98,6 +98,10 @@ const AdminNavbar = (props) => {
                     <i className="ni ni-building" />
                     <span>Cambiar empresa</span>
                   </DropdownItem>
+                  <DropdownItem href={process.env.PUBLIC_URL + "/auth/select-period"}>
+                    <i className="ni ni-calendar-grid-58" />
+                    <span>Cambiar ejercicio</span>
+                  </DropdownItem>
                   <DropdownItem divider />
                   <DropdownItem href="#pablo" onClick={e => exitBtn(e)}>
                     <i className="ni ni-user-run" />

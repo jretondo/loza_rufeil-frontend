@@ -16,6 +16,7 @@ import ActionsBackend from "context/actionsBackend";
 import API_ROUTES from '../../api/routes';
 import LoadingContext from "context/loading";
 import moment from "moment-timezone";
+import AlertsContext from "context/alerts";
 
 const PeriodSelection = () => {
   const [done, setDone] = useState(false)
@@ -26,6 +27,7 @@ const PeriodSelection = () => {
   const [fromDate, setFromDate] = useState(moment(new Date()).format("YYYY-MM-DD"))
   const [toDate, setToDate] = useState(moment(new Date()).format("YYYY-MM-DD"))
 
+  const { newAlert, newActivity } = useContext(AlertsContext)
   const { axiosGetQuery, axiosPost } = useContext(ActionsBackend)
   const { setIsLoading } = useContext(LoadingContext)
 
@@ -39,6 +41,7 @@ const PeriodSelection = () => {
 
   const init = async () => {
     localStorage.setItem("activePeriod", JSON.stringify(activePeriod))
+    setDone(true)
   }
 
   const getPeriods = async () => {
@@ -46,6 +49,7 @@ const PeriodSelection = () => {
     const clientData = JSON.parse(localStorage.getItem("activeClient"))
     const response = await axiosGetQuery(API_ROUTES.accountingDir.sub.period, [{ clientId: clientData.id }])
     if (!response.error) {
+      response.data.length > 0 && setActivePeriod(response.data[0])
       setPeriodList(response.data)
     }
     setIsLoading(false)
@@ -61,10 +65,12 @@ const PeriodSelection = () => {
     }
     const response = await axiosPost(API_ROUTES.accountingDir.sub.period, data)
     if (!response.error) {
+      newActivity(`El usuario agregó un nuevo ejercicio contable. Cliente: ${clientData.business_name} (${clientData.document_number}) Ejercicio: ${moment(fromDate).format("DD/MM/YYYY")} - ${moment(toDate).format("DD/MM/YYYY")}`)
+      newAlert("success", "Cargado con éxito!", "")
       getPeriods()
-      console.log('response :>> ', response.data);
+      setNewPeriod(false)
     } else {
-      console.log('response :>> ', response);
+      newAlert("danger", "Hubo un error!", "Error: " + response.errorMsg)
     }
     setIsLoading(false)
   }
@@ -78,7 +84,7 @@ const PeriodSelection = () => {
     return (
       <Redirect
         className="text-light"
-        to={process.env.PUBLIC_URL + "/auth/dashboard"}
+        to={process.env.PUBLIC_URL + "/admin/dashboard"}
       />
     )
   } else {
@@ -101,13 +107,13 @@ const PeriodSelection = () => {
                         <Label>Desde</Label>
                         <Input value={fromDate} onChange={e => {
                           setFromDate(e.target.value)
-                        }} type="date" required />
+                        }} type="date" required max={toDate} />
                       </Col>
                       <Col md="6">
                         <Label>Hasta</Label>
                         <Input value={toDate} onChange={e => {
                           setToDate(e.target.value)
-                        }} type="date" required />
+                        }} type="date" required min={fromDate} />
                       </Col>
                     </Row>
                     <Row className="mt-3">
@@ -128,10 +134,11 @@ const PeriodSelection = () => {
                   }}>
                     <FormGroup className="mb-3">
                       <Label>Periodos</Label>
-                      <Input type="select" >
+                      <Input type="select" value={JSON.stringify(activePeriod)} onChange={e => setActivePeriod(JSON.parse(e.target.value))}>
                         {
                           periodsList.length > 0 ? periodsList.map((item, key) => {
-                            return (<option key={key}>{`${moment(item.from_date).tz('America/Buenos_Aires').format("DD/MM/YYYY")} - ${moment(item.to_date).format("DD/MM/YYYY")}`}</option>)
+
+                            return (<option key={key} value={JSON.stringify(item)}>{`${moment(item.from_date).format("DD/MM/YYYY")} - ${moment(item.to_date).format("DD/MM/YYYY")}`}</option>)
                           }) :
                             <option>No hay periodos disponibles</option>
                         }

@@ -23,6 +23,7 @@ import Img1 from 'assets/img/theme/default-avatar.png';
 import logo_transparent from 'assets/img/brand/logo_transparent.png';
 import { ModalMyProfile } from "../Modals/ModalProfile";
 import { ModalActivity } from "components/Modals/ModalActivity";
+import moment from "moment";
 
 class Sidebar extends React.Component {
   state = {
@@ -33,7 +34,8 @@ class Sidebar extends React.Component {
     modalProfile: false,
     modalAct: false,
     modules: JSON.parse(localStorage.getItem("modules")),
-    activeClient: localStorage.getItem("activeClient")
+    activeClient: localStorage.getItem("activeClient"),
+    activePeriod: localStorage.getItem("activePeriod")
   };
 
   constructor(props) {
@@ -253,7 +255,11 @@ class Sidebar extends React.Component {
                 </Row>
               </div>
               {/* Navigation */}
-              <h6 style={{ color: "#0081c9" }}><i className="ni ni-building" /> {" "} {this.state.activeClient && JSON.parse(this.state.activeClient).business_name.slice(0, 40)}</h6>
+              <h5 style={{ color: "#0081c9" }}><i className="ni ni-building" /> {" "} {this.state.activeClient && JSON.parse(this.state.activeClient).business_name.slice(0, 40)}</h5>
+              <h6 style={{ color: "red" }} className="mb-0">
+                <i className="ni ni-calendar-grid-58" /> {" "}
+                Periodo:</h6>
+              <h6 style={{ color: "red" }}>{moment(JSON.parse(this.state.activePeriod).from_date).format("DD/MM/YYYY")} - {moment(JSON.parse(this.state.activePeriod).to_date).format("DD/MM/YYYY")}</h6>
               <Nav navbar>{this.state.data}</Nav>
               {/* Divider */}
               <hr className="my-3" />
