@@ -31,3 +31,22 @@
 .animated-button {
     font-size: 20px;
 }
+
+.sm-animated-button-close {
+    animation: animatedButtonFalse 1s forwards;
+    font-size: 10px;
+}
+
+.sm-animated-button-open {
+    animation: animatedButtonTrue 1s forwards;
+    font-size: 10px;
+}
+
+.sm-animated-button {
+    font-size: 10px;
+}
+
+.sm-button {
+    font-size: 10px;
+    height: 33px;
+}
