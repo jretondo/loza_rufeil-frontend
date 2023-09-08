@@ -1,0 +1,33 @@
+@keyframes animatedButtonTrue {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(-90deg);
+    }
+}
+
+@keyframes animatedButtonFalse {
+    from {
+        transform: rotate(-90deg);
+    }
+
+    to {
+        transform: rotate(0deg);
+    }
+}
+
+.animated-button-close {
+    animation: animatedButtonFalse 1s forwards;
+    font-size: 20px;
+}
+
+.animated-button-open {
+    animation: animatedButtonTrue 1s forwards;
+    font-size: 20px;
+}
+
+.animated-button {
+    font-size: 20px;
+}
