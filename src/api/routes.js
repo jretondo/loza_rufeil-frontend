@@ -5,8 +5,8 @@ let host = ""
 let publicFiles = ""
 
 if (process.env.NODE_ENV === "development") {
-    host = `http://localhost:${LOCAL_PORT}/api`
-    publicFiles = `http://localhost:${LOCAL_PORT}/static`
+    host = `http://192.168.100.8:${LOCAL_PORT}/api`
+    publicFiles = `http://192.168.100.8:${LOCAL_PORT}/static`
 } else {
     host = `${API_PRODUCTION_ADDRESS}/${PROJECT}/api`
     publicFiles = `${API_PRODUCTION_ADDRESS}/${PROJECT}/static`
@@ -88,7 +88,8 @@ const routesDir = {
 const accountingDir = {
     accounting,
     sub: {
-        period: accounting + "/period"
+        period: accounting + "/period",
+        accountingCharts: accounting + "/accountingCharts"
     }
 }
 

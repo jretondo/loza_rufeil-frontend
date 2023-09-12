@@ -19,12 +19,12 @@
 }
 
 .animated-button-close {
-    animation: animatedButtonFalse 1s forwards;
+    animation: animatedButtonFalse 0.5s forwards;
     font-size: 20px;
 }
 
 .animated-button-open {
-    animation: animatedButtonTrue 1s forwards;
+    animation: animatedButtonTrue 0.5s forwards;
     font-size: 20px;
 }
 
@@ -33,12 +33,12 @@
 }
 
 .sm-animated-button-close {
-    animation: animatedButtonFalse 1s forwards;
+    animation: animatedButtonFalse 0.5s forwards;
     font-size: 10px;
 }
 
 .sm-animated-button-open {
-    animation: animatedButtonTrue 1s forwards;
+    animation: animatedButtonTrue 0.5s forwards;
     font-size: 10px;
 }
 
