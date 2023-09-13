@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import Header from "components/Headers/Header.js";
 import secureContext from 'context/secureRoutes';
 import apiRoutes from "../../../../api/routes";
-import { Card, CardBody, CardHeader, Collapse, Container, FormGroup, Input, Label } from "reactstrap";
+import { Button, Card, CardBody, CardHeader, Collapse, Container, Form, FormGroup, Input, InputGroup, InputGroupAddon, Label } from "reactstrap";
 import PrincipalButtonAccordion from "components/Accordion/ListAccordion/principalButton";
 import SubButtonAccordion from "components/Accordion/ListAccordion/subButton";
 import NewAccountForm from "./newAccountForm";
@@ -15,9 +15,10 @@ const Index = () => {
     const [activeIds, setActiveIds] = useState([])
     const [isOpenNewForm, setIsOpenNewForm] = useState(false)
     const [selectedAccount, setSelectedAccount] = useState(false)
+    const [nameContain, setNameContain] = useState("")
     const [refreshList, setRefreshList] = useState(false)
-    const { setUrlRoute } = useContext(secureContext)
 
+    const { setUrlRoute } = useContext(secureContext)
     const { setIsLoading } = useContext(LoadingContext)
 
     const {
@@ -25,7 +26,10 @@ const Index = () => {
         loadingList
     } = useAxiosGetList(
         API_ROUTES.accountingDir.sub.accountingCharts,
-        0, refreshList, [{ periodId: JSON.parse(localStorage.getItem("activePeriod")).id }]
+        0, refreshList, [
+        { periodId: JSON.parse(localStorage.getItem("activePeriod")).id },
+        { contain: nameContain ? nameContain : "" }
+    ]
     )
 
     useEffect(() => {
@@ -51,22 +55,36 @@ const Index = () => {
                 bgColor = "#8BEDF8"
                 break;
             default:
-                bgColor = "#AD9CFF"
+                bgColor = "#e6e6e6"
                 break;
         }
         return accountList.map((account, key) => {
             return <div key={key}>
                 {account.principal ?
                     <div key={key}>
-                        <PrincipalButtonAccordion
-                            name={account.name}
-                            key={account.id}
-                            id={account.id}
-                            open={(activeIds.includes(account.id))}
-                            setActiveId={setActiveIds}
-                            hasSub={account.subAccounts.length > 0}
-                            openNewForm={() => openNewForm(account)}
-                        />
+                        {
+                            (account.genre > 0 && account.group === 0 && account.caption === 0 && account.account === 0 && account.sub_account === 0) ?
+                                <PrincipalButtonAccordion
+                                    name={account.name}
+                                    key={account.id}
+                                    id={account.id}
+                                    open={(activeIds.includes(account.id))}
+                                    setActiveId={setActiveIds}
+                                    hasSub={account.subAccounts.length > 0}
+                                    openNewForm={() => openNewForm(account)}
+                                /> :
+                                <SubButtonAccordion
+                                    level={level}
+                                    name={`${account.name} (${account.code})`}
+                                    key={account.id}
+                                    id={account.id}
+                                    open={activeIds.includes(account.id)}
+                                    setActiveId={setActiveIds}
+                                    hasSub={account.subAccounts.length > 0}
+                                    bgColor={bgColor}
+                                    openNewForm={() => openNewForm(account)}
+                                />
+                        }
                         {(account.subAccounts.length > 0 && isParentOpen) && modulesBuilder(account.subAccounts, account.id, (level + 1), activeIds.includes(account.id))}
                     </div> :
                     <Collapse isOpen={activeIds.includes(parentId)} key={key}>
@@ -108,10 +126,23 @@ const Index = () => {
             <Container className="mt--7" fluid>
                 <Card>
                     <CardHeader>
-                        <FormGroup>
-                            <Label>Buscador:</Label>
-                            <Input />
-                        </FormGroup>
+                        <Form onSubmit={e => {
+                            e.preventDefault()
+                            setRefreshList(!refreshList)
+                        }}>
+                            <FormGroup>
+                                <Label>Buscador:</Label>
+                                <InputGroup>
+                                    <Input value={nameContain} onChange={(e) => {
+                                        setNameContain(e.target.value)
+                                        e.target.value === "" && setRefreshList(!refreshList)
+                                    }} />
+                                    <InputGroupAddon addonType="append">
+                                        <Button color="primary" type="submit">Buscar</Button>
+                                    </InputGroupAddon>
+                                </InputGroup>
+                            </FormGroup>
+                        </Form>
                     </CardHeader>
                     <CardBody>
                         {accountsListHtml}

@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Col, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
+import { accountCodeGenerate } from './accountCodeGenerate';
 
 const NewAccountForm = ({ parentAccount, isOpen, toggle }) => {
+    const [numberAccountData, setNumberAccountData] = useState(parentAccount && accountCodeGenerate(parentAccount))
+    console.log('numberAccountData :>> ', numberAccountData);
     return <Modal size="lg" toggle={toggle} isOpen={isOpen}>
         <ModalHeader>
             Cuenta padre: {parentAccount && parentAccount.name} ({parentAccount && parentAccount.code})
@@ -17,7 +20,7 @@ const NewAccountForm = ({ parentAccount, isOpen, toggle }) => {
                 <Col md="4">
                     <FormGroup>
                         <Label>Código</Label>
-                        <Input disabled />
+                        <Input value={numberAccountData} disabled />
                     </FormGroup>
                 </Col>
             </Row>
