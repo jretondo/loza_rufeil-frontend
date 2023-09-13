@@ -5,42 +5,34 @@ import apiRoutes from "../../../../api/routes";
 import { Card, CardBody, CardHeader, Collapse, Container, FormGroup, Input, Label } from "reactstrap";
 import PrincipalButtonAccordion from "components/Accordion/ListAccordion/principalButton";
 import SubButtonAccordion from "components/Accordion/ListAccordion/subButton";
-import egList from './example.json';
 import NewAccountForm from "./newAccountForm";
-import ActionsBackend from "context/actionsBackend";
 import LoadingContext from "context/loading";
 import API_ROUTES from "../../../../api/routes";
-const Index = () => {
+import { useAxiosGetList } from 'hooks/useAxiosGetList';
 
-    const [accountsList, setAccountsList] = useState(egList)
+const Index = () => {
     const [accountsListHtml, setAccountsListHtml] = useState(<></>)
     const [activeIds, setActiveIds] = useState([])
     const [isOpenNewForm, setIsOpenNewForm] = useState(false)
     const [selectedAccount, setSelectedAccount] = useState(false)
+    const [refreshList, setRefreshList] = useState(false)
     const { setUrlRoute } = useContext(secureContext)
 
-    const { axiosGetQuery, loadingActions } = useContext(ActionsBackend)
     const { setIsLoading } = useContext(LoadingContext)
 
-    const getAccountingList = async () => {
-        const selectedPeriod = JSON.parse(localStorage.getItem("activePeriod"))
-        const response = await axiosGetQuery(API_ROUTES.accountingDir.sub.accountingCharts, [{ periodId: selectedPeriod.id }])
-        if (!response.error) {
-            setAccountsList(response.data)
-        } else {
-
-        }
-    }
+    const {
+        dataPage,
+        loadingList
+    } = useAxiosGetList(
+        API_ROUTES.accountingDir.sub.accountingCharts,
+        0, refreshList, [{ periodId: JSON.parse(localStorage.getItem("activePeriod")).id }]
+    )
 
     useEffect(() => {
-        getAccountingList()
-    }, [])
+        setIsLoading(loadingList)
+    }, [loadingList, setIsLoading])
 
-    useEffect(() => {
-        setIsLoading(loadingActions)
-    }, [loadingActions, setIsLoading])
-
-    const modulesBuilder = (accountList, parentId, level) => {
+    const modulesBuilder = (accountList, parentId, level, isParentOpen) => {
         let bgColor = "#AD9CFF"
         switch (level) {
             case 1:
@@ -75,7 +67,7 @@ const Index = () => {
                             hasSub={account.subAccounts.length > 0}
                             openNewForm={() => openNewForm(account)}
                         />
-                        {account.subAccounts.length > 0 && modulesBuilder(account.subAccounts, account.id, (level + 1))}
+                        {(account.subAccounts.length > 0 && isParentOpen) && modulesBuilder(account.subAccounts, account.id, (level + 1), activeIds.includes(account.id))}
                     </div> :
                     <Collapse isOpen={activeIds.includes(parentId)} key={key}>
                         <SubButtonAccordion
@@ -89,7 +81,7 @@ const Index = () => {
                             bgColor={bgColor}
                             openNewForm={() => openNewForm(account)}
                         />
-                        {account.subAccounts.length > 0 && modulesBuilder(account.subAccounts, account.id, (level + 1))}
+                        {(account.subAccounts.length > 0 && isParentOpen) && modulesBuilder(account.subAccounts, account.id, (level + 1), activeIds.includes(account.id))}
                     </Collapse>
                 }
             </div>
@@ -102,9 +94,9 @@ const Index = () => {
     }
 
     useEffect(() => {
-        setAccountsListHtml(modulesBuilder(accountsList, false, 0))
+        dataPage.length > 0 && setAccountsListHtml(modulesBuilder(dataPage, false, 0, true))
         // eslint-disable-next-line
-    }, [accountsList, activeIds])
+    }, [dataPage, activeIds])
 
     useEffect(() => {
         setUrlRoute(apiRoutes.routesDir.sub.accounting)

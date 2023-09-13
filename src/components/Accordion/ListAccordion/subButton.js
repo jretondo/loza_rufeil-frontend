@@ -35,12 +35,15 @@ const SubButtonAccordion = ({ id, name, level, setActiveId, open, hasSub, bgColo
                     </Row>
                 </Col>
                 <Col md="4" className="text-right">
-                    <Button color="primary" id={`plusButton-${id}`} className="sm-button px-3 my-1 py-2" onClick={openNewForm}>
+                    <Button disabled={level === 4} color="primary" id={`plusButton-${id}`} className="sm-button px-3 my-1 py-2" onClick={openNewForm}>
                         <i className="sm-button fa fa-plus"></i>
                     </Button>
-                    <Tooltip placement="top" isOpen={plusToolTip} target={`plusButton-${id}`} toggle={() => setPlusToolTip(!plusToolTip)}>
-                        Agregar nueva cuenta
-                    </Tooltip>
+                    {
+                        level < 4 &&
+                        <Tooltip placement="top" isOpen={plusToolTip} target={`plusButton-${id}`} toggle={() => setPlusToolTip(!plusToolTip)}>
+                            Agregar nueva cuenta
+                        </Tooltip>
+                    }
                     <Button color="primary" id={`modifyButton-${id}`} className="sm-button px-3 my-1 py-2">
                         <i className="sm-button fa fa-edit"></i>
                     </Button>
