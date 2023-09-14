@@ -29,12 +29,7 @@ const Index = () => {
         0, refreshList, [
         { periodId: JSON.parse(localStorage.getItem("activePeriod")).id },
         { contain: nameContain ? nameContain : "" }
-    ]
-    )
-
-    useEffect(() => {
-        setIsLoading(loadingList)
-    }, [loadingList, setIsLoading])
+    ])
 
     const modulesBuilder = (accountList, parentId, level, isParentOpen) => {
         let bgColor = "#AD9CFF"
@@ -112,9 +107,18 @@ const Index = () => {
     }
 
     useEffect(() => {
+        setRefreshList(!refreshList)
+        // eslint-disable-next-line
+    }, [isOpenNewForm])
+
+    useEffect(() => {
         dataPage.length > 0 && setAccountsListHtml(modulesBuilder(dataPage, false, 0, true))
         // eslint-disable-next-line
     }, [dataPage, activeIds])
+
+    useEffect(() => {
+        setIsLoading(loadingList)
+    }, [loadingList, setIsLoading])
 
     useEffect(() => {
         setUrlRoute(apiRoutes.routesDir.sub.accounting)
@@ -153,6 +157,7 @@ const Index = () => {
                 parentAccount={selectedAccount}
                 isOpen={isOpenNewForm}
                 toggle={() => setIsOpenNewForm(!isOpenNewForm)}
+                setIsLoading={setIsLoading}
             />
         </>
     )

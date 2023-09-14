@@ -22,6 +22,10 @@ const SubButtonAccordion = ({ id, name, level, setActiveId, open, hasSub, bgColo
         !open && setActiveId((activeIds) => [...activeIds, id])
     }
 
+    const deleteAccount = () => {
+
+    }
+
     return (<> <Row>
         <Col md={level}>
         </Col>
