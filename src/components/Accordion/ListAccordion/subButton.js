@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Col, Row, Tooltip } from 'reactstrap';
 
-const SubButtonAccordion = ({ id, name, level, setActiveId, open, hasSub, bgColor, openNewForm }) => {
+const SubButtonAccordion = ({ id, name, level, setActiveId, open, hasSub, bgColor, openNewForm, openUpdate }) => {
     const [openedButton, setOpenedButton] = useState("")
     const [plusToolTip, setPlusToolTip] = useState(false)
     const [trashToolTip, setTrashToolTip] = useState(false)
@@ -48,7 +48,7 @@ const SubButtonAccordion = ({ id, name, level, setActiveId, open, hasSub, bgColo
                             Agregar nueva cuenta
                         </Tooltip>
                     }
-                    <Button color="primary" id={`modifyButton-${id}`} className="sm-button px-3 my-1 py-2">
+                    <Button color="primary" id={`modifyButton-${id}`} className="sm-button px-3 my-1 py-2" onClick={openUpdate}>
                         <i className="sm-button fa fa-edit"></i>
                     </Button>
                     <Tooltip placement="top" isOpen={modifyButtonToolTip} target={`modifyButton-${id}`} toggle={() => setModifyButtonToolTip(!modifyButtonToolTip)}>

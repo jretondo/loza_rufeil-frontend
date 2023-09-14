@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Col, Row, Tooltip } from 'reactstrap';
 import './accordion.css';
-const PrincipalButtonAccordion = ({ id, name, setActiveId, open, hasSub, openNewForm }) => {
+const PrincipalButtonAccordion = ({ id, name, setActiveId, open, hasSub, openNewForm, openUpdate }) => {
     const [openedButton, setOpenedButton] = useState("")
     const [plusToolTip, setPlusToolTip] = useState(false)
     const [openButtonToolTip, setOpenButtonToolTip] = useState(false)
@@ -24,7 +24,7 @@ const PrincipalButtonAccordion = ({ id, name, setActiveId, open, hasSub, openNew
         <Row>
             <Col md="12" className="py-2 px-3" style={{ border: "5px solid #073863", backgroundColor: "#e6e6e6" }}>
                 <Row>
-                    <Col md={hasSub ? 6 : 12}>
+                    <Col md={6}>
                         <Row>
                             <h2 className="mt-2 mx-3" style={{ color: "#073863", fontWeight: "bold" }}>{name}</h2>
                         </Row>

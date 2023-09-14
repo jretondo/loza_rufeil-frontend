@@ -5,7 +5,7 @@ import apiRoutes from "../../../../api/routes";
 import { Button, Card, CardBody, CardHeader, Collapse, Container, Form, FormGroup, Input, InputGroup, InputGroupAddon, Label } from "reactstrap";
 import PrincipalButtonAccordion from "components/Accordion/ListAccordion/principalButton";
 import SubButtonAccordion from "components/Accordion/ListAccordion/subButton";
-import NewAccountForm from "./newAccountForm";
+import AccountForm from "./accountForm";
 import LoadingContext from "context/loading";
 import API_ROUTES from "../../../../api/routes";
 import { useAxiosGetList } from 'hooks/useAxiosGetList';
@@ -17,6 +17,7 @@ const Index = () => {
     const [selectedAccount, setSelectedAccount] = useState(false)
     const [nameContain, setNameContain] = useState("")
     const [refreshList, setRefreshList] = useState(false)
+    const [toUpdate, setToUpdate] = useState(false)
 
     const { setUrlRoute } = useContext(secureContext)
     const { setIsLoading } = useContext(LoadingContext)
@@ -78,6 +79,10 @@ const Index = () => {
                                     hasSub={account.subAccounts.length > 0}
                                     bgColor={bgColor}
                                     openNewForm={() => openNewForm(account)}
+                                    openUpdate={() => {
+                                        setToUpdate(true)
+                                        openNewForm(account)
+                                    }}
                                 />
                         }
                         {(account.subAccounts.length > 0 && isParentOpen) && modulesBuilder(account.subAccounts, account.id, (level + 1), activeIds.includes(account.id))}
@@ -93,6 +98,10 @@ const Index = () => {
                             hasSub={account.subAccounts.length > 0}
                             bgColor={bgColor}
                             openNewForm={() => openNewForm(account)}
+                            openUpdate={() => {
+                                setToUpdate(true)
+                                openNewForm(account)
+                            }}
                         />
                         {(account.subAccounts.length > 0 && isParentOpen) && modulesBuilder(account.subAccounts, account.id, (level + 1), activeIds.includes(account.id))}
                     </Collapse>
@@ -109,6 +118,10 @@ const Index = () => {
     useEffect(() => {
         setRefreshList(!refreshList)
         // eslint-disable-next-line
+    }, [isOpenNewForm])
+
+    useEffect(() => {
+        !isOpenNewForm && setToUpdate(false)
     }, [isOpenNewForm])
 
     useEffect(() => {
@@ -142,7 +155,7 @@ const Index = () => {
                                         e.target.value === "" && setRefreshList(!refreshList)
                                     }} />
                                     <InputGroupAddon addonType="append">
-                                        <Button color="primary" type="submit">Buscar</Button>
+                                        <Button style={{ zIndex: 0 }} color="primary" type="submit">Buscar</Button>
                                     </InputGroupAddon>
                                 </InputGroup>
                             </FormGroup>
@@ -153,11 +166,12 @@ const Index = () => {
                     </CardBody>
                 </Card>
             </Container>
-            <NewAccountForm
+            <AccountForm
                 parentAccount={selectedAccount}
                 isOpen={isOpenNewForm}
                 toggle={() => setIsOpenNewForm(!isOpenNewForm)}
                 setIsLoading={setIsLoading}
+                toUpdate={toUpdate}
             />
         </>
     )

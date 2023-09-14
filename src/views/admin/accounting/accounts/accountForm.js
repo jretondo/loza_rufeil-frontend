@@ -5,8 +5,9 @@ import CompleteCerosLeft from 'function/completeCeroLeft';
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, Col, Form, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
 
-const NewAccountForm = ({ parentAccount, isOpen, toggle, setIsLoading }) => {
+const AccountForm = ({ parentAccount, isOpen, toggle, setIsLoading, toUpdate }) => {
     const [formData, setFormData] = useState({
+        id: false,
         genre: 0,
         group: 0,
         caption: 0,
@@ -15,7 +16,8 @@ const NewAccountForm = ({ parentAccount, isOpen, toggle, setIsLoading }) => {
         code: "000000000",
         name: "",
         inflation_adjustment: false,
-        attributable: false
+        attributable: false,
+        accounting_period_id: JSON.parse(localStorage.getItem("activePeriod")).id
     })
 
     const { axiosGetQuery, loadingActions, axiosPost } = useContext(ActionsBackend)
@@ -29,7 +31,13 @@ const NewAccountForm = ({ parentAccount, isOpen, toggle, setIsLoading }) => {
                 + CompleteCerosLeft(response.data.caption, 2)
                 + CompleteCerosLeft(response.data.account, 2)
                 + CompleteCerosLeft(response.data.sub_account, 2)
-            setFormData({ ...response.data, code: code, name: formData.name, id: null })
+            setFormData({
+                ...response.data,
+                code: code,
+                name: formData.name,
+                id: null,
+                accounting_period_id: formData.accounting_period_id
+            })
         } else {
             newAlert("error", "Hubo un error!", "Error: " + response.errorMsg)
         }
@@ -38,8 +46,13 @@ const NewAccountForm = ({ parentAccount, isOpen, toggle, setIsLoading }) => {
     const postDataForm = async () => {
         const response = await axiosPost(API_ROUTES.accountingDir.sub.accountingChart, { formData })
         if (!response.error) {
-            newActivity(`El usuario agregó una nueva cuenta: ${formData.name} (${formData.code})`)
-            newAlert("success", "Cuenta registrada!", "")
+            if (formData.id) {
+                newActivity(`El usuario modificó la cuenta: ${formData.name} (${formData.code})`)
+                newAlert("success", "Cuenta modificada!", "")
+            } else {
+                newActivity(`El usuario agregó una nueva cuenta: ${formData.name} (${formData.code})`)
+                newAlert("success", "Cuenta registrada!", "")
+            }
             setDefaultState()
             toggle()
         } else {
@@ -49,6 +62,7 @@ const NewAccountForm = ({ parentAccount, isOpen, toggle, setIsLoading }) => {
 
     const setDefaultState = () => {
         setFormData({
+            id: false,
             genre: 0,
             group: 0,
             caption: 0,
@@ -57,12 +71,27 @@ const NewAccountForm = ({ parentAccount, isOpen, toggle, setIsLoading }) => {
             code: "000000000",
             name: "",
             inflation_adjustment: false,
-            attributable: false
+            attributable: false,
+            accounting_period_id: JSON.parse(localStorage.getItem("activePeriod")).id
         })
     }
 
     useEffect(() => {
-        isOpen && getLastChild()
+        isOpen && !toUpdate && getLastChild()
+        !isOpen && setDefaultState()
+        isOpen && toUpdate && setFormData({
+            id: parentAccount.id,
+            genre: parentAccount.genre,
+            group: parentAccount.group,
+            caption: parentAccount.caption,
+            account: parentAccount.account,
+            sub_account: parentAccount.sub_account,
+            code: parentAccount.code,
+            name: parentAccount.name,
+            inflation_adjustment: parentAccount.inflation_adjustment,
+            attributable: parentAccount.attributable,
+            accounting_period_id: JSON.parse(localStorage.getItem("activePeriod")).id
+        })
         // eslint-disable-next-line
     }, [parentAccount, isOpen])
 
@@ -78,7 +107,8 @@ const NewAccountForm = ({ parentAccount, isOpen, toggle, setIsLoading }) => {
             postDataForm()
         }} >
             <ModalHeader>
-                Cuenta padre: {parentAccount && parentAccount.name} ({parentAccount && parentAccount.code})
+                <span style={{ fontSize: "20px", color: "red", position: "absolute", right: 0, top: 0, padding: "20px", fontWeight: "bold" }}>{formData.id ? "MODIFICACIÓN" : "NUEVA CUENTA"}</span>
+                Cuenta{!formData.id && " padre"}: {parentAccount && parentAccount.name} ({parentAccount && parentAccount.code})
             </ModalHeader>
             <ModalBody>
 
@@ -87,7 +117,7 @@ const NewAccountForm = ({ parentAccount, isOpen, toggle, setIsLoading }) => {
                         <FormGroup>
                             <Label>Nombre</Label>
                             <Input required value={formData.name} onChange={e => {
-                                setFormData({ ...formData, name: e.target.value })
+                                setFormData({ ...formData, name: (e.target.value).toUpperCase() })
                             }} />
                         </FormGroup>
                     </Col>
@@ -124,7 +154,7 @@ const NewAccountForm = ({ parentAccount, isOpen, toggle, setIsLoading }) => {
             </ModalBody>
             <ModalFooter>
                 <Button type="submit" color="primary">
-                    Cargar
+                    {formData.id ? "Aplicar" : "Cargar"}
                 </Button>
                 <Button
                     color="danger"
@@ -139,4 +169,4 @@ const NewAccountForm = ({ parentAccount, isOpen, toggle, setIsLoading }) => {
     </Modal>
 }
 
-export default NewAccountForm
+export default AccountForm
