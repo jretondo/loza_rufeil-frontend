@@ -76,9 +76,53 @@ class Sidebar extends React.Component {
       data: (
         // eslint-disable-next-line
         routes.map((prop, key) => {
-          const find = this.state.modules.filter(module => module.module_id === prop.id && module.permission_grade > 0)
+          const find = this.state.modules ? this.state.modules.filter(module => module.module_id === prop.id && module.permission_grade > 0) : false
 
-          if ((this.state.isAdmin && this.state.activeClient) || (prop.id === 0 && this.state.activeClient) || (find.length > 0 && this.state.activeClient) || (prop.id < 9 && !this.state.activeClient)) {
+          if ((prop.id === 0 && this.state.activeClient) || (find.length > 0 && this.state.activeClient) || (prop.id < 9 && !this.state.activeClient)) {
+            if (!prop.path) {
+              return (
+                <UncontrolledDropdown nav inNavbar key={key}>
+                  <DropdownToggle nav caret
+                    style={{ color: "#0081c9", fontWeight: "bold" }}
+                  >
+                    <i className={prop.icon} />
+                    {prop.name}
+                  </DropdownToggle>
+                  <DropdownMenu right>
+                    {prop.sub.map((item, key) => {
+                      return (
+                        <DropdownItem key={key}>
+                          <NavLink
+                            to={prop.layout + item.path}
+                            tag={NavLinkRRD}
+                            onClick={this.closeCollapse}
+                            style={{ color: "black", cursor: "pointer", padding: "0", paddingLeft: "10px" }}
+                          >
+                            {item.name}
+                          </NavLink>
+                        </DropdownItem>
+                      )
+                    })}
+                  </DropdownMenu>
+                </UncontrolledDropdown>
+              );
+            } else {
+              return (
+                <NavItem key={key}>
+                  <NavLink
+                    to={prop.layout + prop.path}
+                    tag={NavLinkRRD}
+                    onClick={this.closeCollapse}
+                    activeClassName="active"
+                    style={{ color: "#0081c9", fontWeight: "bold" }}
+                  >
+                    <i className={prop.icon} />
+                    {prop.name}
+                  </NavLink>
+                </NavItem>
+              );
+            }
+          } else if (prop.id < 9 && this.state.isAdmin) {
             if (!prop.path) {
               return (
                 <UncontrolledDropdown nav inNavbar key={key}>
@@ -259,7 +303,7 @@ class Sidebar extends React.Component {
               <h6 style={{ color: "red" }} className="mb-0">
                 <i className="ni ni-calendar-grid-58" /> {" "}
                 Periodo:</h6>
-              <h6 style={{ color: "red" }}>{moment(JSON.parse(this.state.activePeriod).from_date).format("DD/MM/YYYY")} - {moment(JSON.parse(this.state.activePeriod).to_date).format("DD/MM/YYYY")}</h6>
+              <h6 style={{ color: "red" }}>{this.state.activePeriod && moment(JSON.parse(this.state.activePeriod).from_date).format("DD/MM/YYYY")} - {this.state.activePeriod && moment(JSON.parse(this.state.activePeriod).to_date).format("DD/MM/YYYY")}</h6>
               <Nav navbar>{this.state.data}</Nav>
               {/* Divider */}
               <hr className="my-3" />

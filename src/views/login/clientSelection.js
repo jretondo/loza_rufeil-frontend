@@ -17,7 +17,7 @@ import LoadingContext from "context/loading";
 
 const ClientSelection = () => {
   const [done, setDone] = useState(false)
-  const [activeClient, setActiveClient] = useState()
+  const [activeClient, setActiveClient] = useState(false)
   const [activeButton, setActiveButton] = useState(true)
 
   const { axiosGetQuery } = useContext(ActionsBackend)
@@ -32,20 +32,21 @@ const ClientSelection = () => {
   }, [activeClient])
 
   const init = async () => {
-    setIsLoading(true)
-    localStorage.setItem("activeClient", JSON.stringify(activeClient))
-    const response = await axiosGetQuery(API_ROUTES.usersDir.sub.modules, [{ clientId: activeClient.id }])
-    setIsLoading(false)
-    if (!response.error) {
-      localStorage.setItem("modules", JSON.stringify(response.data))
+    if (activeClient) {
+      setIsLoading(true)
+      localStorage.setItem("activeClient", JSON.stringify(activeClient))
+      const response = await axiosGetQuery(API_ROUTES.usersDir.sub.modules, [{ clientId: activeClient.id }])
+      setIsLoading(false)
+      if (!response.error) {
+        localStorage.setItem("modules", JSON.stringify(response.data))
+      }
     }
   }
-
   if (done) {
     return (
       <Redirect
         className="text-light"
-        to={process.env.PUBLIC_URL + "/auth/select-period"}
+        to={process.env.PUBLIC_URL + (activeClient ? "/auth/select-period" : "/admin/dashboard")}
       />
     )
   } else {

@@ -19,6 +19,7 @@ import moment from "moment-timezone";
 import AlertsContext from "context/alerts";
 
 const PeriodSelection = () => {
+  const modules = JSON.parse(localStorage.getItem("modules"))
   const [done, setDone] = useState(false)
   const [activePeriod, setActivePeriod] = useState()
   const [activeButton, setActiveButton] = useState(true)
@@ -77,6 +78,9 @@ const PeriodSelection = () => {
 
   useEffect(() => {
     getPeriods()
+    if (modules.find(module => module.module_id !== 11)) {
+      setDone(true)
+    }
     // eslint-disable-next-line
   }, [])
 
