@@ -2,13 +2,14 @@ import React, { useContext, useEffect, useState } from "react";
 import Header from "components/Headers/Header.js";
 import secureContext from 'context/secureRoutes';
 import apiRoutes from "../../../../api/routes";
-import { Button, Card, CardBody, CardHeader, Collapse, Container, Form, FormGroup, Input, InputGroup, InputGroupAddon, Label } from "reactstrap";
+import { Button, Card, CardBody, CardFooter, CardHeader, Col, Collapse, Container, Form, FormGroup, Input, InputGroup, InputGroupAddon, Label, Row } from "reactstrap";
 import PrincipalButtonAccordion from "components/Accordion/ListAccordion/principalButton";
 import SubButtonAccordion from "components/Accordion/ListAccordion/subButton";
 import AccountForm from "./accountForm";
 import LoadingContext from "context/loading";
 import API_ROUTES from "../../../../api/routes";
 import { useAxiosGetList } from 'hooks/useAxiosGetList';
+import ImportAccounts from "./importAccount";
 
 const Index = () => {
     const [accountsListHtml, setAccountsListHtml] = useState(<></>)
@@ -18,6 +19,7 @@ const Index = () => {
     const [nameContain, setNameContain] = useState("")
     const [refreshList, setRefreshList] = useState(false)
     const [toUpdate, setToUpdate] = useState(false)
+    const [isOpenImportAccounts, setIsOpenImportAccounts] = useState(false)
 
     const { setUrlRoute } = useContext(secureContext)
     const { setIsLoading } = useContext(LoadingContext)
@@ -83,6 +85,7 @@ const Index = () => {
                                         setToUpdate(true)
                                         openNewForm(account)
                                     }}
+                                    refresh={() => setRefreshList(!refreshList)}
                                 />
                         }
                         {(account.subAccounts.length > 0 && isParentOpen) && modulesBuilder(account.subAccounts, account.id, (level + 1), activeIds.includes(account.id))}
@@ -102,6 +105,7 @@ const Index = () => {
                                 setToUpdate(true)
                                 openNewForm(account)
                             }}
+                            refresh={() => setRefreshList(!refreshList)}
                         />
                         {(account.subAccounts.length > 0 && isParentOpen) && modulesBuilder(account.subAccounts, account.id, (level + 1), activeIds.includes(account.id))}
                     </Collapse>
@@ -164,6 +168,15 @@ const Index = () => {
                     <CardBody>
                         {accountsListHtml}
                     </CardBody>
+                    <CardFooter>
+                        <Row>
+                            <Col md="12" style={{ textAlign: "center" }} onClick={() => setIsOpenImportAccounts(true)}>
+                                <Button color="danger">
+                                    Importar Cuenta <i className="fa fa-download"></i>
+                                </Button>
+                            </Col>
+                        </Row>
+                    </CardFooter>
                 </Card>
             </Container>
             <AccountForm
@@ -172,6 +185,11 @@ const Index = () => {
                 toggle={() => setIsOpenNewForm(!isOpenNewForm)}
                 setIsLoading={setIsLoading}
                 toUpdate={toUpdate}
+            />
+            <ImportAccounts
+                isOpen={isOpenImportAccounts}
+                toggle={() => setIsOpenImportAccounts(!isOpenImportAccounts)}
+                setIsLoading={setIsLoading}
             />
         </>
     )

@@ -9,9 +9,9 @@ const LoadingProvider = ({ children }) => {
         {
             isLoading &&
             <>
-                <Row style={{ position: "fixed", zIndex: 98, width: "100%", height: "100%", backgroundColor: "#ddd", opacity: 0.5 }}>
+                <Row style={{ position: "fixed", zIndex: 9998, width: "100%", height: "100%", backgroundColor: "#ddd", opacity: 0.5 }}>
                 </Row>
-                <Row style={{ position: "fixed", zIndex: 99, width: "100%", top: "30%" }}>
+                <Row style={{ position: "fixed", zIndex: 9999, width: "100%", top: "30%" }}>
                     <Col md="12" style={{ textAlign: "center" }}>
                         <Spinner style={{ width: "250px", height: "250px" }} />
                         <h4 style={{ textAlign: "center", color: "#073863", fontWeight: "bold", fontSize: "20px" }}>Procesando...</h4>

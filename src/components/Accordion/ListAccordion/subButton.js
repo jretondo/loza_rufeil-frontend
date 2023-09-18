@@ -1,12 +1,20 @@
-import React, { useState } from 'react';
+import AlertsContext from 'context/alerts';
+import API_ROUTES from '../../../api/routes';
+import ActionsBackend from 'context/actionsBackend';
+import React, { useContext, useEffect, useState } from 'react';
 import { Button, Col, Row, Tooltip } from 'reactstrap';
+import swal from 'sweetalert';
+import LoadingContext from 'context/loading';
 
-const SubButtonAccordion = ({ id, name, level, setActiveId, open, hasSub, bgColor, openNewForm, openUpdate }) => {
+const SubButtonAccordion = ({ id, name, level, setActiveId, open, hasSub, bgColor, openNewForm, openUpdate, refresh }) => {
     const [openedButton, setOpenedButton] = useState("")
     const [plusToolTip, setPlusToolTip] = useState(false)
     const [trashToolTip, setTrashToolTip] = useState(false)
     const [openButtonToolTip, setOpenButtonToolTip] = useState(false)
     const [modifyButtonToolTip, setModifyButtonToolTip] = useState(false)
+    const { setIsLoading } = useContext(LoadingContext)
+    const { newAlert, newActivity } = useContext(AlertsContext)
+    const { axiosDelete, loadingActions } = useContext(ActionsBackend)
 
     const toggleButton = () => {
         open && setOpenedButton("-close")
@@ -22,9 +30,34 @@ const SubButtonAccordion = ({ id, name, level, setActiveId, open, hasSub, bgColo
         !open && setActiveId((activeIds) => [...activeIds, id])
     }
 
-    const deleteAccount = () => {
-
+    const deleteAccount = async () => {
+        swal({
+            title: "Eliminar la cuenta " + name + "!",
+            text: "¿Está seguro de eliminar esta cuenta? Esta desición es permanente y se eliminarán todas las sub cuentas.",
+            icon: "warning",
+            buttons: {
+                cancel: "No",
+                Si: true
+            },
+            dangerMode: true,
+        })
+            .then(async (willDelete) => {
+                if (willDelete) {
+                    const response = await axiosDelete(API_ROUTES.accountingDir.sub.accountingChart, id)
+                    if (!response.error) {
+                        newActivity(`Se ha eliminado la cuenta ${name})`)
+                        newAlert("success", "Cuenta eliminada con éxito!", "")
+                        refresh()
+                    } else {
+                        newAlert("danger", "Hubo un error!", "Intentelo nuevamente. Error: " + response.errorMsg)
+                    }
+                }
+            });
     }
+
+    useEffect(() => {
+        setIsLoading(loadingActions)
+    }, [loadingActions, setIsLoading])
 
     return (<> <Row>
         <Col md={level}>
@@ -54,7 +87,10 @@ const SubButtonAccordion = ({ id, name, level, setActiveId, open, hasSub, bgColo
                     <Tooltip placement="top" isOpen={modifyButtonToolTip} target={`modifyButton-${id}`} toggle={() => setModifyButtonToolTip(!modifyButtonToolTip)}>
                         Modificar
                     </Tooltip>
-                    <Button color="primary" id={`trashButton-${id}`} className="sm-button px-3 my-1 py-1">
+                    <Button color="primary" id={`trashButton-${id}`} className="sm-button px-3 my-1 py-1" onClick={e => {
+                        e.preventDefault()
+                        deleteAccount()
+                    }}>
                         <i className="fa fa-trash"></i>
                     </Button>
                     <Tooltip placement="top" isOpen={trashToolTip} target={`trashButton-${id}`} toggle={() => setTrashToolTip(!trashToolTip)}>
