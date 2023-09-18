@@ -183,13 +183,12 @@ const Index = () => {
                 parentAccount={selectedAccount}
                 isOpen={isOpenNewForm}
                 toggle={() => setIsOpenNewForm(!isOpenNewForm)}
-                setIsLoading={setIsLoading}
                 toUpdate={toUpdate}
             />
             <ImportAccounts
                 isOpen={isOpenImportAccounts}
                 toggle={() => setIsOpenImportAccounts(!isOpenImportAccounts)}
-                setIsLoading={setIsLoading}
+                refresh={() => setRefreshList(!refreshList)}
             />
         </>
     )

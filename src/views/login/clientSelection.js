@@ -24,6 +24,8 @@ const ClientSelection = () => {
   const { setIsLoading } = useContext(LoadingContext)
 
   useEffect(() => {
+    localStorage.removeItem("activeClient")
+    localStorage.removeItem("activePeriod")
     if (!activeClient && !localStorage.getItem("admin")) {
       setActiveButton(false)
     } else {

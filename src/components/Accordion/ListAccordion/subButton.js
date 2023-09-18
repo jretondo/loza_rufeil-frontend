@@ -1,10 +1,9 @@
 import AlertsContext from 'context/alerts';
 import API_ROUTES from '../../../api/routes';
 import ActionsBackend from 'context/actionsBackend';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Button, Col, Row, Tooltip } from 'reactstrap';
 import swal from 'sweetalert';
-import LoadingContext from 'context/loading';
 
 const SubButtonAccordion = ({ id, name, level, setActiveId, open, hasSub, bgColor, openNewForm, openUpdate, refresh }) => {
     const [openedButton, setOpenedButton] = useState("")
@@ -12,9 +11,8 @@ const SubButtonAccordion = ({ id, name, level, setActiveId, open, hasSub, bgColo
     const [trashToolTip, setTrashToolTip] = useState(false)
     const [openButtonToolTip, setOpenButtonToolTip] = useState(false)
     const [modifyButtonToolTip, setModifyButtonToolTip] = useState(false)
-    const { setIsLoading } = useContext(LoadingContext)
     const { newAlert, newActivity } = useContext(AlertsContext)
-    const { axiosDelete, loadingActions } = useContext(ActionsBackend)
+    const { axiosDelete } = useContext(ActionsBackend)
 
     const toggleButton = () => {
         open && setOpenedButton("-close")
@@ -54,10 +52,6 @@ const SubButtonAccordion = ({ id, name, level, setActiveId, open, hasSub, bgColo
                 }
             });
     }
-
-    useEffect(() => {
-        setIsLoading(loadingActions)
-    }, [loadingActions, setIsLoading])
 
     return (<> <Row>
         <Col md={level}>

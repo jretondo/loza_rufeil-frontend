@@ -5,7 +5,7 @@ import CompleteCerosLeft from 'function/completeCeroLeft';
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, Col, Form, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
 
-const AccountForm = ({ parentAccount, isOpen, toggle, setIsLoading, toUpdate }) => {
+const AccountForm = ({ parentAccount, isOpen, toggle, toUpdate }) => {
     const [formData, setFormData] = useState({
         id: false,
         genre: 0,
@@ -20,7 +20,7 @@ const AccountForm = ({ parentAccount, isOpen, toggle, setIsLoading, toUpdate }) 
         accounting_period_id: JSON.parse(localStorage.getItem("activePeriod")).id
     })
 
-    const { axiosGetQuery, loadingActions, axiosPost } = useContext(ActionsBackend)
+    const { axiosGetQuery, axiosPost } = useContext(ActionsBackend)
     const { newAlert, newActivity } = useContext(AlertsContext)
 
     const getLastChild = async () => {
@@ -94,12 +94,6 @@ const AccountForm = ({ parentAccount, isOpen, toggle, setIsLoading, toUpdate }) 
         })
         // eslint-disable-next-line
     }, [parentAccount, isOpen])
-
-    useEffect(() => {
-        setIsLoading(loadingActions)
-    }, [loadingActions, setIsLoading])
-
-    console.log('formData :>> ', formData);
 
     return <Modal size="lg" toggle={toggle} isOpen={isOpen}>
         <Form onSubmit={e => {

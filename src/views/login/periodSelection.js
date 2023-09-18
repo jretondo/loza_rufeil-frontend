@@ -41,7 +41,7 @@ const PeriodSelection = () => {
   }, [activePeriod])
 
   const init = async () => {
-    localStorage.setItem("activePeriod", JSON.stringify(activePeriod))
+    activePeriod && localStorage.setItem("activePeriod", JSON.stringify(activePeriod))
     setDone(true)
   }
 
@@ -77,8 +77,9 @@ const PeriodSelection = () => {
   }
 
   useEffect(() => {
+    localStorage.removeItem("activePeriod")
     getPeriods()
-    if (modules.find(module => module.module_id !== 11)) {
+    if (!(modules.find(module => module.module_id === 11))) {
       setDone(true)
     }
     // eslint-disable-next-line
