@@ -6,10 +6,13 @@ import Header from 'components/Headers/Header';
 import loadingContext from 'context/loading';
 import ClientsForm from './form';
 import ClientsList from './list';
+import ClientPermissions from './modulePermissions';
 
 const ClientsModule = () => {
     const [isOpenClientForm, setIsOpenClientForm] = useState(false)
     const [clientInfo, setClientInfo] = useState(false)
+    const [clientSelected, setClientSelected] = useState(false)
+    const [permissionsBool, setPermissionsBool] = useState(false)
 
     const { setUrlRoute } = useContext(secureContext)
     const { setIsLoading } = useContext(loadingContext)
@@ -29,11 +32,23 @@ const ClientsModule = () => {
                             setIsOpenClientForm={setIsOpenClientForm}
                             setIsLoading={setIsLoading}
                         /> :
-                        <ClientsList
-                            setClientInfo={setClientInfo}
-                            setIsOpenClientForm={setIsOpenClientForm}
-                            setIsLoading={setIsLoading}
-                        />
+                        permissionsBool ?
+                            <ClientPermissions
+                                setPermissionsBool={setPermissionsBool}
+                                clientSelected={clientSelected}
+                                setIsLoading={setIsLoading}
+                                permissionsBool={permissionsBool}
+                            />
+                            :
+                            <ClientsList
+                                setClientInfo={setClientInfo}
+                                setIsOpenClientForm={setIsOpenClientForm}
+                                setIsLoading={setIsLoading}
+                                setClientSelected={setClientSelected}
+                                setPermissionsBool={setPermissionsBool}
+                            />
+
+
                 }
             </Container>
         </>

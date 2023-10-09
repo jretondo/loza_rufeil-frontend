@@ -5,11 +5,12 @@ import alertsContext from 'context/alerts';
 import actionsBackend from 'context/actionsBackend';
 import TabUserPermission from './tabUserPermissions';
 
-const UserPermissions = ({
-    setNewForm,
-    idUser,
-    userName,
-    setIsLoading
+const ClientPermissions = ({
+    setPermissionsBool,
+    clientSelected,
+    setIsLoading,
+    permissionsBool
+
 }) => {
     const [permissionsList, setPermissionsList] = useState([])
 
@@ -21,7 +22,7 @@ const UserPermissions = ({
     }, [loadingActions, setIsLoading])
 
     const getPermissions = async () => {
-        const response = await axiosGetQuery(apiRoutes.usersDir.sub.modulesPermissions, [{ idUser: idUser }])
+        const response = await axiosGetQuery(apiRoutes.modulesDir.sub.all, [{ clientId: clientSelected.id }])
         if (!response.error) {
             setPermissionsList(response.data)
         } else {
@@ -31,14 +32,14 @@ const UserPermissions = ({
 
     const postNewPermissions = async () => {
         const dataPost = {
-            permissionsList,
-            idUser
+            permissions: permissionsList,
+            clientId: clientSelected.id
         }
-        const response = await axiosPost(apiRoutes.usersDir.sub.modulesPermissions, dataPost)
+        const response = await axiosPost(apiRoutes.clientsDir.sub.permissions, dataPost)
         if (!response.error) {
-            newActivity(`El administrador le concedió nuevos permisos al usuario ${userName} (id: ${idUser})`)
+            newActivity(`El administrador le concedió nuevos permisos al usuario ${clientSelected.businessName} (id: ${clientSelected.id})`)
             newAlert("success", "Registrado con éxito!", "Fueron concedido los nuevos permisos.")
-            setNewForm(false)
+            setPermissionsBool(false)
         } else {
             newAlert("danger", "Hubo un problema!", "No se puedieron actualizar los permisos. intente nuevamente. Si persiste llamar a soporte.")
         }
@@ -47,21 +48,21 @@ const UserPermissions = ({
     useEffect(() => {
         getPermissions()
         // eslint-disable-next-line
-    }, [])
+    }, [permissionsBool, clientSelected])
 
     return (
         <Card>
             <CardHeader>
                 <Row>
                     <Col md="10">
-                        <h2>{`Permisos en modulos para el usuario ${userName}`}</h2>
+                        <h2>{`Permisos en modulos para el usuario ${clientSelected.businessName}`}</h2>
                     </Col>
                     <Col md="2" style={{ textAlign: "right" }}>
                         <button
                             className="btn btn-danger"
                             onClick={e => {
                                 e.preventDefault();
-                                setNewForm(false);
+                                setPermissionsBool(false);
                             }}
                         >X</button>
                     </Col>
@@ -94,7 +95,7 @@ const UserPermissions = ({
                                 style={{ width: "200px", margin: "25px" }}
                                 onClick={e => {
                                     e.preventDefault()
-                                    setNewForm(false)
+                                    setPermissionsBool(false)
                                 }}
                             >
                                 Cancelar
@@ -107,4 +108,4 @@ const UserPermissions = ({
     )
 }
 
-export default UserPermissions
+export default ClientPermissions

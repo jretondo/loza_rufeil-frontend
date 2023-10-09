@@ -7,7 +7,6 @@ import UserPermissions from './permissions'
 import secureContext from 'context/secureRoutes';
 import apiRoutes from '../../../api/routes';
 import loadingContext from 'context/loading';
-import UserModulePermissions from './modulePermissions';
 
 const UserAdmin = () => {
     const [newForm, setNewForm] = useState(false)
@@ -63,19 +62,12 @@ const UserAdmin = () => {
                                 setIsLoading={setIsLoading}
                             />
                             :
-                            modulePermissionsBool ?
-                                <UserModulePermissions
-                                    setNewForm={setNewForm}
-                                    idUser={idUser}
-                                    userName={userName}
-                                    setIsLoading={setIsLoading}
-                                /> :
-                                <UserForm
-                                    setNewForm={setNewForm}
-                                    idDetail={idDetail}
-                                    detBool={detBool}
-                                    setIsLoading={setIsLoading}
-                                />
+                            <UserForm
+                                setNewForm={setNewForm}
+                                idDetail={idDetail}
+                                detBool={detBool}
+                                setIsLoading={setIsLoading}
+                            />
                 }
             </Container>
         </>

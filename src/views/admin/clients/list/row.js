@@ -13,7 +13,9 @@ const ClientRow = ({
     setClientInfo,
     setIsOpenClientForm,
     setPage,
-    refreshToggle
+    refreshToggle,
+    setClientSelected,
+    setPermissionsBool
 }) => {
     const [ivaConditionStr, setIvaConditionStr] = useState("")
     const { newAlert, newActivity } = useContext(AlertsContext)
@@ -83,6 +85,12 @@ const ClientRow = ({
         }
     }, [client.iva_condition_id])
 
+    const giveClientsPermissions = (e, client) => {
+        e.preventDefault()
+        setClientSelected(client)
+        setPermissionsBool(true)
+    }
+
     return (
         <tr key={id} className={loadingActions ? "shimmer" : ""} >
             <td style={{ textAlign: "center" }}>
@@ -116,6 +124,13 @@ const ClientRow = ({
                         >
                             <i className="fas fa-edit"></i>
                             Editar
+                        </DropdownItem>
+                        <DropdownItem
+                            href="#pablo"
+                            onClick={e => giveClientsPermissions(e, client)}
+                        >
+                            <i className="fas fa-id-card"></i>
+                            Permisos
                         </DropdownItem>
                         <DropdownItem
                             href="#pablo"

@@ -21,6 +21,7 @@ const clients = host + "/clients"
 const providers = host + "/providers"
 const certificates = host + "/certificates"
 const accounting = host + "/accounting"
+const modules = host + "/modules"
 
 const authDir = {
     auth
@@ -42,9 +43,8 @@ const usersDir = {
     sub: {
         details: users + "/details",
         mydata: users + "/mydata",
-        permissions: users + "/permissions",
         clients: users + "/clients",
-        modules: users + "/modules"
+        permissions: users + "/permissions"
     }
 }
 
@@ -52,7 +52,8 @@ const clientsDir = {
     clients,
     sub: {
         dataTax: clients + "/dataTax",
-        dataTaxProof: clients + "/dataTaxProof"
+        dataTaxProof: clients + "/dataTaxProof",
+        permissions: clients + "/permissions"
     }
 }
 
@@ -94,6 +95,13 @@ const accountingDir = {
     }
 }
 
+const modulesDir = {
+    modules,
+    sub: {
+        all: modules + "/all",
+    }
+}
+
 const API_ROUTES = {
     publicFiles,
     authDir,
@@ -104,7 +112,8 @@ const API_ROUTES = {
     clientsDir,
     certificatesDir,
     providersDir,
-    accountingDir
+    accountingDir,
+    modulesDir
 }
 
 export default API_ROUTES

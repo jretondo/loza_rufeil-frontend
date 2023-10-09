@@ -21,7 +21,7 @@ const UserPermissions = ({
     }, [loadingActions, setIsLoading])
 
     const getPermissions = async () => {
-        const response = await axiosGetQuery(apiRoutes.usersDir.sub.permissions, [{ idUser: idUser }])
+        const response = await axiosGetQuery(apiRoutes.usersDir.sub.clients, [{ idUser: idUser }])
         if (!response.error) {
             setPermissionsList(response.data)
         } else {
@@ -34,7 +34,7 @@ const UserPermissions = ({
             permissionsList,
             idUser
         }
-        const response = await axiosPost(apiRoutes.usersDir.sub.permissions, dataPost)
+        const response = await axiosPost(apiRoutes.usersDir.sub.clients, dataPost)
         if (!response.error) {
             newActivity(`El administrador le concedió nuevos permisos al usuario ${userName} (id: ${idUser})`)
             newAlert("success", "Registrado con éxito!", "Fueron concedido los nuevos permisos.")

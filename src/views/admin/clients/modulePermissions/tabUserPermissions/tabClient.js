@@ -2,7 +2,7 @@ import React from 'react';
 import { Col, Row, TabPane } from 'reactstrap';
 import ModuleItem from './moduleItem';
 
-const TabClient = ({ id, changePermissionGrade, module }) => {
+const TabClient = ({ id, changePermission, module }) => {
 
     return (
         <TabPane tabId={id} className="p-5" style={{ background: "#073863" }}>
@@ -10,7 +10,7 @@ const TabClient = ({ id, changePermissionGrade, module }) => {
                 <Col md="12" className="text-center">
                     <ModuleItem
                         module={module}
-                        changePermission={changePermissionGrade}
+                        changePermission={changePermission}
                         clientId={id}
                     />
                 </Col>

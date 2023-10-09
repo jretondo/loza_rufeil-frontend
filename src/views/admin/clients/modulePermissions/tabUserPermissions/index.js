@@ -4,18 +4,16 @@ import NavClient from './navClient';
 import TabClient from './tabClient';
 
 const TabUserPermission = ({ permissionsList, setPermissionsList }) => {
-    const [clientActive, setClientActive] = useState(0)
+    const [moduleActive, setModuleActive] = useState(0)
     const [navClients, setNavClients] = useState(<></>)
     const [tabsClients, setTabsClients] = useState(<></>)
 
-    const changePermission = (clientId, grade) => {
-        console.log('clientId :>> ', clientId);
-        let newPermissionsList = permissionsList.map(client => {
-            if (client.client_id === clientId) {
-                client.permission_grade_id = grade
+    const changePermission = (moduleId, active) => {
+        let newPermissionsList = permissionsList.map(module => {
+            if (module.module_id === moduleId) {
+                module.active = active
             }
-            console.log('client :>> ', client);
-            return client
+            return module
         }
         )
         setPermissionsList(() => newPermissionsList)
@@ -24,24 +22,24 @@ const TabUserPermission = ({ permissionsList, setPermissionsList }) => {
         let navClient = <></>
         let tabClient = <></>
         // eslint-disable-next-line
-        permissionsList.map((client, key) => {
+        permissionsList.map((module, key) => {
             navClient = <>
                 {navClient}
                 <NavClient
                     key={key}
-                    id={client.client_id}
-                    business_name={client.business_name}
-                    clientActive={clientActive}
-                    setClientActive={setClientActive}
-                    grade={client.permission_grade_id}
+                    id={module.module_id}
+                    moduleName={module.name}
+                    moduleActive={moduleActive}
+                    setModuleActive={setModuleActive}
+                    active={module.active}
                 />
             </>
             tabClient = <>
                 {tabClient}
                 <TabClient
                     key={key}
-                    id={client.client_id}
-                    client={client}
+                    id={module.module_id}
+                    module={module}
                     changePermission={changePermission}
                 /></>
         })
@@ -49,13 +47,13 @@ const TabUserPermission = ({ permissionsList, setPermissionsList }) => {
         setNavClients(navClient)
         setTabsClients(tabClient)
         // eslint-disable-next-line
-    }, [clientActive, permissionsList])
+    }, [moduleActive, permissionsList])
 
     return (<>
         <Nav tabs>
             {navClients}
         </Nav>
-        <TabContent activeTab={clientActive}>
+        <TabContent activeTab={moduleActive}>
             {tabsClients}
         </TabContent>
     </>)

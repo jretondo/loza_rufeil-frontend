@@ -37,7 +37,7 @@ const ClientSelection = () => {
     if (activeClient) {
       setIsLoading(true)
       localStorage.setItem("activeClient", JSON.stringify(activeClient))
-      const response = await axiosGetQuery(API_ROUTES.usersDir.sub.modules, [{ clientId: activeClient.id }])
+      const response = await axiosGetQuery(API_ROUTES.modulesDir.modules, [{ clientId: activeClient.id }])
       setIsLoading(false)
       if (!response.error) {
         localStorage.setItem("modules", JSON.stringify(response.data))

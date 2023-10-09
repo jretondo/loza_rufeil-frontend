@@ -114,6 +114,7 @@ const UserRow = ({
                         <DropdownItem
                             href="#pablo"
                             onClick={e => giveClientsPermissions(e, item.id, item.name + " " + item.lastname)}
+                            disabled={item.admin}
                         >
                             <i className="fas fa-id-card"></i>
                             Permisos

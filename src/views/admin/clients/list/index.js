@@ -9,7 +9,9 @@ import { TableList } from 'components/Lists/TableList';
 const ClientsList = ({
     setClientInfo,
     setIsOpenClientForm,
-    setIsLoading
+    setIsLoading,
+    setClientSelected,
+    setPermissionsBool
 }) => {
     const titlesArray = ["Razón Social", "CUIT", "Email", "Cond. IVA", ""]
     const [list, setList] = useState(<></>)
@@ -58,6 +60,8 @@ const ClientsList = ({
                             setIsOpenClientForm={setIsOpenClientForm}
                             setPage={setPage}
                             refreshToggle={() => setRefreshList(!refreshList)}
+                            setClientSelected={setClientSelected}
+                            setPermissionsBool={setPermissionsBool}
                         />
                     )
                 })
