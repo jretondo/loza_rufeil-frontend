@@ -1,0 +1,32 @@
+[
+    {
+        "name": "0,00%",
+        "type": 3,
+        "active": true
+    },
+    {
+        "name": "10,50%",
+        "type": 4,
+        "active": true
+    },
+    {
+        "name": "21,00%",
+        "type": 5,
+        "active": true
+    },
+    {
+        "name": "27,00%",
+        "type": 6,
+        "active": true
+    },
+    {
+        "name": "5,00%",
+        "type": 8,
+        "active": true
+    },
+    {
+        "name": "2,50%",
+        "type": 9,
+        "active": true
+    }
+]

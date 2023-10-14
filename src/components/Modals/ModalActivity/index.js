@@ -46,7 +46,6 @@ export const ModalActivity = ({
                     setFromDate={setFromDate}
                     toDate={toDate}
                     setToDate={setToDate}
-                    modal={modal}
                     setPage={setPage}
                 />
                 <List

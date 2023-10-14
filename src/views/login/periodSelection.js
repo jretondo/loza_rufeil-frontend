@@ -19,7 +19,6 @@ import moment from "moment-timezone";
 import AlertsContext from "context/alerts";
 
 const PeriodSelection = () => {
-  const modules = JSON.parse(localStorage.getItem("modules"))
   const [done, setDone] = useState(false)
   const [activePeriod, setActivePeriod] = useState()
   const [activeButton, setActiveButton] = useState(true)
@@ -31,14 +30,6 @@ const PeriodSelection = () => {
   const { newAlert, newActivity } = useContext(AlertsContext)
   const { axiosGetQuery, axiosPost } = useContext(ActionsBackend)
   const { setIsLoading } = useContext(LoadingContext)
-
-  useEffect(() => {
-    if (!activePeriod && !localStorage.getItem("admin")) {
-      setActiveButton(false)
-    } else {
-      setActiveButton(true)
-    }
-  }, [activePeriod])
 
   const init = async () => {
     activePeriod && localStorage.setItem("activePeriod", JSON.stringify(activePeriod))
@@ -77,11 +68,15 @@ const PeriodSelection = () => {
   }
 
   useEffect(() => {
-    localStorage.removeItem("activePeriod")
-    getPeriods()
-    if (!(modules.find(module => module.module_id === 11))) {
-      setDone(true)
+    if (!activePeriod && !localStorage.getItem("admin")) {
+      setActiveButton(false)
+    } else {
+      setActiveButton(true)
     }
+  }, [activePeriod])
+
+  useEffect(() => {
+    getPeriods()
     // eslint-disable-next-line
   }, [])
 

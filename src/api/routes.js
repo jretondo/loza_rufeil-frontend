@@ -22,6 +22,7 @@ const providers = host + "/providers"
 const certificates = host + "/certificates"
 const accounting = host + "/accounting"
 const modules = host + "/modules"
+const purchases = host + "/purchases"
 
 const authDir = {
     auth
@@ -53,7 +54,8 @@ const clientsDir = {
     sub: {
         dataTax: clients + "/dataTax",
         dataTaxProof: clients + "/dataTaxProof",
-        permissions: clients + "/permissions"
+        permissions: clients + "/permissions",
+        token: clients + "/token",
     }
 }
 
@@ -91,7 +93,8 @@ const accountingDir = {
     sub: {
         period: accounting + "/period",
         accountingCharts: accounting + "/accountingCharts",
-        accountingChart: accounting + "/accountingChart"
+        accountingChart: accounting + "/accountingChart",
+        attributableAccountingChart: accounting + "/attributableAccountingChart",
     }
 }
 
@@ -99,6 +102,15 @@ const modulesDir = {
     modules,
     sub: {
         all: modules + "/all",
+    }
+}
+
+const purchasesDir = {
+    purchases,
+    sub: {
+        period: purchases + "/period",
+        params: purchases + "/params",
+        paymentsMethods: purchases + "/paymentsMethods",
     }
 }
 
@@ -113,7 +125,8 @@ const API_ROUTES = {
     certificatesDir,
     providersDir,
     accountingDir,
-    modulesDir
+    modulesDir,
+    purchasesDir
 }
 
 export default API_ROUTES

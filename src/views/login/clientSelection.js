@@ -14,6 +14,7 @@ import ClientSelectionCard from "components/Cards/ClientSelection";
 import ActionsBackend from "context/actionsBackend";
 import API_ROUTES from '../../api/routes';
 import LoadingContext from "context/loading";
+import AlertsContext from "context/alerts";
 
 const ClientSelection = () => {
   const [done, setDone] = useState(false)
@@ -22,10 +23,13 @@ const ClientSelection = () => {
 
   const { axiosGetQuery } = useContext(ActionsBackend)
   const { setIsLoading } = useContext(LoadingContext)
+  const { newAlert } = useContext(AlertsContext)
+
 
   useEffect(() => {
     localStorage.removeItem("activeClient")
     localStorage.removeItem("activePeriod")
+    localStorage.removeItem("client-token")
     if (!activeClient && !localStorage.getItem("admin")) {
       setActiveButton(false)
     } else {
@@ -34,16 +38,36 @@ const ClientSelection = () => {
   }, [activeClient])
 
   const init = async () => {
-    if (activeClient) {
-      setIsLoading(true)
-      localStorage.setItem("activeClient", JSON.stringify(activeClient))
-      const response = await axiosGetQuery(API_ROUTES.modulesDir.modules, [{ clientId: activeClient.id }])
-      setIsLoading(false)
-      if (!response.error) {
-        localStorage.setItem("modules", JSON.stringify(response.data))
+    const tokenError = await getClientToken()
+    if (tokenError.error) {
+      newAlert("danger", "Error! ", "Puede que no tenga los permisos para esta empresa")
+    } else {
+      if (activeClient) {
+        setIsLoading(true)
+        localStorage.setItem("activeClient", JSON.stringify(activeClient))
+
+        const response = await axiosGetQuery(API_ROUTES.modulesDir.modules, [{ clientId: activeClient.id }])
+        setIsLoading(false)
+        if (!response.error) {
+          localStorage.setItem("modules", JSON.stringify(response.data))
+        }
+        setDone(true)
       }
     }
   }
+
+  const getClientToken = async () => {
+    setIsLoading(true)
+    const response = await axiosGetQuery(API_ROUTES.clientsDir.sub.token, [{ clientId: activeClient.id }])
+    setIsLoading(false)
+    if (!response.error) {
+      localStorage.setItem("client-token", JSON.stringify(response.data.token).replace(/['"]+/g, '').trim())
+      return { error: false }
+    } else {
+      return { error: true }
+    }
+  }
+
   if (done) {
     return (
       <Redirect
@@ -75,7 +99,6 @@ const ClientSelection = () => {
                     disabled={!activeButton}
                     onClick={async () => {
                       await init()
-                      setDone(true)
                     }}
                     style={{ marginTop: "3em" }} color="primary" type="submit">
                     Ingresar

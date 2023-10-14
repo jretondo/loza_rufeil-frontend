@@ -16,7 +16,7 @@ const SecureRoutesProvider = ({ children }) => {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem('user-token')
+                    'Authorization': 'Bearer ' + localStorage.getItem('user-token') + "||Bearer " + localStorage.getItem('client-token')
                 },
             })
             let data = await res.json()

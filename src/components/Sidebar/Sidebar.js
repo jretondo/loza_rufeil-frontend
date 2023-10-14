@@ -76,72 +76,39 @@ class Sidebar extends React.Component {
       data: (
         // eslint-disable-next-line
         routes.map((prop, key) => {
-          const find = this.state.modules ? this.state.modules.filter(module => module.module_id === prop.id && module.permission_grade > 0) : false
+          const find = this.state.modules ? this.state.modules.filter(module => module.module_id === prop.id) : false
 
-          if (
+          if ((
             (prop.id === 0 && this.state.activeClient) ||
             (find.length > 0 && this.state.activeClient) ||
-            (prop.id < 9 && !this.state.activeClient)) {
+            (prop.id < 9 && !this.state.activeClient)) && this.state.activePeriod) {
             if (!prop.path) {
-              if (prop.id === 11) {
-                if (this.state.activePeriod) {
-
-                  return (
-                    <UncontrolledDropdown nav inNavbar key={key}>
-                      <DropdownToggle nav caret
-                        style={{ color: "#0081c9", fontWeight: "bold" }}
-                      >
-                        <i className={prop.icon} />
-                        {prop.name}
-                      </DropdownToggle>
-                      <DropdownMenu right>
-                        {prop.sub.map((item, key) => {
-                          return (
-                            <DropdownItem key={key}>
-                              <NavLink
-                                to={prop.layout + item.path}
-                                tag={NavLinkRRD}
-                                onClick={this.closeCollapse}
-                                style={{ color: "black", cursor: "pointer", padding: "0", paddingLeft: "10px" }}
-                              >
-                                {item.name}
-                              </NavLink>
-                            </DropdownItem>
-                          )
-                        })}
-                      </DropdownMenu>
-                    </UncontrolledDropdown>
-                  );
-                }
-              } else {
-
-                return (
-                  <UncontrolledDropdown nav inNavbar key={key}>
-                    <DropdownToggle nav caret
-                      style={{ color: "#0081c9", fontWeight: "bold" }}
-                    >
-                      <i className={prop.icon} />
-                      {prop.name}
-                    </DropdownToggle>
-                    <DropdownMenu right>
-                      {prop.sub.map((item, key) => {
-                        return (
-                          <DropdownItem key={key}>
-                            <NavLink
-                              to={prop.layout + item.path}
-                              tag={NavLinkRRD}
-                              onClick={this.closeCollapse}
-                              style={{ color: "black", cursor: "pointer", padding: "0", paddingLeft: "10px" }}
-                            >
-                              {item.name}
-                            </NavLink>
-                          </DropdownItem>
-                        )
-                      })}
-                    </DropdownMenu>
-                  </UncontrolledDropdown>
-                );
-              }
+              return (
+                <UncontrolledDropdown nav inNavbar key={key}>
+                  <DropdownToggle nav caret
+                    style={{ color: "#0081c9", fontWeight: "bold" }}
+                  >
+                    <i className={prop.icon} />
+                    {prop.name}
+                  </DropdownToggle>
+                  <DropdownMenu right>
+                    {prop.sub.map((item, key) => {
+                      return (
+                        <DropdownItem key={key}>
+                          <NavLink
+                            to={prop.layout + item.path}
+                            tag={NavLinkRRD}
+                            onClick={this.closeCollapse}
+                            style={{ color: "black", cursor: "pointer", padding: "0", paddingLeft: "10px" }}
+                          >
+                            {item.name}
+                          </NavLink>
+                        </DropdownItem>
+                      )
+                    })}
+                  </DropdownMenu>
+                </UncontrolledDropdown>
+              );
             } else {
               return (
                 <NavItem key={key}>

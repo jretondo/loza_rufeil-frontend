@@ -1,7 +1,8 @@
+import ActionsBackend from 'context/actionsBackend';
 import UrlNodeServer from '../../../../api/routes';
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Button, Col, FormGroup, Input, Label, Row } from 'reactstrap';
-import { useAxiosGetList } from '../../../../hooks/useAxiosGetList';
+import LoadingContext from 'context/loading';
 
 const Header = ({
     userSearch,
@@ -10,21 +11,31 @@ const Header = ({
     setFromDate,
     toDate,
     setToDate,
-    modal,
     setPage,
     toggleRefresh
 }) => {
+    const [usersList, setUsersList] = useState([])
+    const { axiosGetQuery, loadingActions } = useContext(ActionsBackend)
+    const { setIsLoading } = useContext(LoadingContext)
 
-    const {
-        dataPage,
-        errorList,
-    } = useAxiosGetList(
-        UrlNodeServer.activityDir.activity,
-        0,
-        modal,
-        [{ query: "" }]
-    )
-    console.log('dataPage :>> ', dataPage);
+    const getUSers = async () => {
+        const response = await axiosGetQuery(UrlNodeServer.usersDir.users, [])
+        if (response) {
+            setUsersList(response.data.items)
+        } else {
+            setUsersList([])
+        }
+    }
+
+    useEffect(() => {
+        setIsLoading(loadingActions)
+    }, [loadingActions, setIsLoading])
+
+    useEffect(() => {
+        getUSers()
+        // eslint-disable-next-line
+    }, [])
+    console.log('usersList :>> ', usersList);
     return (
         <Row>
             <Col md="4">
@@ -34,10 +45,10 @@ const Header = ({
                     </Label>
                     <Input type="select" value={userSearch} onChange={e => setUserSearch(e.target.value)}>
                         <option value={""}>Todos los usuarios</option>
-                        {errorList ? <></> :
-                            (dataPage.length > 0) ?
+                        {
+                            (usersList.length > 0) ?
                                 // eslint-disable-next-line
-                                dataPage.map((item, key) => {
+                                usersList.map((item, key) => {
                                     return (
                                         <option key={key} value={item.id} >{`${item.name} ${item.lastname} (usuario: ${item.user})`}</option>
                                     )

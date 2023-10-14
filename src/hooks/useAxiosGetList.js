@@ -24,7 +24,7 @@ export const useAxiosGetList = (url, page, refresh, queries) => {
             }
             await axios.get(`${urlApi}${query}`, {
                 headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('user-token')
+                    'Authorization': 'Bearer ' + localStorage.getItem('user-token') + "||Bearer " + localStorage.getItem('client-token')
                 }
             }).then(res => {
                 if (res.data.status === 200) {

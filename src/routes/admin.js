@@ -9,7 +9,7 @@ import sells from 'views/admin/sells'
 import purchasesEntries from 'views/admin/purchases/entries'
 import purchasesProvider from 'views/admin/purchases/providers'
 import purchasesReports from 'views/admin/purchases/reports'
-
+import purchaseParameters from 'views/admin/purchases/parameters';
 
 var routes = [
   {
@@ -58,6 +58,11 @@ var routes = [
         name: "Reportes",
         path: "/purchases/reports",
         component: purchasesReports,
+      },
+      {
+        name: "Parametros",
+        path: "/purchases/parameters",
+        component: purchaseParameters,
       }
     ],
     name: "Compras",

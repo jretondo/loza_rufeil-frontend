@@ -31,7 +31,13 @@ const ModuleItem = ({ id, client, changePermission }) => {
             case 3:
                 setPermissionGrade({
                     color: "warning",
-                    text: "Control Total"
+                    text: "Lectura, inserción y modificación"
+                })
+                break;
+            case 4:
+                setPermissionGrade({
+                    color: "danger",
+                    text: "Control Total (incluye eliminación)"
                 })
                 break;
             default:

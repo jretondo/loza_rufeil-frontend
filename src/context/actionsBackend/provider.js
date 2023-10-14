@@ -12,7 +12,7 @@ const ActionsBackendProvider = ({ children }) => {
         setLoadingActions(true)
         return await axios.post(url, data, {
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('user-token')
+                'Authorization': 'Bearer ' + localStorage.getItem('user-token') + "||Bearer " + localStorage.getItem('client-token')
             }
         }).then(res => {
             if (res.data.status === 201 || res.data.status === 200) {
@@ -51,7 +51,7 @@ const ActionsBackendProvider = ({ children }) => {
         setLoadingActions(true)
         return await axios.put(url, data, {
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('user-token')
+                'Authorization': 'Bearer ' + localStorage.getItem('user-token') + "||Bearer " + localStorage.getItem('client-token')
             }
         }).then(res => {
             if (res.data.status === 201 || res.data.status === 200) {
@@ -90,7 +90,7 @@ const ActionsBackendProvider = ({ children }) => {
         setLoadingActions(true)
         return await axios.delete(url + "/" + id, {
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('user-token')
+                'Authorization': 'Bearer ' + localStorage.getItem('user-token') + "||Bearer " + localStorage.getItem('client-token')
             }
         }).then(res => {
             if (res.data.status === 200) {
@@ -129,7 +129,7 @@ const ActionsBackendProvider = ({ children }) => {
         setLoadingActions(true)
         return await axios.get(url + "/" + id, {
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('user-token')
+                'Authorization': 'Bearer ' + localStorage.getItem('user-token') + "||Bearer " + localStorage.getItem('client-token')
             }
         }).then(res => {
             if (res.data.status === 200) {
@@ -172,7 +172,7 @@ const ActionsBackendProvider = ({ children }) => {
         }
         return await axios.get(url + query, {
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('user-token')
+                'Authorization': 'Bearer ' + localStorage.getItem('user-token') + "||Bearer " + localStorage.getItem('client-token')
             }
         }).then(res => {
             if (res.data.status === 200) {
@@ -212,7 +212,7 @@ const ActionsBackendProvider = ({ children }) => {
         return await axios.post(url, data, {
             responseType: 'arraybuffer',
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('user-token'),
+                'Authorization': 'Bearer ' + localStorage.getItem('user-token') + "||Bearer " + localStorage.getItem('client-token'),
                 Accept: fileType,
             },
         }).then(res => {
@@ -259,7 +259,7 @@ const ActionsBackendProvider = ({ children }) => {
         return await axios.get(url + "/" + id, {
             responseType: 'arraybuffer',
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('user-token'),
+                'Authorization': 'Bearer ' + localStorage.getItem('user-token') + "||Bearer " + localStorage.getItem('client-token'),
                 Accept: fileType,
             },
         }).then(res => {
@@ -309,7 +309,7 @@ const ActionsBackendProvider = ({ children }) => {
         return await axios.get(url + query, {
             responseType: 'arraybuffer',
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('user-token'),
+                'Authorization': 'Bearer ' + localStorage.getItem('user-token') + "||Bearer " + localStorage.getItem('client-token'),
                 Accept: fileType,
             },
         }).then(res => {
@@ -356,7 +356,7 @@ const ActionsBackendProvider = ({ children }) => {
             body: data,
             headers: {
                 'Accept': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('user-token')
+                'Authorization': 'Bearer ' + localStorage.getItem('user-token') + "||Bearer " + localStorage.getItem('client-token')
             }
         })
             .then(response => response.json())

@@ -1,9 +1,9 @@
-import apiRoutes from '../../../../api/routes'
 import React, { useContext, useEffect, useState } from 'react'
 import { Card, CardBody, CardHeader, Col, Container, Row } from 'reactstrap'
 import alertsContext from 'context/alerts';
 import actionsBackend from 'context/actionsBackend';
 import TabUserPermission from './tabUserPermissions';
+import apiRoutes from '../../../../api/routes'
 
 const ClientPermissions = ({
     setPermissionsBool,
@@ -13,7 +13,6 @@ const ClientPermissions = ({
 
 }) => {
     const [permissionsList, setPermissionsList] = useState([])
-
     const { newAlert, newActivity } = useContext(alertsContext)
     const { axiosGetQuery, axiosPost, loadingActions } = useContext(actionsBackend)
 
@@ -39,6 +38,15 @@ const ClientPermissions = ({
         if (!response.error) {
             newActivity(`El administrador le concedió nuevos permisos al usuario ${clientSelected.businessName} (id: ${clientSelected.id})`)
             newAlert("success", "Registrado con éxito!", "Fueron concedido los nuevos permisos.")
+
+            localStorage.setItem("modules", JSON.stringify(response.data))
+            const clientId = JSON.parse(localStorage.getItem("activeClient")).id
+
+            if (clientId === response.data[0].client_id) {
+                setTimeout(() => {
+                    document.location.reload()
+                }, 750);
+            }
             setPermissionsBool(false)
         } else {
             newAlert("danger", "Hubo un problema!", "No se puedieron actualizar los permisos. intente nuevamente. Si persiste llamar a soporte.")

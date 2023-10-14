@@ -41,6 +41,7 @@ const Login = () => {
     localStorage.removeItem("modules")
     localStorage.removeItem("activeClient")
     localStorage.removeItem("activePeriod")
+    localStorage.removeItem("client-token")
     if (!isLog) {
       const savedEmail = localStorage.getItem("savedEmail")
       if (savedEmail) {
