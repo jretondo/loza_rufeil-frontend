@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Col, Collapse, FormGroup, Input, Label, Row } from 'reactstrap';
+import { Button, Collapse, FormGroup, Input, InputGroup, InputGroupAddon, Label, Row } from 'reactstrap';
 
-const InputSearch = ({ itemsList = [], itemSelected = {}, title = "", placeholderInput = "", getNameFn, setItemSelected, searchFn }) => {
+const InputSearch = ({ itemsList = [], itemSelected = {}, title = "", placeholderInput = "", getNameFn, setItemSelected, searchFn, strict, cbStrict, id, nextFn }) => {
     const [textSearched, setTextSearched] = useState("")
     const [isOpen, setIsOpen] = useState(false)
     const [filteredList, setFilteredList] = useState(itemsList)
@@ -16,7 +16,11 @@ const InputSearch = ({ itemsList = [], itemSelected = {}, title = "", placeholde
             try {
                 const newList = itemsList.filter((item) => searchFn(item, value)).slice(0, 20)
                 setFilteredList(newList)
-                newList.length === 0 && setFilteredList(itemsList)
+                if (strict) {
+                    newList.length === 0 && setFilteredList([])
+                } else {
+                    newList.length === 0 && setFilteredList(itemsList)
+                }
             } catch (error) {
                 setFilteredList(itemsList)
             }
@@ -29,18 +33,31 @@ const InputSearch = ({ itemsList = [], itemSelected = {}, title = "", placeholde
             try {
                 setItemSelected(JSON.parse(e.target.value));
             } catch (error) {
-                console.log('error', error);
             }
         }
     }
 
     const escapeHandler = (e) => {
         if (e.keyCode === 27) {
-            e.preventDefault()
             setIsOpen(!isOpen)
+        } else if (e.keyCode === 13 || e.keyCode === 9) {
+            e.preventDefault()
+            filteredList.length > 0 && setItemSelected(filteredList[0])
+            setFilteredList(itemsList)
+            nextFn && nextFn()
         } else {
             setIsOpen(true)
         }
+    }
+
+    const leaveHandler = () => {
+        if (strict && textSearched !== "" && cbStrict && filteredList.length === 0) {
+            cbStrict(textSearched)
+        } else if (textSearched !== "") {
+            setItemSelected(filteredList[0])
+        }
+        setFilteredList(itemsList)
+        setIsOpen(false)
     }
 
     useEffect(() => {
@@ -53,28 +70,31 @@ const InputSearch = ({ itemsList = [], itemSelected = {}, title = "", placeholde
             {title && <Label for="searchInp">{title}</Label>}
             {itemSelected ?
                 <Row>
-                    <Col md="10" style={{ marginRight: 0, paddingRight: "5px" }}>
+                    <InputGroup>
                         <Input disabled value={getNameFn(itemSelected)} />
-                    </Col>
-                    <Col md="2" style={{ textAlign: "left", marginLeft: 0, paddingLeft: "5px" }}>
-                        <button
-                            onClick={e => {
-                                e.preventDefault();
-                                setItemSelected(false);
-                            }}
-                            className="btn btn-danger"
-                        >X</button>
-                    </Col>
+                        <InputGroupAddon addonType="append">
+                            <Button
+                                onClick={e => {
+                                    e.preventDefault();
+                                    setItemSelected(false);
+                                }}
+                                color="danger"
+                            >X</Button>
+                        </InputGroupAddon>
+                    </InputGroup>
                 </Row> :
                 <> <Input
                     type="text"
-                    id="searchInp"
+                    id={id ? id : "searchInp"}
                     placeholder={placeholderInput}
                     value={textSearched}
-                    onChange={e => changeText(e)}
-                    onBlur={() => setIsOpen(false)}
-                    onFocus={() => setIsOpen(true)}
-                    onKeyUp={escapeHandler}
+                    onChange={changeText}
+                    onBlur={leaveHandler}
+                    onFocus={(e) => {
+                        e.target.select()
+                        setIsOpen(true)
+                    }}
+                    onKeyDown={escapeHandler}
                 />
                     <Collapse
                         isOpen={isOpen}
@@ -90,6 +110,7 @@ const InputSearch = ({ itemsList = [], itemSelected = {}, title = "", placeholde
                                 }}
                                 onKeyUp={e => KeyUp(e)}
                                 onBlur={() => setIsOpen(false)}
+
                             >
                                 {filteredList.length > 0 && filteredList.map((item, key) => {
                                     return (

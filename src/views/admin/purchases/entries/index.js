@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import PurchasesLayout from "..";
 import { ButtonGroup, Card, CardBody, Collapse, Input } from "reactstrap";
 import ButtonOpenCollapse from "components/Buttons/buttonOpenCollapse";
@@ -6,16 +6,56 @@ import { useWindowSize } from "hooks/UseWindowSize";
 import PurchasesEntriesCharge from "./charge";
 import PurchasesEntriesList from "./list";
 import PurchasesEntriesChargeHeader from "./header";
+import PurchasesEntriesOperations from "./operations";
+import ActionsBackend from "context/actionsBackend";
+import API_ROUTES from "api/routes";
+import AlertsContext from "context/alerts";
 
 const Index = () => {
+    const modules = JSON.parse(localStorage.getItem("modules"))
+    const accountPeriod = JSON.parse(localStorage.getItem("activePeriod"))
     const activeClient = localStorage.getItem("activeClient")
     const activePeriod = JSON.parse(localStorage.getItem("activePeriod"))
     const [confirmedPeriod, setConfirmedPeriod] = useState(false)
-    const [periodMonth, setPeriodMonth] = useState(new Date().getMonth())
-    const [periodYear, setPeriodYear] = useState(new Date().getFullYear())
+    const [periodMonth, setPeriodMonth] = useState()
+    const [periodYear, setPeriodYear] = useState()
     const [activeTab, setActiveTab] = useState(0)
+    const [purchasePeriodId, setPurchasePeriodId] = useState()
+    const [accountsList, setAccountsList] = useState([])
+    const [refreshList, setRefreshList] = useState(false)
 
+    const { axiosGetQuery } = useContext(ActionsBackend)
+    const { newAlert } = useContext(AlertsContext)
     const width = useWindowSize()
+
+    const getAttributableAccounts = async () => {
+        const response = await axiosGetQuery(API_ROUTES.accountingDir.sub.attributableAccountingChart, [{ accountPeriodId: accountPeriod.id }])
+        if (!response.error) {
+            setAccountsList(response.data)
+        } else {
+            newAlert("danger", "Error al cargar las cuentas atribuibles", response.errorMsg)
+        }
+    }
+
+    const hasAccountingModule = () => {
+        const find = modules.find((module) => module.module_id === 11)
+        if (find) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    const accountSearchFn = (account, searchedText) => {
+        if ((account.name).toLowerCase().includes(searchedText.toLowerCase()) || (account.code).toLowerCase().includes(searchedText.toLowerCase())) {
+            return account
+        }
+    }
+
+    useEffect(() => {
+        getAttributableAccounts()
+        // eslint-disable-next-line
+    }, [])
 
     return (
         <PurchasesLayout  >
@@ -28,6 +68,7 @@ const Index = () => {
                 periodYear={periodYear}
                 setConfirmedPeriod={setConfirmedPeriod}
                 activePeriod={activePeriod}
+                setPurchasePeriodId={setPurchasePeriodId}
             />
             <Card className="mt-2">
                 <CardBody className="text-center">
@@ -44,19 +85,37 @@ const Index = () => {
                                     tittle={"Listado"}
                                     active={activeTab === 1 ? true : false}
                                 />
+                                <ButtonOpenCollapse
+                                    action={() => setActiveTab(2)}
+                                    tittle={"Operaciones"}
+                                    active={activeTab === 2 ? true : false}
+                                />
                             </ButtonGroup>
                         </> :
                         <Input value="Seleccione un periodo" disabled />}
                 </CardBody>
             </Card>
-            {confirmedPeriod &&
+            {confirmedPeriod && purchasePeriodId &&
                 <Card className="mt-2">
                     <CardBody>
                         <Collapse isOpen={activeTab === 0 ? true : false} >
-                            <PurchasesEntriesCharge />
+                            <PurchasesEntriesCharge
+                                accountsList={accountsList}
+                                hasAccountingModule={hasAccountingModule()}
+                                accountSearchFn={accountSearchFn}
+                                purchasePeriodId={purchasePeriodId}
+                                refreshListToggle={() => setRefreshList(!refreshList)}
+                            />
                         </Collapse>
                         <Collapse isOpen={activeTab === 1 ? true : false} >
-                            <PurchasesEntriesList />
+                            <PurchasesEntriesList
+                                purchasePeriodId={purchasePeriodId}
+                                refreshList={refreshList}
+                                setRefreshList={setRefreshList}
+                            />
+                        </Collapse>
+                        <Collapse isOpen={activeTab === 2 ? true : false} >
+                            <PurchasesEntriesOperations />
                         </Collapse>
                     </CardBody>
                 </Card>}

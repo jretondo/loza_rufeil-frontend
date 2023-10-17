@@ -19,6 +19,7 @@ import moment from "moment-timezone";
 import AlertsContext from "context/alerts";
 
 const PeriodSelection = () => {
+  const activeClient = JSON.parse(localStorage.getItem("activeClient"))
   const [done, setDone] = useState(false)
   const [activePeriod, setActivePeriod] = useState()
   const [activeButton, setActiveButton] = useState(true)
@@ -33,13 +34,17 @@ const PeriodSelection = () => {
 
   const init = async () => {
     activePeriod && localStorage.setItem("activePeriod", JSON.stringify(activePeriod))
-    setDone(true)
+    const error = await getClientToken()
+    if (error) {
+      newAlert("danger", "Hubo un error!")
+    } else {
+      setDone(true)
+    }
   }
 
   const getPeriods = async () => {
     setIsLoading(true)
-    const clientData = JSON.parse(localStorage.getItem("activeClient"))
-    const response = await axiosGetQuery(API_ROUTES.accountingDir.sub.period, [{ clientId: clientData.id }])
+    const response = await axiosGetQuery(API_ROUTES.accountingDir.sub.period, [{ clientId: activeClient.id }])
     if (!response.error) {
       response.data.length > 0 && setActivePeriod(response.data[0])
       setPeriodList(response.data)
@@ -65,6 +70,18 @@ const PeriodSelection = () => {
       newAlert("danger", "Hubo un error!", "Error: " + response.errorMsg)
     }
     setIsLoading(false)
+  }
+
+  const getClientToken = async () => {
+    setIsLoading(true)
+    const response = await axiosGetQuery(API_ROUTES.clientsDir.sub.token, [{ clientId: activeClient.id }, { periodId: activePeriod.id }])
+    setIsLoading(false)
+    if (!response.error) {
+      localStorage.setItem("client-token", JSON.stringify(response.data.token).replace(/['"]+/g, '').trim())
+      return false
+    } else {
+      return true
+    }
   }
 
   useEffect(() => {
@@ -156,7 +173,6 @@ const PeriodSelection = () => {
                         disabled={!activeButton}
                         onClick={async () => {
                           await init()
-                          setDone(true)
                         }}
                         style={{ marginTop: "3em" }} color="primary" type="submit">
                         Ingresar

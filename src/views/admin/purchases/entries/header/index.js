@@ -1,5 +1,10 @@
-import React from 'react';
+import AlertsContext from 'context/alerts';
+import API_ROUTES from '../../../../../api/routes';
+import ActionsBackend from 'context/actionsBackend';
+import { monthToStr } from 'function/monthStr';
+import React, { useContext, useEffect, useState } from 'react';
 import { Card, CardBody, Row, Col, FormGroup, Label, InputGroup, Input, InputGroupAddon, Button } from 'reactstrap';
+import LoadingContext from 'context/loading';
 
 const PurchasesEntriesChargeHeader = ({
     activeClient,
@@ -9,15 +14,92 @@ const PurchasesEntriesChargeHeader = ({
     setPeriodYear,
     periodYear,
     setConfirmedPeriod,
-    activePeriod
+    activePeriod,
+    setPurchasePeriodId
 }) => {
+    const [yearsLimits, setYearsLimits] = useState([])
+    const [monthLimits, setMonthLimits] = useState([])
+
+    const { axiosPost, axiosGetQuery, loadingActions } = useContext(ActionsBackend)
+    const { newAlert, newActivity } = useContext(AlertsContext)
+    const { setIsLoading } = useContext(LoadingContext)
 
     const getYearsLimits = () => {
         const fromYear = parseInt(activePeriod.from_date.substring(0, 4))
         const toYear = parseInt(activePeriod.to_date.substring(0, 4))
         const years = [fromYear, toYear]
-        return years.filter((value, index, array) => array.indexOf(value) === index);
+        !periodYear && setPeriodYear(fromYear)
+        setYearsLimits(years)
     }
+
+    const getMonthLimits = (year) => {
+        const fromYear = parseInt(activePeriod.from_date.substring(0, 4))
+        const toYear = parseInt(activePeriod.to_date.substring(0, 4))
+        let fromMonth
+        let toMonth
+        const months = []
+        if (year === fromYear && year === toYear) {
+            fromMonth = parseInt(activePeriod.from_date.substring(5, 7))
+            toMonth = parseInt(activePeriod.to_date.substring(5, 7))
+        } else if (year === fromYear) {
+            fromMonth = parseInt(activePeriod.from_date.substring(5, 7))
+            toMonth = 12
+        } else {
+            fromMonth = 1
+            toMonth = parseInt(activePeriod.to_date.substring(5, 7))
+        }
+        for (let i = fromMonth; i <= toMonth; i++) {
+            const monthName = monthToStr(i)
+            months.push({ value: i, name: monthName })
+        }
+        !periodMonth && setPeriodMonth(fromMonth)
+        setMonthLimits(months)
+    }
+
+    const savePeriod = async () => {
+        const response = await axiosPost(API_ROUTES.purchasesDir.sub.period, { month: periodMonth, year: periodYear })
+        if (!response.error) {
+            newActivity(`Se ha creado el periodo ${monthToStr(periodMonth)} ${periodYear}`)
+            setPurchasePeriodId(response.data.id)
+        } else {
+            setConfirmedPeriod(false)
+            newAlert("danger", "Hubo un error al cargar el periodo", response.errorMsg)
+        }
+    }
+
+    const getPeriod = async () => {
+        const response = await axiosGetQuery(API_ROUTES.purchasesDir.sub.period, [{ month: periodMonth }, { year: periodYear }])
+        if (!response.error) {
+            if (response.data.id) {
+                setPurchasePeriodId(response.data.id)
+            } else {
+                await savePeriod()
+            }
+        } else {
+            setConfirmedPeriod(false)
+            newAlert("danger", "Hubo un error al cargar el periodo", response.errorMsg)
+        }
+    }
+
+    useEffect(() => {
+        confirmedPeriod && getPeriod()
+        // eslint-disable-next-line
+    }, [confirmedPeriod])
+
+    useEffect(() => {
+        getMonthLimits(parseInt(periodYear))
+        // eslint-disable-next-line
+    }, [periodYear])
+
+    useEffect(() => {
+        getYearsLimits()
+        // eslint-disable-next-line
+    }, [])
+
+    useEffect(() => {
+        setIsLoading(loadingActions)
+        // eslint-disable-next-line
+    }, [])
 
     return (<>
         <Card className="mt-2">
@@ -31,22 +113,11 @@ const PurchasesEntriesChargeHeader = ({
                                     <Label>Periodo</Label>
                                     <InputGroup>
                                         <Input type="select" onChange={e => setPeriodMonth(e.target.value)} value={periodMonth} disabled={confirmedPeriod}>
-                                            <option value={1}>Enero</option>
-                                            <option value={2}>Febrero</option>
-                                            <option value={3}>Marzo</option>
-                                            <option value={4}>Abril</option>
-                                            <option value={5}>Mayo</option>
-                                            <option value={6}>Junio</option>
-                                            <option value={7}>Julio</option>
-                                            <option value={8}>Agosto</option>
-                                            <option value={9}>Septiembre</option>
-                                            <option value={10}>Octubre</option>
-                                            <option value={11}>Noviembre</option>
-                                            <option value={12}>Diciembre</option>
+                                            {monthLimits.map((month, index) => <option key={index} value={month.value}>{month.name}</option>)}
                                         </Input>
                                         <InputGroupAddon addonType="append">
                                             <Input type="select" onChange={e => setPeriodYear(e.target.value)} value={periodYear} disabled={confirmedPeriod}>
-                                                {getYearsLimits().map((year, index) => <option key={index} value={year}>{year}</option>)}
+                                                {yearsLimits.map((year, index) => <option key={index} value={year}>{year}</option>)}
                                             </Input>
                                         </InputGroupAddon>
                                         <InputGroupAddon addonType="append">

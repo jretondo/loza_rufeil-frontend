@@ -6,18 +6,18 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Button, Card, CardBody, CardHeader, Col, Form, FormGroup, Input, InputGroup, InputGroupAddon, Label, Row, Tooltip } from 'reactstrap';
 
 const ProviderForm = ({
-    clientInfo,
-    setIsOpenClientForm,
+    providerInfo,
+    setIsOpenProviderForm,
     setIsLoading
 }) => {
-    const [documentNumber, setDocumentNumber] = useState(clientInfo ? clientInfo.document_number : "")
-    const [isDocumentValid, setIsDocumentValid] = useState(clientInfo ? true : false)
-    const [businessName, setBusinessName] = useState(clientInfo ? clientInfo.business_name : "")
-    const [fantasieName, setFantasieName] = useState(clientInfo ? clientInfo.fantasie_name : "")
-    const [ivaConditionId, setIvaConditionId] = useState(clientInfo ? clientInfo.iva_condition_id : 30)
-    const [direction, setDirection] = useState(clientInfo ? clientInfo.direction : "")
-    const [activity, setActivity] = useState(clientInfo ? clientInfo.activity_description : "")
-    const [city, setCity] = useState(clientInfo ? clientInfo.city : "")
+    const [documentNumber, setDocumentNumber] = useState(providerInfo ? providerInfo.document_number : "")
+    const [isDocumentValid, setIsDocumentValid] = useState(providerInfo ? true : false)
+    const [businessName, setBusinessName] = useState(providerInfo ? providerInfo.business_name : "")
+    const [fantasieName, setFantasieName] = useState(providerInfo ? providerInfo.fantasie_name : "")
+    const [ivaConditionId, setIvaConditionId] = useState(providerInfo ? providerInfo.iva_condition_id : 30)
+    const [direction, setDirection] = useState(providerInfo ? providerInfo.direction : "")
+    const [activity, setActivity] = useState(providerInfo ? providerInfo.activity_description : "")
+    const [city, setCity] = useState(providerInfo ? providerInfo.city : "")
     const [dataInfoToolTip, setDataInfoToolTip] = useState(false)
     const [isMono, setIsMono] = useState(false)
 
@@ -35,12 +35,14 @@ const ProviderForm = ({
             city: city,
             activity_description: activity
         }
-        clientInfo && (dataPost.id = clientInfo.id)
+        providerInfo && (dataPost.id = providerInfo.id)
         const response = await axiosPost(API_ROUTES.providersDir.providers, dataPost)
         if (!response.error) {
-            newAlert("success", "Registrado con éxito!", "Proveedor registrado éxitosamente!")
-            newActivity("Ha registrado al proveedor: " + businessName + " (" + documentNumber + ")")
-            setIsOpenClientForm(false)
+            providerInfo && newAlert("success", "Modificado con éxito!", "Proveedor modificado éxitosamente!")
+            !providerInfo && newAlert("success", "Registrado con éxito!", "Proveedor registrado éxitosamente!")
+            providerInfo && newActivity("Ha modificado al proveedor: " + businessName + " (" + documentNumber + ")")
+            !providerInfo && newActivity("Ha registrado al proveedor: " + businessName + " (" + documentNumber + ")")
+            setIsOpenProviderForm(false)
         } else {
             newAlert("danger", "Hubo un error!", "Controle que todos los datos sean los correctos!. Error: " + response.errorMsg)
         }
@@ -123,14 +125,14 @@ const ProviderForm = ({
             <CardHeader>
                 <Row>
                     <Col md="10">
-                        <h2>{clientInfo ? `Modificar proveedor ${clientInfo.business_name} CUIT: ${clientInfo.document_number}` : "Proveedor Nuevo"}</h2>
+                        <h2>{providerInfo ? `Modificar proveedor ${providerInfo.business_name} CUIT: ${providerInfo.document_number}` : "Proveedor Nuevo"}</h2>
                     </Col>
                     <Col md="2" style={{ textAlign: "right" }}>
                         <button
                             className="btn btn-danger"
                             onClick={e => {
                                 e.preventDefault();
-                                setIsOpenClientForm(false);
+                                setIsOpenProviderForm(false);
                             }}
                         >X</button>
                     </Col>
@@ -263,14 +265,14 @@ const ProviderForm = ({
                                 style={{ width: "150px", margin: "20px" }}
                                 type="submit"
                             >
-                                {clientInfo ? "Modificar" : "Agregar"}
+                                {providerInfo ? "Modificar" : "Agregar"}
                             </button>
                             <button
                                 className="btn btn-danger"
                                 style={{ width: "150px", margin: "20px" }}
                                 onClick={e => {
                                     e.preventDefault();
-                                    setIsOpenClientForm(false);
+                                    setIsOpenProviderForm(false);
                                 }}
                             >
                                 Cancelar

@@ -5,24 +5,26 @@ import React, { useContext, useEffect, useState } from 'react';
 import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
 import swal from 'sweetalert';
 
-const ClientRow = ({
+const ProviderRow = ({
     id,
-    client,
+    provider,
     first,
     page,
-    setClientInfo,
-    setIsOpenClientForm,
+    setProviderInfo,
+    setIsOpenProviderForm,
     setPage,
-    refreshToggle
+    refreshToggle,
+    setModalAccountsIsOpen,
+    hasAccountingModule
 }) => {
     const [ivaConditionStr, setIvaConditionStr] = useState("")
     const { newAlert, newActivity } = useContext(AlertsContext)
     const { axiosDelete, loadingActions } = useContext(ActionsBackend)
 
-    const deleteUser = async (e, id, clientInfo, first, page) => {
+    const deleteUser = async (e, id, providerInfo, first, page) => {
         e.preventDefault()
         swal({
-            title: "Eliminar al proveedor " + clientInfo + "!",
+            title: "Eliminar al proveedor " + providerInfo + "!",
             text: "¿Está seguro de eliminar a este proveedor? Esta desición es permanente.",
             icon: "warning",
             buttons: {
@@ -34,14 +36,14 @@ const ClientRow = ({
             .then(async (willDelete) => {
                 let backPage = false
                 if (willDelete) {
-                    const response = await axiosDelete(API_ROUTES.clientsDir.clients, id)
+                    const response = await axiosDelete(API_ROUTES.providersDir.providers, id)
                     if (!response.error) {
                         if (first) {
                             if (page > 1) {
                                 backPage = true
                             }
                         }
-                        newActivity(`Se ha eliminado al proveedor ${clientInfo})`)
+                        newActivity(`Se ha eliminado al proveedor ${providerInfo})`)
                         newAlert("success", "Proveedor eliminado con éxito!", "")
                         if (backPage) {
                             setPage(parseInt(page - 1))
@@ -55,14 +57,20 @@ const ClientRow = ({
             });
     }
 
-    const details = (e, client) => {
+    const details = (e, provider) => {
         e.preventDefault()
-        setClientInfo(client)
-        setIsOpenClientForm(true)
+        setProviderInfo(provider)
+        setIsOpenProviderForm(true)
+    }
+
+    const openModalAccounts = (e, provider) => {
+        e.preventDefault()
+        setProviderInfo(provider)
+        setModalAccountsIsOpen(true)
     }
 
     useEffect(() => {
-        switch (client.iva_condition_id) {
+        switch (provider.iva_condition_id) {
             case 30:
                 setIvaConditionStr("IVA Responsable Inscripto")
                 break;
@@ -81,18 +89,15 @@ const ClientRow = ({
             default:
                 break;
         }
-    }, [client.iva_condition_id])
+    }, [provider.iva_condition_id])
 
     return (
         <tr key={id} className={loadingActions ? "shimmer" : ""} >
             <td style={{ textAlign: "center" }}>
-                {client.business_name}
+                {provider.business_name}
             </td>
             <td style={{ textAlign: "center" }}>
-                {client.document_number}
-            </td>
-            <td style={{ textAlign: "center" }}>
-                {client.email}
+                {provider.document_number}
             </td>
             <td style={{ textAlign: "center" }}>
                 {ivaConditionStr}
@@ -112,21 +117,22 @@ const ClientRow = ({
                     <DropdownMenu className="dropdown-menu-arrow" right>
                         <DropdownItem
                             href="#pablo"
-                            onClick={e => e.preventDefault()}
+                            onClick={e => openModalAccounts(e, provider)}
+                            disabled={!hasAccountingModule}
                         >
                             <i className="fas fa-retweet"></i>
-                            Asignar Cuentas
+                            Cuentas Asociadas
                         </DropdownItem>
                         <DropdownItem
                             href="#pablo"
-                            onClick={e => details(e, client)}
+                            onClick={e => details(e, provider)}
                         >
                             <i className="fas fa-edit"></i>
                             Editar
                         </DropdownItem>
                         <DropdownItem
                             href="#pablo"
-                            onClick={e => deleteUser(e, client.id, client.business_name + " CUIT: " + client.document_number, first, page)}
+                            onClick={e => deleteUser(e, provider.id, provider.business_name + " CUIT: " + provider.document_number, first, page)}
                         >
                             <i className="fas fa-trash-alt"></i>
                             Eliminar
@@ -138,4 +144,4 @@ const ClientRow = ({
     )
 }
 
-export default ClientRow
+export default ProviderRow

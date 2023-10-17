@@ -62,8 +62,9 @@ const clientsDir = {
 const providersDir = {
     providers,
     sub: {
-        dataTax: clients + "/dataTax",
-        dataTaxProof: clients + "/dataTaxProof"
+        dataTax: providers + "/dataTax",
+        dataTaxProof: providers + "/dataTaxProof",
+        parameters: providers + "/parameters",
     }
 }
 
@@ -111,6 +112,8 @@ const purchasesDir = {
         period: purchases + "/period",
         params: purchases + "/params",
         paymentsMethods: purchases + "/paymentsMethods",
+        receipt: purchases + "/receipt",
+        receipts: purchases + "/receipts"
     }
 }
 

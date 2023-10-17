@@ -12,7 +12,8 @@ import API_ROUTES from "api/routes";
 
 const ParametersComp = () => {
     const accountPeriod = JSON.parse(localStorage.getItem("activePeriod"))
-    const clientActive = JSON.parse(localStorage.getItem("activeClient"))
+    const activeClient = JSON.parse(localStorage.getItem("activeClient"))
+    const modules = JSON.parse(localStorage.getItem("modules"))
     const [activeTab, setActiveTab] = useState(0)
     const [accountsList, setAccountsList] = useState([])
     const { axiosGetQuery, loadingActions } = useContext(ActionsBackend)
@@ -32,6 +33,15 @@ const ParametersComp = () => {
     const accountSearchFn = (account, searchedText) => {
         if ((account.name).toLowerCase().includes(searchedText.toLowerCase()) || (account.code).toLowerCase().includes(searchedText.toLowerCase())) {
             return account
+        }
+    }
+
+    const hasAccountingModule = () => {
+        const find = modules.find((module) => module.module_id === 11)
+        if (find) {
+            return true
+        } else {
+            return false
         }
     }
 
@@ -68,16 +78,18 @@ const ParametersComp = () => {
                 <CardBody>
                     <Collapse isOpen={activeTab === 0 ? true : false} >
                         <PaymentMethods
+                            hasAccountingModule={hasAccountingModule}
                             accountsList={accountsList}
                             accountSearchFn={accountSearchFn}
+                            activeClient={activeClient}
                         />
                     </Collapse>
                     <Collapse isOpen={activeTab === 1 ? true : false} >
                         <VatTaxesOthers
-                            accountPeriod={accountPeriod}
-                            clientActive={clientActive}
+                            hasAccountingModule={hasAccountingModule}
                             accountsList={accountsList}
                             accountSearchFn={accountSearchFn}
+                            activeClient={activeClient}
                         />
                     </Collapse>
                 </CardBody>
