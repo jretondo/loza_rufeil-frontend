@@ -29,6 +29,13 @@ const PaymentMethods = ({ hasAccountingModule, accountsList, accountSearchFn }) 
     }
 
     const savePaymentsMethods = async () => {
+        if (!hasAccountingModule()) {
+            const newPaymentsArray = paymentsArray.map((payment) => {
+                delete payment.AccountChart
+                return payment
+            })
+            setPaymentsArray(newPaymentsArray)
+        }
         const response = await axiosPost(API_ROUTES.purchasesDir.sub.paymentsMethods, { params: paymentsArray })
         if (!response.error) {
             newActivity(`Se actualizaron los parametros del cliente: ${activeClient.business_name}`)
