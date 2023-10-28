@@ -188,7 +188,7 @@ const ProviderForm = ({
                         </Col>
                         <Col md="3">
                             <FormGroup>
-                                <Label for="fantasieTxt">Condición frente al IVA</Label>
+                                <Label for="fantasieTxt">Cond. IVA</Label>
                                 <Input
                                     type="select"
                                     id="fantasieTxt"

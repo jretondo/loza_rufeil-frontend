@@ -50,20 +50,15 @@ const InputSearch = ({ itemsList = [], itemSelected = {}, title = "", placeholde
         }
     }
 
-    const leaveHandler = () => {
-        if (strict && textSearched !== "" && cbStrict && filteredList.length === 0) {
-            cbStrict(textSearched)
-        } else if (textSearched !== "") {
-            setItemSelected(filteredList[0])
-        }
-        setFilteredList(itemsList)
-        setIsOpen(false)
-    }
-
     useEffect(() => {
         const newList = itemsList.slice(0, 20)
         setFilteredList(newList)
     }, [itemsList])
+
+    useEffect(() => {
+        !itemSelected && changeText(false, true)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [itemSelected])
 
     return (
         <FormGroup style={!title ? { marginBottom: "0px" } : {}}>
@@ -89,7 +84,7 @@ const InputSearch = ({ itemsList = [], itemSelected = {}, title = "", placeholde
                     placeholder={placeholderInput}
                     value={textSearched}
                     onChange={changeText}
-                    onBlur={leaveHandler}
+                    //onBlur={leaveHandler}
                     onFocus={(e) => {
                         e.target.select()
                         setIsOpen(true)
@@ -105,7 +100,7 @@ const InputSearch = ({ itemsList = [], itemSelected = {}, title = "", placeholde
                                 type="select"
                                 multiple
                                 onFocus={() => setIsOpen(true)}
-                                onClick={(e) => {
+                                onChange={(e) => {
                                     setItemSelected(JSON.parse(e.target.value));
                                 }}
                                 onKeyUp={e => KeyUp(e)}

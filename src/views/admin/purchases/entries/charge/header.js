@@ -4,17 +4,24 @@ import ActionsBackend from 'context/actionsBackend';
 import AlertsContext from 'context/alerts';
 import LoadingContext from 'context/loading';
 import React, { useContext, useEffect, useState } from 'react';
-import { Button, Col, FormGroup, Input, Label, Row } from 'reactstrap';
+import { Button, Col, FormGroup, Input, Label, Modal, Row } from 'reactstrap';
+import ProviderForm from '../../providers/form';
+import moment from 'moment';
 
 const ReceiptsChargeHeader = ({
     selectedProvider,
     setSelectedProvider,
     headerInvoice,
     setHeaderInvoice,
-    correctAmounts
+    correctAmounts,
+    periodMonth,
+    periodYear
 }) => {
     const activeClient = JSON.parse(localStorage.getItem("activeClient"))
     const [providersList, setProvidersList] = useState([])
+    const [dateLimit, setDateLimit] = useState(moment(new Date()).format("YYYY-MM-DD"))
+
+    const [isOpenNewProvider, setIsOpenNewProvider] = useState(false)
 
     const { axiosGetQuery, loadingActions } = useContext(ActionsBackend)
     const { setIsLoading } = useContext(LoadingContext)
@@ -100,9 +107,14 @@ const ReceiptsChargeHeader = ({
     }
 
     useEffect(() => {
+        const nextPeriod = moment(`${periodYear}-${periodMonth}-01`).add(1, "month")
+        setDateLimit(moment(nextPeriod).format("YYYY-MM-DD"))
+    }, [periodMonth, periodYear])
+
+    useEffect(() => {
         getProviders()
         // eslint-disable-next-line
-    }, [])
+    }, [isOpenNewProvider])
 
     useEffect(() => {
         setIsLoading(loadingActions)
@@ -119,12 +131,27 @@ const ReceiptsChargeHeader = ({
             <Col md="3">
                 <FormGroup>
                     <Label>Fecha</Label>
-                    <Input value={headerInvoice.data} onChange={e => setHeaderInvoice({ ...headerInvoice, date: e.target.value })} id="order_1" type="date" onKeyDown={(e) => nextInput(e, 1)} />
+                    <Input
+                        required
+                        value={headerInvoice.data}
+                        max={dateLimit}
+                        onChange={
+                            e => setHeaderInvoice(
+                                { ...headerInvoice, date: e.target.value })
+                        }
+                        id="order_1"
+                        type="date"
+                        onKeyDown={
+                            (e) => nextInput(e, 1)} />
                 </FormGroup>
             </Col>
             <Col md="6">
                 <Label>Proveedor</Label>
-                <Button className="p-0 px-1 ml-2" color="primary"><i className='fas fa-plus'></i></Button>
+                <Button
+                    className="p-0 px-1 ml-2"
+                    color="primary"
+                    onClick={() => setIsOpenNewProvider(true)}
+                ><i className='fas fa-plus'></i></Button>
                 <InputSearch
                     id="order_2"
                     itemsList={providersList}
@@ -143,6 +170,9 @@ const ReceiptsChargeHeader = ({
                 <FormGroup>
                     <Label>Importe</Label>
                     <Input
+                        required
+                        min={0.01}
+                        step={0.01}
                         value={headerInvoice.total}
                         onChange={e => setHeaderInvoice({ ...headerInvoice, total: parseFloat(e.target.value) })}
                         type="number"
@@ -182,6 +212,7 @@ const ReceiptsChargeHeader = ({
                 <FormGroup>
                     <Label>Letra</Label>
                     <Input
+                        required
                         value={headerInvoice.word}
                         onChange={e => changeWord(e.target.value)}
                         maxLength={1}
@@ -196,6 +227,7 @@ const ReceiptsChargeHeader = ({
                 <FormGroup>
                     <Label>PV</Label>
                     <Input
+                        required
                         value={headerInvoice.sellPoint}
                         onChange={e => setHeaderInvoice({ ...headerInvoice, sellPoint: e.target.value })}
                         id="order_6"
@@ -209,6 +241,7 @@ const ReceiptsChargeHeader = ({
                 <FormGroup>
                     <Label>Número</Label>
                     <Input
+                        required
                         value={headerInvoice.number}
                         onChange={e => setHeaderInvoice({ ...headerInvoice, number: e.target.value })}
                         id="order_7"
@@ -219,7 +252,12 @@ const ReceiptsChargeHeader = ({
                 </FormGroup>
             </Col>
         </Row>
-
+        <Modal size="lg" isOpen={isOpenNewProvider} toggle={() => setIsOpenNewProvider(!isOpenNewProvider)}>
+            <ProviderForm
+                setIsOpenProviderForm={setIsOpenNewProvider}
+                setIsLoading={setIsLoading}
+            />
+        </Modal>
     </>);
 }
 

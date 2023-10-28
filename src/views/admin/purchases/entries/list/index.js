@@ -1,19 +1,21 @@
 import API_ROUTES from '../../../../../api/routes';
 import { TableList } from 'components/Lists/TableList';
-import ActionsBackend from 'context/actionsBackend';
 import LoadingContext from 'context/loading';
-import CompleteCerosLeft from 'function/completeCeroLeft';
-import { numberFormat } from 'function/numberFormat';
 import { useAxiosGetList } from 'hooks/useAxiosGetList';
-import moment from 'moment';
 import React, { useContext, useEffect, useState } from 'react';
-import { Col, Pagination, Row } from 'reactstrap';
+import { Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Pagination, Row } from 'reactstrap';
+import { SearchFormComponent } from '../../../../../components/Search/Search1';
+import ReceiptRow from './row';
+import CompleteCerosLeft from '../../../../../function/completeCeroLeft';
+import moment from 'moment';
+import { numberFormat } from '../../../../../function/numberFormat';
 
 const PurchasesEntriesList = ({ purchasePeriodId, refreshList, setRefreshList }) => {
     const [page, setPage] = useState(1)
-
-    const [receiptsList, setReceiptsList] = useState([])
-    const [stringSearched, setStringSearched] = useState("")
+    const [receiptInfo, setReceiptInfo] = useState()
+    const [isOpenReceiptModal, setIsOpenReceiptModal] = useState(false)
+    const [receiptSearch, setReceiptSearch] = useState("")
+    const [providerSearch, setProviderSearch] = useState("")
 
     const { setIsLoading } = useContext(LoadingContext)
     const {
@@ -23,39 +25,63 @@ const PurchasesEntriesList = ({ purchasePeriodId, refreshList, setRefreshList })
         loadingList
     } = useAxiosGetList(
         API_ROUTES.purchasesDir.sub.receipts,
-        page, refreshList, [{ query: stringSearched }, { purchasePeriodId: purchasePeriodId }]
-    )
-
+        page, refreshList, [
+        { query: receiptSearch },
+        { purchasePeriodId: purchasePeriodId },
+        { provider: providerSearch }
+    ])
 
     useEffect(() => {
         setIsLoading(loadingList)
     }, [loadingList, setIsLoading])
 
-    useEffect(() => {
-        errorList && setReceiptsList([])
-    }, [errorList])
-
     return (
         <>
+            <Row className="mb-3">
+                <Col md="6" className="text-left">
+                    <SearchFormComponent
+                        setStringSearched={setReceiptSearch}
+                        stringSearched={receiptSearch}
+                        setRefreshList={setRefreshList}
+                        refreshList={refreshList}
+                        title="Buscar por comprobantes"
+                    />
+                </Col>
+                <Col md="6">
+                    <SearchFormComponent
+                        setStringSearched={setProviderSearch}
+                        stringSearched={providerSearch}
+                        setRefreshList={setRefreshList}
+                        refreshList={refreshList}
+                        title="Buscar por proveedor"
+                    />
+                </Col>
+            </Row>
             <Row>
                 <Col md="12">
                     <Row>
                         <Col md="12">
-                            <TableList titlesArray={["Fecha", "Comprobante", "Proveedor", "Importe"]}>
-                                {dataPage.length > 0 ? dataPage.map((receipt, key) => {
+                            <TableList titlesArray={["Fecha", "Comprobante", "Proveedor", "Importe", ""]}>
+                                {!errorList && dataPage.length > 0 ? dataPage.map((receipt, key) => {
+                                    let first
+                                    if (key === 0) {
+                                        first = true
+                                    } else {
+                                        first = false
+                                    }
+
                                     return (
-                                        <tr key={key}>
-                                            <td className='text-center'>{moment(new Date(receipt.date)).format("DD/MM/YYYY")}</td>
-                                            <td className='text-center'>{
-                                                (receipt.receipt_type === 1 && "Factura") ||
-                                                (receipt.receipt_type === 2 && "Recibo") ||
-                                                (receipt.receipt_type === 3 && "Ticket") ||
-                                                (receipt.receipt_type === 4 && "Nota de credito") ||
-                                                (receipt.receipt_type === 5 && "Nota de debito")
-                                            } {receipt.word} {CompleteCerosLeft(receipt.sell_point, 5)}-{CompleteCerosLeft(receipt.number, 8)}</td>
-                                            <td className='text-center'>{receipt.Provider.business_name} ({receipt.Provider.document_number})</td>
-                                            <td className='text-center'>$ {numberFormat(receipt.total)}</td>
-                                        </tr>
+                                        <ReceiptRow
+                                            key={key}
+                                            id={key}
+                                            receipt={receipt}
+                                            first={first}
+                                            page={page}
+                                            setPage={setPage}
+                                            refreshToggle={() => setRefreshList(!refreshList)}
+                                            setReceiptInfo={setReceiptInfo}
+                                            setIsOpenReceiptModal={setIsOpenReceiptModal}
+                                        />
                                     )
                                 }) : <tr><td></td><td>No hay comprobantes para mostrar</td></tr>}
                             </TableList>
@@ -63,6 +89,56 @@ const PurchasesEntriesList = ({ purchasePeriodId, refreshList, setRefreshList })
                     </Row>
                 </Col>
             </Row>
+            <Modal size="lg" isOpen={isOpenReceiptModal} toggle={() => setIsOpenReceiptModal(!isOpenReceiptModal)}>
+                <ModalHeader>
+                    <h2>Comprobante de compra Nº {receiptInfo && (receiptInfo.word + " " + CompleteCerosLeft(receiptInfo.sell_point, 5) + "-" + CompleteCerosLeft(receiptInfo.number, 8))}</h2>
+                </ModalHeader>
+                <ModalBody>
+                    {receiptInfo && <>
+                        <Row>
+                            <Col md="6">
+                                <h4>Fecha: {moment(new Date(receiptInfo.date)).format("DD/MM/YYYY")}</h4>
+                            </Col>
+                            <Col md="6">
+                                <h4>Proveedor: {receiptInfo.Provider.business_name}</h4>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col md="12">
+                                <TableList titlesArray={["Concepto", "Cuenta", "Debe", "Haber"]}>
+                                    {receiptInfo.PurchaseEntries.map((entry, key) => {
+                                        return (
+                                            <tr key={key}>
+                                                <td>{entry.description}</td>
+                                                <td>{entry.AccountChart.name} ({entry.AccountChart.code})</td>
+                                                <td className="text-right">${numberFormat(entry.debit)}</td>
+                                                <td className="text-right">${numberFormat(entry.credit)}</td>
+                                            </tr>
+                                        )
+                                    })}
+                                </TableList>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col md="6" className="text-left">
+                                <h3>observaciones:</h3>
+                                <div className="content" dangerouslySetInnerHTML={{ __html: receiptInfo.observation }}></div>
+                            </Col>
+                            <Col md="6" className="text-right">
+                                <h3>Total: ${numberFormat(receiptInfo.total)}</h3>
+                            </Col>
+                        </Row>
+                    </>}
+                </ModalBody>
+                <ModalFooter>
+                    <Button
+                        color="danger"
+                        onClick={() => setIsOpenReceiptModal(!isOpenReceiptModal)}
+                    >
+                        Cerrar
+                    </Button>
+                </ModalFooter>
+            </Modal>
             <Row>
                 <Col md="12" className="text-center">
                     {!pageObj ? null : <Pagination

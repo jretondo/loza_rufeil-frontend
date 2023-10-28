@@ -102,7 +102,7 @@ const PaymentsMethodsTable = ({ paymentsArray, setPaymentsArray, accountsList, a
                                     })
                                 }}
                             >
-                                -
+                                <i className='fas fa-trash-alt'></i>
                             </Button>
                         </td>
                     </tr>)
@@ -123,7 +123,7 @@ const PaymentsMethodsTable = ({ paymentsArray, setPaymentsArray, accountsList, a
                                 }])
                             }}
                         >
-                            +
+                            <i className='fas fa-plus'></i>
                         </Button>
                     </td>
                     <td></td><td></td><td></td>

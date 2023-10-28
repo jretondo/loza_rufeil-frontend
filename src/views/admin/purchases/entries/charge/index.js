@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import React, { useContext, useEffect, useState } from 'react';
-import { Button, Col, Nav, NavItem, NavLink, Row, TabContent, TabPane } from 'reactstrap';
+import { Button, Col, Form, Nav, NavItem, NavLink, Row, TabContent, TabPane } from 'reactstrap';
 import ReceiptsChargeHeader from './header';
 import ReceiptPaymentsTable from './paymentsMethods';
 import ActionsBackend from 'context/actionsBackend';
@@ -18,7 +18,9 @@ const PurchasesEntriesCharge = ({
     hasAccountingModule,
     accountSearchFn,
     purchasePeriodId,
-    refreshListToggle
+    refreshListToggle,
+    periodMonth,
+    periodYear
 }) => {
     const [activeTab, setActiveTab] = useState(0)
     const [selectedProvider, setSelectedProvider] = useState(false)
@@ -99,8 +101,8 @@ const PurchasesEntriesCharge = ({
         }
     }
 
-    const getTaxes = async () => {
-        const response = await axiosGetQuery(API_ROUTES.purchasesDir.sub.params, [])
+    const getTaxes = async (vat_condition) => {
+        const response = await axiosGetQuery(API_ROUTES.purchasesDir.sub.params, [{ vat_condition }])
         if (!response.error) {
             const arrayDataVat = response.data.vat.length > 0 ? response.data.vat.map((tax, key) => {
                 tax.id = key
@@ -185,9 +187,9 @@ const PurchasesEntriesCharge = ({
         setEntryAmounts(newAmounts)
     }
 
-    const getAllData = async () => {
+    const getAllData = async (vat_condition) => {
         await getPaymentsMethods()
-        await getTaxes()
+        await getTaxes(vat_condition)
         await getProviderAccount()
     }
 
@@ -212,7 +214,7 @@ const PurchasesEntriesCharge = ({
     }
 
     useEffect(() => {
-        selectedProvider && getAllData()
+        selectedProvider && getAllData(selectedProvider.iva_condition_id)
         // eslint-disable-next-line
     }, [selectedProvider])
 
@@ -228,50 +230,59 @@ const PurchasesEntriesCharge = ({
 
     return (
         <>
-            <ReceiptsChargeHeader
-                selectedProvider={selectedProvider}
-                setSelectedProvider={setSelectedProvider}
-                headerInvoice={headerInvoice}
-                setHeaderInvoice={setHeaderInvoice}
-                correctAmounts={correctAmounts}
-            />
-            <Row className="mt-3">
-                <Col md="6">
-                    <ReactQuill
-                        theme="snow"
-                        value={detail}
-                        onChange={setDetail}
-                        modules={{
-                            toolbar: [
-                                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                                ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-                                [{ 'list': 'ordered' }, { 'list': 'bullet' }]
-                            ]
-                        }}
-                        style={{ background: "#e8eaed" }}
-                    />
-                </Col>
-                <Col md="6" className="text-center" style={{ border: "2px solid #073863" }}>
-                    <PurchasesEntrySummary
-                        entryAmounts={entryAmounts}
-                    />
-                </Col>
-            </Row>
-            <Row className="mt-3">
-                <Col md="12" className="text-center">
-                    <Button
-                        disabled={!selectedProvider}
-                        color="primary"
-                        onClick={saveNewReceipt}
-                        id="saveBtn"
-                    >
-                        Cargar
-                    </Button>
-                    <Button color="danger">
-                        Cancelar
-                    </Button>
-                </Col>
-            </Row>
+            <Form onSubmit={
+                e => {
+                    e.preventDefault()
+                    saveNewReceipt(e)
+                }
+            }>
+                <ReceiptsChargeHeader
+                    selectedProvider={selectedProvider}
+                    setSelectedProvider={setSelectedProvider}
+                    headerInvoice={headerInvoice}
+                    setHeaderInvoice={setHeaderInvoice}
+                    correctAmounts={correctAmounts}
+                    periodMonth={periodMonth}
+                    periodYear={periodYear}
+                />
+                <Row className="mt-3">
+                    <Col md="6">
+                        <ReactQuill
+                            theme="snow"
+                            value={detail}
+                            onChange={setDetail}
+                            modules={{
+                                toolbar: [
+                                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                                    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+                                    [{ 'list': 'ordered' }, { 'list': 'bullet' }]
+                                ]
+                            }}
+                            style={{ background: "#e8eaed" }}
+                        />
+                    </Col>
+                    <Col md="6" className="text-center" style={{ border: "2px solid #073863" }}>
+                        <PurchasesEntrySummary
+                            entryAmounts={entryAmounts}
+                        />
+                    </Col>
+                </Row>
+                <Row className="mt-3">
+                    <Col md="12" className="text-center">
+                        <Button
+                            disabled={!selectedProvider}
+                            color="primary"
+                            id="saveBtn"
+                            type="submit"
+                        >
+                            Cargar
+                        </Button>
+                        <Button color="danger">
+                            Cancelar
+                        </Button>
+                    </Col>
+                </Row>
+            </Form>
             <hr />
             <Nav tabs className="mt-3" >
                 <NavItem style={{ cursor: "pointer" }}>

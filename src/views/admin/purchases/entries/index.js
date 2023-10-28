@@ -53,6 +53,11 @@ const Index = () => {
     }
 
     useEffect(() => {
+        setRefreshList(!refreshList)
+        // eslint-disable-next-line
+    }, [purchasePeriodId])
+
+    useEffect(() => {
         getAttributableAccounts()
         // eslint-disable-next-line
     }, [])
@@ -105,6 +110,8 @@ const Index = () => {
                                 accountSearchFn={accountSearchFn}
                                 purchasePeriodId={purchasePeriodId}
                                 refreshListToggle={() => setRefreshList(!refreshList)}
+                                periodMonth={periodMonth}
+                                periodYear={periodYear}
                             />
                         </Collapse>
                         <Collapse isOpen={activeTab === 1 ? true : false} >
