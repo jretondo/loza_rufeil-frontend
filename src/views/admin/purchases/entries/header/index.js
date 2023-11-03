@@ -15,7 +15,7 @@ const PurchasesEntriesChargeHeader = ({
     periodYear,
     setConfirmedPeriod,
     activePeriod,
-    setPurchasePeriodId
+    setPurchasePeriod
 }) => {
     const [yearsLimits, setYearsLimits] = useState([])
     const [monthLimits, setMonthLimits] = useState([])
@@ -60,7 +60,7 @@ const PurchasesEntriesChargeHeader = ({
         const response = await axiosPost(API_ROUTES.purchasesDir.sub.period, { month: periodMonth, year: periodYear })
         if (!response.error) {
             newActivity(`Se ha creado el periodo ${monthToStr(periodMonth)} ${periodYear}`)
-            setPurchasePeriodId(response.data.id)
+            setPurchasePeriod(response.data)
         } else {
             setConfirmedPeriod(false)
             newAlert("danger", "Hubo un error al cargar el periodo", response.errorMsg)
@@ -71,7 +71,7 @@ const PurchasesEntriesChargeHeader = ({
         const response = await axiosGetQuery(API_ROUTES.purchasesDir.sub.period, [{ month: periodMonth }, { year: periodYear }])
         if (!response.error) {
             if (response.data.id) {
-                setPurchasePeriodId(response.data.id)
+                setPurchasePeriod(response.data)
             } else {
                 await savePeriod()
             }

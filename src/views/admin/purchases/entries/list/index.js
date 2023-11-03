@@ -10,7 +10,7 @@ import CompleteCerosLeft from '../../../../../function/completeCeroLeft';
 import moment from 'moment';
 import { numberFormat } from '../../../../../function/numberFormat';
 
-const PurchasesEntriesList = ({ purchasePeriodId, refreshList, setRefreshList }) => {
+const PurchasesEntriesList = ({ purchasePeriodId, refreshList, setRefreshList, purchasePeriod }) => {
     const [page, setPage] = useState(1)
     const [receiptInfo, setReceiptInfo] = useState()
     const [isOpenReceiptModal, setIsOpenReceiptModal] = useState(false)
@@ -81,6 +81,7 @@ const PurchasesEntriesList = ({ purchasePeriodId, refreshList, setRefreshList })
                                             refreshToggle={() => setRefreshList(!refreshList)}
                                             setReceiptInfo={setReceiptInfo}
                                             setIsOpenReceiptModal={setIsOpenReceiptModal}
+                                            purchasePeriod={purchasePeriod}
                                         />
                                     )
                                 }) : <tr><td></td><td>No hay comprobantes para mostrar</td></tr>}

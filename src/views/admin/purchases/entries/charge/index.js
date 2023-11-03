@@ -20,7 +20,8 @@ const PurchasesEntriesCharge = ({
     purchasePeriodId,
     refreshListToggle,
     periodMonth,
-    periodYear
+    periodYear,
+    purchasePeriod
 }) => {
     const [activeTab, setActiveTab] = useState(0)
     const [selectedProvider, setSelectedProvider] = useState(false)
@@ -230,121 +231,130 @@ const PurchasesEntriesCharge = ({
 
     return (
         <>
-            <Form onSubmit={
-                e => {
-                    e.preventDefault()
-                    saveNewReceipt(e)
-                }
-            }>
-                <ReceiptsChargeHeader
-                    selectedProvider={selectedProvider}
-                    setSelectedProvider={setSelectedProvider}
-                    headerInvoice={headerInvoice}
-                    setHeaderInvoice={setHeaderInvoice}
-                    correctAmounts={correctAmounts}
-                    periodMonth={periodMonth}
-                    periodYear={periodYear}
-                />
-                <Row className="mt-3">
-                    <Col md="6">
-                        <ReactQuill
-                            theme="snow"
-                            value={detail}
-                            onChange={setDetail}
-                            modules={{
-                                toolbar: [
-                                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                                    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-                                    [{ 'list': 'ordered' }, { 'list': 'bullet' }]
-                                ]
-                            }}
-                            style={{ background: "#e8eaed" }}
-                        />
-                    </Col>
-                    <Col md="6" className="text-center" style={{ border: "2px solid #073863" }}>
-                        <PurchasesEntrySummary
-                            entryAmounts={entryAmounts}
-                        />
-                    </Col>
-                </Row>
-                <Row className="mt-3">
-                    <Col md="12" className="text-center">
-                        <Button
-                            disabled={!selectedProvider}
-                            color="primary"
-                            id="saveBtn"
-                            type="submit"
-                        >
-                            Cargar
-                        </Button>
-                        <Button color="danger">
-                            Cancelar
-                        </Button>
-                    </Col>
-                </Row>
-            </Form>
-            <hr />
-            <Nav tabs className="mt-3" >
-                <NavItem style={{ cursor: "pointer" }}>
-                    <NavLink
-                        style={activeTab === 0 ? { background: "gray", color: "white" } : { background: "#adb5bd" }}
-                        className={classNames({ active: activeTab === 0 })}
-                        onClick={() => setActiveTab(0)}
-                    >
-                        Conceptos de gasto
-                    </NavLink>
-                </NavItem>
-                <NavItem style={{ cursor: "pointer" }}>
-                    <NavLink
-                        style={activeTab === 1 ? { background: "gray", color: "white" } : { background: "#adb5bd" }}
-                        className={classNames({ active: activeTab === 1 })}
-                        onClick={() => setActiveTab(1)}
-                    >
-                        Metodos de pago
-                    </NavLink>
-                </NavItem>
-                <NavItem style={{ cursor: "pointer" }}>
-                    <NavLink
-                        style={activeTab === 2 ? { background: "gray", color: "white" } : { background: "#adb5bd" }}
-                        className={classNames({ active: activeTab === 2 })}
-                        onClick={() => setActiveTab(2)}
-                    >
-                        Impuestos
-                    </NavLink>
-                </NavItem>
-            </Nav>
-            <TabContent activeTab={activeTab}>
-                <TabPane tabId={0} className="p-5" style={{ background: "gray", fontWeight: "bold", color: "#073863" }}>
-                    <ReceiptsConceptsTable
-                        receiptConcepts={receiptConcepts}
-                        setReceiptConcepts={setReceiptConcepts}
-                        accountsList={accountsList}
-                        accountSearchFn={accountSearchFn}
-                        hasAccountingModule={hasAccountingModule}
-                    />
-                </TabPane>
-                <TabPane tabId={1} className="p-5" style={{ background: "gray", fontWeight: "bold", color: "#073863" }} >
-                    <ReceiptPaymentsTable
-                        paymentsArray={paymentsMethods}
-                        setPaymentsArray={setPaymentsMethods}
-                        accountsList={accountsList}
-                        accountSearchFn={accountSearchFn}
-                        hasAccountingModule={hasAccountingModule}
-                        setEntryAmounts={setEntryAmounts}
-                        entryAmounts={entryAmounts}
-                    />
-                </TabPane>
-                <TabPane tabId={2} className="p-5" style={{ background: "gray", fontWeight: "bold", color: "#073863" }}>
-                    <TaxesEntry
-                        taxesList={taxesList}
-                        setTaxesList={setTaxesList}
-                        hasAccountingModule={hasAccountingModule}
-                        accountsList={accountsList}
-                        accountSearchFn={accountSearchFn}
-                    />
-                </TabPane>
-            </TabContent>
-
+            {
+                purchasePeriod.closed ?
+                    <Row>
+                        <Col md="12" className="text-center">
+                            <h3>El periodo se encuentra cerrado - No se puede modificar</h3>
+                        </Col>
+                    </Row> :
+                    <>
+                        <Form onSubmit={
+                            e => {
+                                e.preventDefault()
+                                saveNewReceipt(e)
+                            }
+                        }>
+                            <ReceiptsChargeHeader
+                                selectedProvider={selectedProvider}
+                                setSelectedProvider={setSelectedProvider}
+                                headerInvoice={headerInvoice}
+                                setHeaderInvoice={setHeaderInvoice}
+                                correctAmounts={correctAmounts}
+                                periodMonth={periodMonth}
+                                periodYear={periodYear}
+                            />
+                            <Row className="mt-3">
+                                <Col md="6">
+                                    <ReactQuill
+                                        theme="snow"
+                                        value={detail}
+                                        onChange={setDetail}
+                                        modules={{
+                                            toolbar: [
+                                                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                                                ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+                                                [{ 'list': 'ordered' }, { 'list': 'bullet' }]
+                                            ]
+                                        }}
+                                        style={{ background: "#e8eaed" }}
+                                    />
+                                </Col>
+                                <Col md="6" className="text-center" style={{ border: "2px solid #073863" }}>
+                                    <PurchasesEntrySummary
+                                        entryAmounts={entryAmounts}
+                                    />
+                                </Col>
+                            </Row>
+                            <Row className="mt-3">
+                                <Col md="12" className="text-center">
+                                    <Button
+                                        disabled={!selectedProvider}
+                                        color="primary"
+                                        id="saveBtn"
+                                        type="submit"
+                                    >
+                                        Cargar
+                                    </Button>
+                                    <Button color="danger">
+                                        Cancelar
+                                    </Button>
+                                </Col>
+                            </Row>
+                        </Form>
+                        <hr />
+                        <Nav tabs className="mt-3" >
+                            <NavItem style={{ cursor: "pointer" }}>
+                                <NavLink
+                                    style={activeTab === 0 ? { background: "gray", color: "white" } : { background: "#adb5bd" }}
+                                    className={classNames({ active: activeTab === 0 })}
+                                    onClick={() => setActiveTab(0)}
+                                >
+                                    Conceptos de gasto
+                                </NavLink>
+                            </NavItem>
+                            <NavItem style={{ cursor: "pointer" }}>
+                                <NavLink
+                                    style={activeTab === 1 ? { background: "gray", color: "white" } : { background: "#adb5bd" }}
+                                    className={classNames({ active: activeTab === 1 })}
+                                    onClick={() => setActiveTab(1)}
+                                >
+                                    Metodos de pago
+                                </NavLink>
+                            </NavItem>
+                            <NavItem style={{ cursor: "pointer" }}>
+                                <NavLink
+                                    style={activeTab === 2 ? { background: "gray", color: "white" } : { background: "#adb5bd" }}
+                                    className={classNames({ active: activeTab === 2 })}
+                                    onClick={() => setActiveTab(2)}
+                                >
+                                    Impuestos
+                                </NavLink>
+                            </NavItem>
+                        </Nav>
+                        <TabContent activeTab={activeTab}>
+                            <TabPane tabId={0} className="p-5" style={{ background: "gray", fontWeight: "bold", color: "#073863" }}>
+                                <ReceiptsConceptsTable
+                                    receiptConcepts={receiptConcepts}
+                                    setReceiptConcepts={setReceiptConcepts}
+                                    accountsList={accountsList}
+                                    accountSearchFn={accountSearchFn}
+                                    hasAccountingModule={hasAccountingModule}
+                                />
+                            </TabPane>
+                            <TabPane tabId={1} className="p-5" style={{ background: "gray", fontWeight: "bold", color: "#073863" }} >
+                                <ReceiptPaymentsTable
+                                    paymentsArray={paymentsMethods}
+                                    setPaymentsArray={setPaymentsMethods}
+                                    accountsList={accountsList}
+                                    accountSearchFn={accountSearchFn}
+                                    hasAccountingModule={hasAccountingModule}
+                                    setEntryAmounts={setEntryAmounts}
+                                    entryAmounts={entryAmounts}
+                                />
+                            </TabPane>
+                            <TabPane tabId={2} className="p-5" style={{ background: "gray", fontWeight: "bold", color: "#073863" }}>
+                                <TaxesEntry
+                                    taxesList={taxesList}
+                                    setTaxesList={setTaxesList}
+                                    hasAccountingModule={hasAccountingModule}
+                                    accountsList={accountsList}
+                                    accountSearchFn={accountSearchFn}
+                                />
+                            </TabPane>
+                        </TabContent>
+                    </>
+            }
         </>
     )
 }

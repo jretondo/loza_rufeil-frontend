@@ -263,7 +263,7 @@ const ActionsBackendProvider = ({ children }) => {
                 Accept: fileType,
             },
         }).then(res => {
-            if (res.status === 200) {
+            if (res.status === 201 || res.status === 200) {
                 let headerLine = res.headers['content-disposition'];
                 const largo = parseInt(headerLine.length)
                 let filename = headerLine.substring(21, largo);

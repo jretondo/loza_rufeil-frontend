@@ -20,7 +20,7 @@ const Index = () => {
     const [periodMonth, setPeriodMonth] = useState()
     const [periodYear, setPeriodYear] = useState()
     const [activeTab, setActiveTab] = useState(0)
-    const [purchasePeriodId, setPurchasePeriodId] = useState()
+    const [purchasePeriod, setPurchasePeriod] = useState()
     const [accountsList, setAccountsList] = useState([])
     const [refreshList, setRefreshList] = useState(false)
 
@@ -55,7 +55,7 @@ const Index = () => {
     useEffect(() => {
         setRefreshList(!refreshList)
         // eslint-disable-next-line
-    }, [purchasePeriodId])
+    }, [purchasePeriod])
 
     useEffect(() => {
         getAttributableAccounts()
@@ -73,7 +73,7 @@ const Index = () => {
                 periodYear={periodYear}
                 setConfirmedPeriod={setConfirmedPeriod}
                 activePeriod={activePeriod}
-                setPurchasePeriodId={setPurchasePeriodId}
+                setPurchasePeriod={setPurchasePeriod}
             />
             <Card className="mt-2">
                 <CardBody className="text-center">
@@ -100,7 +100,7 @@ const Index = () => {
                         <Input value="Seleccione un periodo" disabled />}
                 </CardBody>
             </Card>
-            {confirmedPeriod && purchasePeriodId &&
+            {confirmedPeriod && purchasePeriod &&
                 <Card className="mt-2">
                     <CardBody>
                         <Collapse isOpen={activeTab === 0 ? true : false} >
@@ -108,7 +108,8 @@ const Index = () => {
                                 accountsList={accountsList}
                                 hasAccountingModule={hasAccountingModule()}
                                 accountSearchFn={accountSearchFn}
-                                purchasePeriodId={purchasePeriodId}
+                                purchasePeriodId={purchasePeriod.id}
+                                purchasePeriod={purchasePeriod}
                                 refreshListToggle={() => setRefreshList(!refreshList)}
                                 periodMonth={periodMonth}
                                 periodYear={periodYear}
@@ -116,13 +117,16 @@ const Index = () => {
                         </Collapse>
                         <Collapse isOpen={activeTab === 1 ? true : false} >
                             <PurchasesEntriesList
-                                purchasePeriodId={purchasePeriodId}
+                                purchasePeriodId={purchasePeriod.id}
+                                purchasePeriod={purchasePeriod}
                                 refreshList={refreshList}
                                 setRefreshList={setRefreshList}
                             />
                         </Collapse>
                         <Collapse isOpen={activeTab === 2 ? true : false} >
-                            <PurchasesEntriesOperations />
+                            <PurchasesEntriesOperations
+                                purchasePeriod={purchasePeriod}
+                            />
                         </Collapse>
                     </CardBody>
                 </Card>}

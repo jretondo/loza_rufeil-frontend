@@ -113,7 +113,8 @@ const purchasesDir = {
         params: purchases + "/params",
         paymentsMethods: purchases + "/paymentsMethods",
         receipt: purchases + "/receipt",
-        receipts: purchases + "/receipts"
+        receipts: purchases + "/receipts",
+        receiptsTxt: purchases + "/receipts/txt",
     }
 }
 

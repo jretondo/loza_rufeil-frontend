@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment from "moment-timezone";
 import React, { useContext } from 'react';
 import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
 import CompleteCerosLeft from '../../../../../function/completeCeroLeft';
@@ -16,7 +16,8 @@ const ReceiptRow = ({
     setPage,
     refreshToggle,
     setReceiptInfo,
-    setIsOpenReceiptModal
+    setIsOpenReceiptModal,
+    purchasePeriod
 }) => {
     const { newAlert, newActivity } = useContext(AlertsContext)
     const { axiosDelete, loadingActions } = useContext(ActionsBackend)
@@ -65,7 +66,7 @@ const ReceiptRow = ({
 
     return (<>
         <tr key={id} className={loadingActions ? "shimmer" : ""} >
-            <td className='text-center'>{moment(new Date(receipt.date)).format("DD/MM/YYYY")}</td>
+            <td className='text-center'>{moment(receipt.date.split("T")[0]).tz('America/Argentina/Buenos_Aires').format("DD/MM/YYYY")}</td>
             <td className='text-center'>{
                 (receipt.receipt_type === 1 && "Factura") ||
                 (receipt.receipt_type === 2 && "Recibo") ||
@@ -96,6 +97,7 @@ const ReceiptRow = ({
                             Ver Detalles
                         </DropdownItem>
                         <DropdownItem
+                            disabled={purchasePeriod.closed ? true : false}
                             href="#pablo"
                             onClick={e => deleteReceipt(e, receipt.id, receipt.word + " " + CompleteCerosLeft(receipt.sell_point, 5) + "-" + CompleteCerosLeft(receipt.number, 8), first, page)}
                         >
