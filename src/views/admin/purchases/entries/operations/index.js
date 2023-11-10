@@ -1,38 +1,111 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { Button, Col, Row } from 'reactstrap';
 import ActionsBackend from '../../../../../context/actionsBackend';
 import AlertsContext from '../../../../../context/alerts';
-import LoadingContext from '../../../../../context/loading';
 import API_ROUTES from '../../../../../api/routes';
+import ExcelPNG from 'assets/img/icons/excel.png';
+import ImportData from './importData';
 
-const PurchasesEntriesOperations = ({ purchasePeriod }) => {
-    const { axiosGetFile, loadingActions } = useContext(ActionsBackend)
+const PurchasesEntriesOperations = ({
+    purchasePeriod,
+    accountsList,
+    accountSearchFn,
+    hasAccountingModule,
+    activePeriod
+}) => {
+    const [importFile, setImportFile] = useState()
+    const [purchaseImported, setPurchaseImported] = useState(false)
+    const [importDataModule, setImportDataModule] = useState(false)
+    const { axiosGetFile, axiosPost } = useContext(ActionsBackend)
     const { newAlert, newActivity } = useContext(AlertsContext)
-    const { setIsLoading } = useContext(LoadingContext)
 
     const importFromAFIP = async () => {
         const response = await axiosGetFile(API_ROUTES.purchasesDir.sub.receiptsTxt, purchasePeriod.id, "application/x-gzip")
         if (!response.error) {
-            newAlert("success", "Archivo generado con éxito!", "Descomprima el archivo para encontrar el .csr y el .key")
+            newAlert("success", "Archivo generado con éxito!", "Descomprima el archivo para encontrar los TXT")
         } else {
             console.log(response.error)
             newAlert("danger", "Hubo un error!", "Revise los datos colocados. Error: " + response.errorMsg)
         }
     }
+
+    const processCVS = async (e) => {
+        e.preventDefault()
+        const data = new FormData()
+        data.append("file", importFile)
+        data.append("accountingPeriodId", activePeriod.id)
+        const response = await axiosPost(API_ROUTES.purchasesDir.sub.cvsImport, data)
+        if (!response.error) {
+            setPurchaseImported(response.data)
+            setImportDataModule(true)
+        } else {
+            newAlert("danger", "Hubo un error!", "Revise los datos colocados. Error: " + response.errorMsg)
+        }
+    }
+
     return (<>
-        <Row>
-            <Col md="4" className="text-center">
-                <Button
-                    onClick={() => importFromAFIP()}
-                    color="primary">Importar TXT desde AFIP <i className='fas fa-download ml-2'></i></Button>
-            </Col>
-            <Col md="4" className="text-center">
-                <Button color="primary">Cerrar Periodo <i className='fas fa-window-close ml-2'></i></Button>
-            </Col>
-            <Col md="4" className="text-center">
-                <Button color="primary">Exportar TXT para AFIP <i className='fas fa-upload ml-2'></i></Button>
-            </Col>
-        </Row>
+        {
+            importFile ?
+                importDataModule ?
+                    <ImportData
+                        purchasePeriod={purchasePeriod}
+                        setImportDataModule={setImportDataModule}
+                        purchaseImported={purchaseImported}
+                        setImportFile={setImportFile}
+                        accountsList={accountsList}
+                        accountSearchFn={accountSearchFn}
+                    />
+                    :
+                    <Row>
+                        <Col md="12" className="text-center">
+
+                            <Row style={{ paddingTop: "20px", paddingBottom: "20px" }}>
+                                <Col md="12" style={{ textAlign: "center" }}>
+                                    <button
+                                        className="btn btn-danger"
+                                        onClick={e => {
+                                            setImportFile(null)
+                                        }}
+                                        style={{ position: "relative", right: "-120px", top: "-40px" }}
+                                    > X
+                                    </button>
+                                    <img src={ExcelPNG} style={{ width: "80px" }} alt="Excel" />
+                                    <h3 style={{ color: "green" }}>{importFile.name}</h3>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md="12" style={{ textAlign: "center" }}>
+                                    <button className="btn btn-warning" style={{ marginBottom: "30px" }} onClick={e => { processCVS(e) }} >Procesar Archivo</button>
+                                </Col>
+                            </Row>
+                        </Col>
+                    </Row>
+                : <Row>
+                    <Col md="4" className="text-center">
+                        <Button
+                            disabled={purchasePeriod.closed}
+                            color="primary"
+                            onClick={e => {
+                                e.preventDefault()
+                                document.getElementById("selectFile").click()
+                            }}
+                        >Importar TXT desde AFIP <i className='fas fa-download ml-2'></i></Button>
+                        <input type="file" placeholder="Selecciones archivo" id="selectFile" style={{ visibility: "hidden" }} accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel,.csv" onChange={e => {
+                            setImportFile(e.target.files[0])
+                        }} />
+                    </Col>
+                    <Col md="4" className="text-center">
+                        <Button
+                            disabled={purchasePeriod.closed}
+                            color="primary">Cerrar Periodo <i className='fas fa-window-close ml-2'></i></Button>
+                    </Col>
+                    <Col md="4" className="text-center">
+                        <Button
+                            onClick={() => importFromAFIP()}
+                            color="primary">Exportar TXT para AFIP <i className='fas fa-upload ml-2'></i></Button>
+                    </Col>
+                </Row>
+        }
     </>)
 }
 

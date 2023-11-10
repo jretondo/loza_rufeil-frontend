@@ -126,6 +126,10 @@ const Index = () => {
                         <Collapse isOpen={activeTab === 2 ? true : false} >
                             <PurchasesEntriesOperations
                                 purchasePeriod={purchasePeriod}
+                                accountsList={accountsList}
+                                hasAccountingModule={hasAccountingModule()}
+                                accountSearchFn={accountSearchFn}
+                                activePeriod={activePeriod}
                             />
                         </Collapse>
                     </CardBody>

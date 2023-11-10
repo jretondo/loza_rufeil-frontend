@@ -115,6 +115,7 @@ const purchasesDir = {
         receipt: purchases + "/receipt",
         receipts: purchases + "/receipts",
         receiptsTxt: purchases + "/receipts/txt",
+        cvsImport: purchases + "/receipt/import",
     }
 }
 
