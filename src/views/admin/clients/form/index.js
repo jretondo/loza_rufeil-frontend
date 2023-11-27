@@ -64,56 +64,52 @@ const ClientsForm = ({
     }
 
     const getClientDataTax = async (e) => {
-        const documentVerify = verifyDocumentNumber(e.target.value)
-        if (documentVerify.isValid) {
-            setIsDocumentValid(true)
-            const response = await axiosGetQuery(API_ROUTES.clientsDir.sub.dataTax, [{ documentNumber: documentNumber }])
-            try {
-                const personType = response.data.data.datosGenerales.tipoPersona
-                if (personType === "FISICA") {
-                    setBusinessName(response.data.data.datosGenerales.apellido + " " + response.data.data.datosGenerales.nombre)
-                    setFantasieName(response.data.data.datosGenerales.apellido + " " + response.data.data.datosGenerales.nombre)
-                } else {
-                    setBusinessName(response.data.data.datosGenerales.razonSocial)
-                    setFantasieName(response.data.data.datosGenerales.razonSocial)
-                }
-                setCity(response.data.data.datosGenerales.domicilioFiscal.descripcionProvincia)
-                setDirection(response.data.data.datosGenerales.domicilioFiscal.direccion)
-                if (response.data.data.datosMonotributo) {
-                    setIvaConditionId(20)
-                    setActivity(response.data.data.datosMonotributo.actividadMonotributista.descripcionActividad)
-                    setIsMono(true)
-                } else {
-                    setIsMono(false)
-                    const taxes = response.data.data.datosRegimenGeneral.impuesto
-                    // eslint-disable-next-line 
-                    taxes.map(item => {
-                        switch (item.idImpuesto) {
-                            case 30:
-                                setIvaConditionId(item.idImpuesto)
-                                break;
-                            case 32:
-                                setIvaConditionId(item.idImpuesto)
-                                break;
-                            case 20:
-                                setIvaConditionId(item.idImpuesto)
-                                break;
-                            case 33:
-                                setIvaConditionId(item.idImpuesto)
-                                break;
-                            case 34:
-                                setIvaConditionId(item.idImpuesto)
-                                break;
-                            default:
-                                break;
-                        }
-                    })
-                    setActivity(response.data.data.datosRegimenGeneral.actividad[0].descripcionActividad)
-                }
-            } catch (error) {
+
+        setIsDocumentValid(true)
+        const response = await axiosGetQuery(API_ROUTES.clientsDir.sub.dataTax, [{ documentNumber: documentNumber }])
+        try {
+            const personType = response.data.data.datosGenerales.tipoPersona
+            if (personType === "FISICA") {
+                setBusinessName(response.data.data.datosGenerales.apellido + " " + response.data.data.datosGenerales.nombre)
+                setFantasieName(response.data.data.datosGenerales.apellido + " " + response.data.data.datosGenerales.nombre)
+            } else {
+                setBusinessName(response.data.data.datosGenerales.razonSocial)
+                setFantasieName(response.data.data.datosGenerales.razonSocial)
             }
-        } else {
-            setIsDocumentValid(false)
+            setCity(response.data.data.datosGenerales.domicilioFiscal.descripcionProvincia)
+            setDirection(response.data.data.datosGenerales.domicilioFiscal.direccion)
+            if (response.data.data.datosMonotributo) {
+                setIvaConditionId(20)
+                setActivity(response.data.data.datosMonotributo.actividadMonotributista.descripcionActividad)
+                setIsMono(true)
+            } else {
+                setIsMono(false)
+                const taxes = response.data.data.datosRegimenGeneral.impuesto
+                // eslint-disable-next-line 
+                taxes.map(item => {
+                    switch (item.idImpuesto) {
+                        case 30:
+                            setIvaConditionId(item.idImpuesto)
+                            break;
+                        case 32:
+                            setIvaConditionId(item.idImpuesto)
+                            break;
+                        case 20:
+                            setIvaConditionId(item.idImpuesto)
+                            break;
+                        case 33:
+                            setIvaConditionId(item.idImpuesto)
+                            break;
+                        case 34:
+                            setIvaConditionId(item.idImpuesto)
+                            break;
+                        default:
+                            break;
+                    }
+                })
+                setActivity(response.data.data.datosRegimenGeneral.actividad[0].descripcionActividad)
+            }
+        } catch (error) {
         }
     }
 

@@ -5,6 +5,7 @@ import ClientRow from './row';
 import { Button, Card, CardBody, CardFooter, CardHeader, Col, Pagination, Row } from 'reactstrap';
 import { SearchFormComponent } from 'components/Search/Search1';
 import { TableList } from 'components/Lists/TableList';
+import PaginationComp from '../../../../components/Pagination/Pages';
 
 const ClientsList = ({
     setClientInfo,
@@ -20,8 +21,8 @@ const ClientsList = ({
     const [stringSearched, setStringSearched] = useState("")
 
     const {
+        pagesQuantity,
         dataPage,
-        pageObj,
         errorList,
         loadingList
     } = useAxiosGetList(
@@ -117,10 +118,10 @@ const ClientsList = ({
                         </Button>
                     </Col>
                     <Col>
-                        {!pageObj ? null : <Pagination
+                        {!pagesQuantity ? null : <PaginationComp
                             page={page}
                             setPage={setPage}
-                            dataPages={pageObj}
+                            pagesQuantity={pagesQuantity}
                         />}
                     </Col>
                 </Row>

@@ -73,14 +73,18 @@ const PeriodSelection = () => {
   }
 
   const getClientToken = async () => {
-    setIsLoading(true)
-    const response = await axiosGetQuery(API_ROUTES.clientsDir.sub.token, [{ clientId: activeClient.id }, { periodId: activePeriod.id }])
-    setIsLoading(false)
-    if (!response.error) {
-      localStorage.setItem("client-token", JSON.stringify(response.data.token).replace(/['"]+/g, '').trim())
-      return false
+    if (activePeriod) {
+      setIsLoading(true)
+      const response = await axiosGetQuery(API_ROUTES.clientsDir.sub.token, [{ clientId: activeClient.id }, { periodId: activePeriod.id }])
+      setIsLoading(false)
+      if (!response.error) {
+        localStorage.setItem("client-token", JSON.stringify(response.data.token).replace(/['"]+/g, '').trim())
+        return false
+      } else {
+        return true
+      }
     } else {
-      return true
+      return false
     }
   }
 
