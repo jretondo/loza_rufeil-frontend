@@ -35,7 +35,7 @@ const Header = ({
         getUSers()
         // eslint-disable-next-line
     }, [])
-    console.log('usersList :>> ', usersList);
+
     return (
         <Row>
             <Col md="4">

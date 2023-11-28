@@ -9,12 +9,10 @@ const TabUserPermission = ({ permissionsList, setPermissionsList }) => {
     const [tabsClients, setTabsClients] = useState(<></>)
 
     const changePermission = (clientId, grade) => {
-        console.log('clientId :>> ', clientId);
         let newPermissionsList = permissionsList.map(client => {
             if (client.client_id === clientId) {
                 client.permission_grade_id = grade
             }
-            console.log('client :>> ', client);
             return client
         }
         )

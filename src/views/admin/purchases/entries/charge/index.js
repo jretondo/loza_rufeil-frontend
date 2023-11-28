@@ -48,6 +48,7 @@ const PurchasesEntriesCharge = ({
     const { newAlert, newActivity } = useContext(AlertsContext)
 
     const saveNewReceipt = async () => {
+
         const data = {
             header: headerInvoice,
             payments: paymentsMethods.filter((payment) => payment.amount > 0),

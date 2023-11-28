@@ -22,6 +22,7 @@ const PurchasesEntriesOperations = ({
     const importFromAFIP = async () => {
         const response = await axiosGetFile(API_ROUTES.purchasesDir.sub.receiptsTxt, purchasePeriod.id, "application/x-gzip")
         if (!response.error) {
+            newActivity("Se generó un archivo TXT para AFIP", "success")
             newAlert("success", "Archivo generado con éxito!", "Descomprima el archivo para encontrar los TXT")
         } else {
             console.log(response.error)

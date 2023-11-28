@@ -10,6 +10,7 @@ import PurchasesEntriesOperations from "./operations";
 import ActionsBackend from "context/actionsBackend";
 import API_ROUTES from "api/routes";
 import AlertsContext from "context/alerts";
+import PurchasePeriodSummary from "./operations/summary";
 
 const Index = () => {
     const modules = JSON.parse(localStorage.getItem("modules"))
@@ -101,39 +102,50 @@ const Index = () => {
                 </CardBody>
             </Card>
             {confirmedPeriod && purchasePeriod &&
-                <Card className="mt-2">
-                    <CardBody>
-                        <Collapse isOpen={activeTab === 0 ? true : false} >
-                            <PurchasesEntriesCharge
-                                accountsList={accountsList}
-                                hasAccountingModule={hasAccountingModule()}
-                                accountSearchFn={accountSearchFn}
-                                purchasePeriodId={purchasePeriod.id}
-                                purchasePeriod={purchasePeriod}
-                                refreshListToggle={() => setRefreshList(!refreshList)}
-                                periodMonth={periodMonth}
-                                periodYear={periodYear}
-                            />
-                        </Collapse>
-                        <Collapse isOpen={activeTab === 1 ? true : false} >
-                            <PurchasesEntriesList
-                                purchasePeriodId={purchasePeriod.id}
-                                purchasePeriod={purchasePeriod}
-                                refreshList={refreshList}
-                                setRefreshList={setRefreshList}
-                            />
-                        </Collapse>
-                        <Collapse isOpen={activeTab === 2 ? true : false} >
-                            <PurchasesEntriesOperations
-                                purchasePeriod={purchasePeriod}
-                                accountsList={accountsList}
-                                hasAccountingModule={hasAccountingModule()}
-                                accountSearchFn={accountSearchFn}
-                                activePeriod={activePeriod}
-                            />
-                        </Collapse>
-                    </CardBody>
-                </Card>}
+                <>
+                    <Card className="mt-2">
+                        <CardBody>
+                            <Collapse isOpen={activeTab === 0 ? true : false} >
+                                <PurchasesEntriesCharge
+                                    accountsList={accountsList}
+                                    hasAccountingModule={hasAccountingModule()}
+                                    accountSearchFn={accountSearchFn}
+                                    purchasePeriodId={purchasePeriod.id}
+                                    purchasePeriod={purchasePeriod}
+                                    refreshListToggle={() => setRefreshList(!refreshList)}
+                                    periodMonth={periodMonth}
+                                    periodYear={periodYear}
+                                />
+                            </Collapse>
+                            <Collapse isOpen={activeTab === 1 ? true : false} >
+                                <PurchasesEntriesList
+                                    purchasePeriodId={purchasePeriod.id}
+                                    purchasePeriod={purchasePeriod}
+                                    refreshList={refreshList}
+                                    setRefreshList={setRefreshList}
+                                />
+                            </Collapse>
+                            <Collapse isOpen={activeTab === 2 ? true : false} >
+                                <PurchasesEntriesOperations
+                                    purchasePeriod={purchasePeriod}
+                                    accountsList={accountsList}
+                                    hasAccountingModule={hasAccountingModule()}
+                                    accountSearchFn={accountSearchFn}
+                                    activePeriod={activePeriod}
+                                />
+                            </Collapse>
+                        </CardBody>
+                    </Card>
+                    <Collapse isOpen={activeTab === 2 ? true : false} >
+                        <Card className="mt-2">
+                            <CardBody>
+                                <PurchasePeriodSummary
+                                    purchasePeriod={purchasePeriod}
+                                />
+                            </CardBody>
+                        </Card>
+                    </Collapse>
+                </>}
         </PurchasesLayout>
     )
 }

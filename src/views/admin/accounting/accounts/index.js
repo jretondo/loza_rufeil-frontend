@@ -10,8 +10,11 @@ import LoadingContext from "context/loading";
 import API_ROUTES from "../../../../api/routes";
 import { useAxiosGetList } from 'hooks/useAxiosGetList';
 import ImportAccounts from "./importAccount";
+import ActionsBackend from "../../../../context/actionsBackend";
 
 const Index = () => {
+    const accountingId = JSON.parse(localStorage.getItem("activePeriod")).id
+
     const [accountsListHtml, setAccountsListHtml] = useState(<></>)
     const [activeIds, setActiveIds] = useState([])
     const [isOpenNewForm, setIsOpenNewForm] = useState(false)
@@ -20,7 +23,9 @@ const Index = () => {
     const [refreshList, setRefreshList] = useState(false)
     const [toUpdate, setToUpdate] = useState(false)
     const [isOpenImportAccounts, setIsOpenImportAccounts] = useState(false)
+    const [allowImport, setAllowImport] = useState(false)
 
+    const { loadingActions, axiosGetQuery } = useContext(ActionsBackend)
     const { setUrlRoute } = useContext(secureContext)
     const { setIsLoading } = useContext(LoadingContext)
 
@@ -30,7 +35,7 @@ const Index = () => {
     } = useAxiosGetList(
         API_ROUTES.accountingDir.sub.accountingCharts,
         0, refreshList, [
-        { periodId: JSON.parse(localStorage.getItem("activePeriod")).id },
+        { periodId: accountingId },
         { contain: nameContain ? nameContain : "" }
     ])
 
@@ -114,6 +119,19 @@ const Index = () => {
         })
     }
 
+    const getAllowImport = async () => {
+        const response = await axiosGetQuery(API_ROUTES.accountingDir.sub.allowImport, [{ accountingId }])
+        if (!response.error) {
+            if (response.data) {
+                setAllowImport(true)
+            } else {
+                setAllowImport(false)
+            }
+        } else {
+            setAllowImport(false)
+        }
+    }
+
     const openNewForm = (parentAccount) => {
         setSelectedAccount(parentAccount)
         setIsOpenNewForm(true)
@@ -134,12 +152,17 @@ const Index = () => {
     }, [dataPage, activeIds])
 
     useEffect(() => {
-        setIsLoading(loadingList)
-    }, [loadingList, setIsLoading])
+        setIsLoading((loadingList || loadingActions))
+    }, [loadingList, setIsLoading, loadingActions])
 
     useEffect(() => {
         setUrlRoute(apiRoutes.routesDir.sub.accounting)
     }, [setUrlRoute])
+
+    useEffect(() => {
+        getAllowImport()
+        // eslint-disable-next-line 
+    }, [])
 
     return (
         <>
@@ -170,8 +193,11 @@ const Index = () => {
                     </CardBody>
                     <CardFooter>
                         <Row>
-                            <Col md="12" style={{ textAlign: "center" }} onClick={() => setIsOpenImportAccounts(true)}>
-                                <Button color="danger">
+                            <Col md="12" style={{ textAlign: "center" }} >
+                                <Button
+                                    onClick={() => allowImport && setIsOpenImportAccounts(true)}
+                                    disabled={!allowImport}
+                                    color="danger">
                                     Importar Cuenta <i className="fa fa-download"></i>
                                 </Button>
                             </Col>

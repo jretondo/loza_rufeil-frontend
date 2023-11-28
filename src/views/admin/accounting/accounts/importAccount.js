@@ -13,7 +13,7 @@ const ImportAccounts = ({ isOpen, toggle, refresh }) => {
     const [periodList, setPeriodList] = useState([])
 
     const { axiosGetQuery, axiosPut, loadingActions } = useContext(ActionsBackend)
-    const { newAlert, newActivity } = useContext(AlertsContext)
+    const { newAlert } = useContext(AlertsContext)
     const { setIsLoading } = useContext(LoadingContext)
 
     const getClients = async () => {
@@ -71,7 +71,7 @@ const ImportAccounts = ({ isOpen, toggle, refresh }) => {
         periodList.length > 0 && setPeriodSelected(periodList[0])
         periodList.length === 0 && setPeriodSelected(false)
     }, [periodList])
-    console.log('loadingList :>> ', loadingActions);
+
     useEffect(() => {
         setIsLoading(loadingActions)
     }, [loadingActions, setIsLoading])
