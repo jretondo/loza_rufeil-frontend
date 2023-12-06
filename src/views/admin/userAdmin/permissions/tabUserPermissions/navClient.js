@@ -2,7 +2,8 @@ import classNames from 'classnames';
 import React from 'react';
 import { NavItem, NavLink } from 'reactstrap';
 
-const NavClient = ({ id, business_name, clientActive, setClientActive, grade }) => {
+const NavClient = ({ id, business_name, clientActive, setClientActive, permissions }) => {
+    const hasPermission = permissions.some(permission => permission.permission_grade_id > 0)
 
     return (
         <NavItem style={{ cursor: "pointer" }} key={id}>
@@ -11,10 +12,8 @@ const NavClient = ({ id, business_name, clientActive, setClientActive, grade }) 
                 style={
                     clientActive === id ?
                         { background: "#073863", color: "white" } :
-                        grade === 0 ? { background: "#959595", color: "white" } :
-                            grade === 1 ? { background: "#0da5c0" } :
-                                grade === 2 ? { background: "#2dce89" } :
-                                    grade === 3 ? { background: "#fb6340" } : null
+                        !hasPermission ? { background: "#959595", color: "white" } :
+                            hasPermission ? { background: "#2dce89" } : null
                 }
                 onClick={() => setClientActive(id)}
             >

@@ -11,7 +11,15 @@ const UserPermissions = ({
     userName,
     setIsLoading
 }) => {
-    const [permissionsList, setPermissionsList] = useState([])
+    const [permissionsList, setPermissionsList] = useState([{
+        client_id: 0,
+        business_name: "",
+        permissions: [{
+            module_id: 0,
+            module_name: "",
+            permission_grade_id: 0
+        }]
+    }])
 
     const { newAlert, newActivity } = useContext(alertsContext)
     const { axiosGetQuery, axiosPost, loadingActions } = useContext(actionsBackend)

@@ -8,10 +8,15 @@ const TabUserPermission = ({ permissionsList, setPermissionsList }) => {
     const [navClients, setNavClients] = useState(<></>)
     const [tabsClients, setTabsClients] = useState(<></>)
 
-    const changePermission = (clientId, grade) => {
+    const changePermission = (clientId, moduleId, grade) => {
         let newPermissionsList = permissionsList.map(client => {
             if (client.client_id === clientId) {
-                client.permission_grade_id = grade
+                client.permissions.map(permission => {
+                    if (permission.module_id === moduleId) {
+                        permission.permission_grade_id = grade
+                    }
+                    return permission
+                })
             }
             return client
         }
@@ -31,7 +36,7 @@ const TabUserPermission = ({ permissionsList, setPermissionsList }) => {
                     business_name={client.business_name}
                     clientActive={clientActive}
                     setClientActive={setClientActive}
-                    grade={client.permission_grade_id}
+                    permissions={client.permissions}
                 />
             </>
             tabClient = <>

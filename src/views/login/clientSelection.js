@@ -49,7 +49,14 @@ const ClientSelection = () => {
         const response = await axiosGetQuery(API_ROUTES.modulesDir.modules, [{ clientId: activeClient.id }])
         setIsLoading(false)
         if (!response.error) {
-          localStorage.setItem("modules", JSON.stringify(response.data))
+          const permissionsUser = activeClient.AdminPermissions
+          const permissionsClient = response.data
+          const permissions = permissionsClient.filter((permission) => {
+            return permissionsUser.some((permissionUser) => {
+              return permissionUser.module_id === permission.module_id
+            })
+          })
+          localStorage.setItem("modules", JSON.stringify(permissions))
         }
         setDone(true)
       }

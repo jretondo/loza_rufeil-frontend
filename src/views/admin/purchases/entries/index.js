@@ -14,7 +14,6 @@ import PurchasePeriodSummary from "./operations/summary";
 
 const Index = () => {
     const modules = JSON.parse(localStorage.getItem("modules"))
-    const accountPeriod = JSON.parse(localStorage.getItem("activePeriod"))
     const activeClient = localStorage.getItem("activeClient")
     const activePeriod = JSON.parse(localStorage.getItem("activePeriod"))
     const [confirmedPeriod, setConfirmedPeriod] = useState(false)
@@ -30,7 +29,7 @@ const Index = () => {
     const width = useWindowSize()
 
     const getAttributableAccounts = async () => {
-        const response = await axiosGetQuery(API_ROUTES.accountingDir.sub.attributableAccountingChart, [{ accountPeriodId: accountPeriod.id }])
+        const response = await axiosGetQuery(API_ROUTES.accountingDir.sub.attributableAccountingChart, [{ accountPeriodId: activePeriod.id }])
         if (!response.error) {
             setAccountsList(response.data)
         } else {

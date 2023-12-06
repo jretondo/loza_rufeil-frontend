@@ -3,6 +3,7 @@ import { Col, FormGroup, Input, Label, Row } from 'reactstrap';
 import ActionsBackend from '../../../../../context/actionsBackend';
 import AlertsContext from '../../../../../context/alerts';
 import API_ROUTES from '../../../../../api/routes';
+import { numberFormat } from '../../../../../function/numberFormat';
 
 
 const PurchasePeriodSummary = ({
@@ -64,7 +65,7 @@ const PurchaseSummaryItem = ({
         <Col md={6} key={id}>
             <FormGroup>
                 <Label>{title.replace("_", " ")}</Label>
-                <Input type="text" value={"$ " + totalStr} disabled />
+                <Input type="text" value={"$ " + numberFormat(totalStr)} disabled />
             </FormGroup>
         </Col>
     )
