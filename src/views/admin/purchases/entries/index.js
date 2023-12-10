@@ -140,6 +140,7 @@ const Index = () => {
                             <CardBody>
                                 <PurchasePeriodSummary
                                     purchasePeriod={purchasePeriod}
+                                    refreshList={refreshList}
                                 />
                             </CardBody>
                         </Card>

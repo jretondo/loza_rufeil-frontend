@@ -25,7 +25,6 @@ const ClientSelection = () => {
   const { setIsLoading } = useContext(LoadingContext)
   const { newAlert } = useContext(AlertsContext)
 
-
   useEffect(() => {
     localStorage.removeItem("activeClient")
     localStorage.removeItem("activePeriod")

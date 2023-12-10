@@ -14,7 +14,7 @@ const TaxesEntry = ({
     const [isOpenModalAdd, setIsOpenModalAdd] = useState(false)
     const toggleModalAdd = () => setIsOpenModalAdd(!isOpenModalAdd)
     return (<>
-        <TableList titlesArray={hasAccountingModule ? ["Tipo", "Cuenta", "Importe", ""] : ["Tipo", "Importe", ""]} >
+        <TableList titlesArray={hasAccountingModule ? ["Tipo", "Cuenta", "Grabado","Importe", ""] : ["Tipo", "Grabado","Importe", ""]} >
             {taxesList && taxesList.map((tax, key) => {
                 return (tax.active && <tr key={key}>
                     <td>
@@ -44,6 +44,20 @@ const TaxesEntry = ({
                     }
                     <td className='text-center'>
                         <Input
+                            value={tax.recorded}
+                            onChange={(e) => {
+                                const newTaxesArray = taxesList.map((item) => {
+                                    if (item.id === tax.id) {
+                                        tax.recorded = roundNumber(e.target.value)
+                                    }
+                                    return item
+                                })
+                                setTaxesList(newTaxesArray)
+                            }}
+                        />
+                    </td>
+                    <td className='text-center'>
+                        <Input
                             value={tax.amount}
                             onChange={(e) => {
                                 const newTaxesArray = taxesList.map((item) => {
@@ -64,6 +78,7 @@ const TaxesEntry = ({
                                     if (item.id === tax.id) {
                                         item.active = !item.active
                                         item.amount = 0
+                                        item.recorded = 0
                                     }
                                     return item
                                 })

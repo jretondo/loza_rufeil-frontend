@@ -127,27 +127,33 @@ const PurchasesEntriesCharge = ({
             if (roundNumber(totalAmount) > 0 && tax.active) {
                 switch (parseInt(tax.type)) {
                     case 4:
-                        tax.amount = !isRecorded ? (totalAmount - (totalAmount / (1.105))) : (totalAmount * 0.105)
+                        tax.amount = !isRecorded ? (totalAmount - (totalAmount / (1.105))) : (totalAmount * 0.105) 
+                        tax.recorded = tax.amount /0.105
                         break;
                     case 5:
                         tax.amount = !isRecorded ? (totalAmount - (totalAmount / (1.21))) : (totalAmount * 0.21)
+                        tax.recorded = tax.amount /0.21
                         break;
                     case 6:
                         tax.amount = !isRecorded ? (totalAmount - (totalAmount / (1.27))) : (totalAmount * 0.27)
+                        tax.recorded = tax.amount /0.27
                         break;
                     case 8:
                         tax.amount = !isRecorded ? (totalAmount - (totalAmount / (1.05))) : (totalAmount * 0.05)
+                        tax.recorded = tax.amount /0.05
                         break;
                     case 9:
                         tax.amount = !isRecorded ? (totalAmount - (totalAmount / (1.025))) : (totalAmount * 0.025)
+                        tax.recorded = tax.amount /0.025
                         break;
                     default:
                         break;
                 }
             } else {
                 tax.amount = 0
-            }
+            }            
             tax.amount = roundNumber(tax.amount)
+            tax.recorded = roundNumber(tax.recorded)           
             return tax
         })
         return { taxes: newTaxesArray, recorded: roundNumber(totalAmount - newTaxesArray.reduce((acc, tax) => acc + roundNumber(tax.amount), 0)) }
@@ -229,6 +235,7 @@ const PurchasesEntriesCharge = ({
         setConceptsAmounts()
         // eslint-disable-next-line
     }, [receiptConcepts, paymentsMethods, taxesList])
+
 
     return (
         <>

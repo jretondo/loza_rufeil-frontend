@@ -3,17 +3,7 @@ import CompleteCerosLeft from "function/completeCeroLeft"
 export const accountCodeGenerate = (parentAccount) => {
     const subAccounts = parentAccount.subAccounts
     if (subAccounts.length > 0) {
-        if (parentAccount.group === 0) {
-            const code = {
-                genre: parentAccount.genre,
-                group: 1,
-                caption: 0,
-                account: 0,
-                sub_account: 0,
-                code: parentAccount.genre + "01000000"
-            }
-            console.log('code :>> ', code);
-        } else if (parentAccount.caption === 0) {
+        if (parentAccount.caption === 0) {
             return {
                 genre: parentAccount.genre,
                 group: parentAccount.group,

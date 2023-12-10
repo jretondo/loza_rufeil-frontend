@@ -7,7 +7,8 @@ import { numberFormat } from '../../../../../function/numberFormat';
 
 
 const PurchasePeriodSummary = ({
-    purchasePeriod
+    purchasePeriod,
+    refreshList
 }) => {
     const [summaryList, setSummaryList] = useState([])
 
@@ -36,7 +37,7 @@ const PurchasePeriodSummary = ({
     useEffect(() => {
         getPurchaseSummary()
         // eslint-disable-next-line 
-    }, [purchasePeriod])
+    }, [purchasePeriod, refreshList])
 
     return (
         <Row>

@@ -11,7 +11,8 @@ const PurchasesEntriesOperations = ({
     accountsList,
     accountSearchFn,
     hasAccountingModule,
-    activePeriod
+    activePeriod,
+    refreshList
 }) => {
     const [importFile, setImportFile] = useState()
     const [purchaseImported, setPurchaseImported] = useState(false)
@@ -54,7 +55,7 @@ const PurchasesEntriesOperations = ({
                         purchaseImported={purchaseImported}
                         setImportFile={setImportFile}
                         accountsList={accountsList}
-                        accountSearchFn={accountSearchFn}
+                        accountSearchFn={accountSearchFn}                        
                     />
                     :
                     <Row>
