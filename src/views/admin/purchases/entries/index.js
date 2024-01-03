@@ -105,7 +105,7 @@ const Index = () => {
                     <Card className="mt-2">
                         <CardBody>
                             <Collapse isOpen={activeTab === 0 ? true : false} >
-                                <PurchasesEntriesCharge
+                                {(activeTab === 0 || activeTab === 1) && <PurchasesEntriesCharge
                                     accountsList={accountsList}
                                     hasAccountingModule={hasAccountingModule()}
                                     accountSearchFn={accountSearchFn}
@@ -114,7 +114,7 @@ const Index = () => {
                                     refreshListToggle={() => setRefreshList(!refreshList)}
                                     periodMonth={periodMonth}
                                     periodYear={periodYear}
-                                />
+                                />}
                             </Collapse>
                             <Collapse isOpen={activeTab === 1 ? true : false} >
                                 <PurchasesEntriesList
@@ -122,6 +122,7 @@ const Index = () => {
                                     purchasePeriod={purchasePeriod}
                                     refreshList={refreshList}
                                     setRefreshList={setRefreshList}
+                                    hasAccountingModule={hasAccountingModule()}
                                 />
                             </Collapse>
                             <Collapse isOpen={activeTab === 2 ? true : false} >
@@ -131,6 +132,9 @@ const Index = () => {
                                     hasAccountingModule={hasAccountingModule()}
                                     accountSearchFn={accountSearchFn}
                                     activePeriod={activePeriod}
+                                    refreshListToggle={() => setRefreshList(!refreshList)}
+                                    periodMonth={periodMonth}
+                                    periodYear={periodYear}
                                 />
                             </Collapse>
                         </CardBody>

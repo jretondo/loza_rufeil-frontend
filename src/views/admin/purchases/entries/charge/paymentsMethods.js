@@ -77,7 +77,7 @@ const ReceiptPaymentsTable = ({
                             }
 
                             <td className='text-center'>
-                                <Input value={payment.amount} onChange={e => {
+                                <Input type="number" value={payment.amount} onChange={e => {
                                     const newPaymentArray = paymentsArray.map((item) => {
                                         if (item.id === payment.id) {
                                             item.amount = roundNumber(e.target.value)

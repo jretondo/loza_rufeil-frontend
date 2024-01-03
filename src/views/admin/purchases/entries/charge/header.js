@@ -49,7 +49,8 @@ const ReceiptsChargeHeader = ({
                 const newOrder = order + 1
                 try {
                     document.getElementById("order_" + newOrder).focus()
-                } catch (error) { }
+                } catch (error) {
+                }
             }
 
         }
@@ -108,6 +109,8 @@ const ReceiptsChargeHeader = ({
     }
 
     useEffect(() => {
+        console.log('periodYear :>> ', periodYear);
+        console.log('periodMonth :>> ', periodMonth);
         const nextPeriod = moment(`${periodYear}-${periodMonth}-01`).add(1, "month")
         setDateLimitMax(moment(nextPeriod).format("YYYY-MM-DD"))
         const dateLimitMin = moment(`${periodYear}-${periodMonth}-01`).subtract(3, "month")
@@ -136,7 +139,7 @@ const ReceiptsChargeHeader = ({
                     <Label>Fecha</Label>
                     <Input
                         required
-                        value={headerInvoice.data}
+                        value={headerInvoice.date}
                         max={dateLimitMax}
                         min={dateLimitMin}
                         onChange={

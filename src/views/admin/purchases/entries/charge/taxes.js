@@ -14,7 +14,7 @@ const TaxesEntry = ({
     const [isOpenModalAdd, setIsOpenModalAdd] = useState(false)
     const toggleModalAdd = () => setIsOpenModalAdd(!isOpenModalAdd)
     return (<>
-        <TableList titlesArray={hasAccountingModule ? ["Tipo", "Cuenta", "Grabado","Importe", ""] : ["Tipo", "Grabado","Importe", ""]} >
+        <TableList titlesArray={hasAccountingModule ? ["Tipo", "Cuenta", "Grabado", "Importe", ""] : ["Tipo", "Grabado", "Importe", ""]} >
             {taxesList && taxesList.map((tax, key) => {
                 return (tax.active && <tr key={key}>
                     <td>

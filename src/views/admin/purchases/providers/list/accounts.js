@@ -17,7 +17,6 @@ const ProvidersListAccounts = ({
     refreshList
 }) => {
     const [clientAccountsArray, setClientAccountsArray] = useState([])
-
     const { axiosGetQuery, axiosPost, loadingActions } = useContext(ActionsBackend)
     const { setIsLoading } = useContext(LoadingContext)
     const { newAlert, newActivity } = useContext(AlertsContext)
@@ -87,11 +86,11 @@ const ProvidersListAccounts = ({
         <Modal size="lg" isOpen={isOpen} toggle={toggle}>
             <ModalHeader>Cuentas asociadas a {providerData.business_name}</ModalHeader>
             <ModalBody>
-                <TableList titlesArray={["Cuenta", "Activo", "Descripción", ""]} >
+                <TableList titlesArray={hasAccountingModule() ? ["Cuenta", "Activo", "Descripción", ""] : ["Activo", "Descripción", ""]} >
                     {clientAccountsArray && clientAccountsArray.map((clientAccount, key) => {
                         return (<tr key={key}>
                             {
-                                hasAccountingModule &&
+                                hasAccountingModule() &&
                                 <td className='text-center'>
                                     <InputSearch
                                         itemsList={accountsList}
@@ -178,7 +177,7 @@ const ProvidersListAccounts = ({
                             >
                                 <i className="fas fa-plus"></i>
                             </Button>
-                        </td><td></td><td></td><td></td>
+                        </td><td></td><td></td>{hasAccountingModule() && <td></td>}
                     </tr>
                 </TableList>
             </ModalBody>

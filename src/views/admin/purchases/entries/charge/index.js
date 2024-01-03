@@ -12,6 +12,8 @@ import 'react-quill/dist/quill.snow.css';
 import PurchasesEntrySummary from './entry';
 import TaxesEntry from './taxes';
 import roundNumber from 'function/roundNumber';
+import moment from 'moment';
+import { invoiceTypeConvertObject } from '../../../../../function/invoiceType';
 
 const PurchasesEntriesCharge = ({
     accountsList,
@@ -21,7 +23,11 @@ const PurchasesEntriesCharge = ({
     refreshListToggle,
     periodMonth,
     periodYear,
-    purchasePeriod
+    purchasePeriod,
+    importedReceipt,
+    setInvoiceSelected,
+    setPurchaseImported,
+    invoiceSelected
 }) => {
     const [activeTab, setActiveTab] = useState(0)
     const [selectedProvider, setSelectedProvider] = useState(false)
@@ -47,6 +53,69 @@ const PurchasesEntriesCharge = ({
     const { axiosGetQuery, axiosPost } = useContext(ActionsBackend)
     const { newAlert, newActivity } = useContext(AlertsContext)
 
+    const saveImportedInvoice = async () => {
+        const data = {
+            header: headerInvoice,
+            payments: paymentsMethods.filter((payment) => payment.amount > 0),
+            concepts: receiptConcepts.filter((concept) => concept.amount > 0),
+            taxes: taxesList.filter((tax) => (tax.amount > 0 && tax.active)),
+            purchasePeriodId: purchasePeriodId,
+            provider: selectedProvider,
+            observations: detail
+        }
+        const response = await axiosPost(API_ROUTES.purchasesDir.sub.checkReceipts, data)
+        if (!response.error) {
+            setPurchaseImported((prevState) => {
+                return prevState.map((item) => {
+                    if (item.id === invoiceSelected.id) {
+                        const newInvoice = {
+                            ...item,
+                            header: headerInvoice,
+                            payments: paymentsMethods.filter((payment) => payment.amount > 0),
+                            concepts: receiptConcepts.filter((concept) => concept.amount > 0),
+                            taxes: taxesList.filter((tax) => (tax.amount > 0 && tax.active)),
+                            Provider: selectedProvider,
+                            provider: selectedProvider,
+                            observations: detail,
+                            checked: true,
+                            total: headerInvoice.total
+                        }
+                        return newInvoice
+                    } else {
+                        return item
+                    }
+                })
+            })
+            setInvoiceSelected(false)
+        } else {
+            newAlert("danger", "Error al guardar el comprobante", response.errorMsg)
+        }
+    }
+
+    const submitForm = async () => {
+        if (importedReceipt) {
+            saveImportedInvoice()
+        } else {
+            await saveNewReceipt()
+        }
+    }
+
+    const completeFieldsImported = () => {
+        const invoiceNumber = parseInt(invoiceSelected.receipt_type)
+        const { word, type } = invoiceTypeConvertObject(invoiceNumber)
+
+        const newHeader = {
+            date: moment(new Date(invoiceSelected.date)).format("YYYY-MM-DD"),
+            total: invoiceSelected.total,
+            type: type,
+            word: word,
+            sellPoint: invoiceSelected.sell_point,
+            number: invoiceSelected.number,
+        }
+        setHeaderInvoice(newHeader)
+        invoiceSelected.Provider && setSelectedProvider(invoiceSelected.Provider)
+    }
+
     const saveNewReceipt = async () => {
 
         const data = {
@@ -66,7 +135,6 @@ const PurchasesEntriesCharge = ({
             refreshListToggle()
             newActivity("Se cargó un nuevo comprobante de ID: " + response.data.id + " con un total de $" + response.data.total + " ")
             document.getElementById("order_1").focus()
-
         } else {
             newAlert("danger", "Error al guardar el comprobante", response.errorMsg)
         }
@@ -127,33 +195,33 @@ const PurchasesEntriesCharge = ({
             if (roundNumber(totalAmount) > 0 && tax.active) {
                 switch (parseInt(tax.type)) {
                     case 4:
-                        tax.amount = !isRecorded ? (totalAmount - (totalAmount / (1.105))) : (totalAmount * 0.105) 
-                        tax.recorded = tax.amount /0.105
+                        tax.amount = !isRecorded ? (totalAmount - (totalAmount / (1.105))) : (totalAmount * 0.105)
+                        tax.recorded = tax.amount / 0.105
                         break;
                     case 5:
                         tax.amount = !isRecorded ? (totalAmount - (totalAmount / (1.21))) : (totalAmount * 0.21)
-                        tax.recorded = tax.amount /0.21
+                        tax.recorded = tax.amount / 0.21
                         break;
                     case 6:
                         tax.amount = !isRecorded ? (totalAmount - (totalAmount / (1.27))) : (totalAmount * 0.27)
-                        tax.recorded = tax.amount /0.27
+                        tax.recorded = tax.amount / 0.27
                         break;
                     case 8:
                         tax.amount = !isRecorded ? (totalAmount - (totalAmount / (1.05))) : (totalAmount * 0.05)
-                        tax.recorded = tax.amount /0.05
+                        tax.recorded = tax.amount / 0.05
                         break;
                     case 9:
                         tax.amount = !isRecorded ? (totalAmount - (totalAmount / (1.025))) : (totalAmount * 0.025)
-                        tax.recorded = tax.amount /0.025
+                        tax.recorded = tax.amount / 0.025
                         break;
                     default:
                         break;
                 }
             } else {
                 tax.amount = 0
-            }            
+            }
             tax.amount = roundNumber(tax.amount)
-            tax.recorded = roundNumber(tax.recorded)           
+            tax.recorded = roundNumber(tax.recorded)
             return tax
         })
         return { taxes: newTaxesArray, recorded: roundNumber(totalAmount - newTaxesArray.reduce((acc, tax) => acc + roundNumber(tax.amount), 0)) }
@@ -204,6 +272,7 @@ const PurchasesEntriesCharge = ({
     const correctAmounts = () => {
         const { taxes, recorded } = getVatAmount(headerInvoice.total)
         setTaxesList(taxes)
+
         const newReceiptsArray = receiptConcepts.map((item, key) => {
             if (key === 0) {
                 item.amount = roundNumber(recorded)
@@ -227,15 +296,34 @@ const PurchasesEntriesCharge = ({
     }, [selectedProvider])
 
     useEffect(() => {
-        correctAmounts()
+        (selectedProvider && receiptConcepts) && correctAmounts()
         // eslint-disable-next-line
-    }, [headerInvoice.total, taxesList.filter((tax) => tax.active).length])
+    }, [selectedProvider, headerInvoice.total, taxesList.filter((tax) => tax.active).length])
 
     useEffect(() => {
-        setConceptsAmounts()
+        (selectedProvider && receiptConcepts.length > 0) && correctAmounts()
+        // eslint-disable-next-line
+    }, [receiptConcepts.length])
+
+    useEffect(() => {
+        if (invoiceSelected && invoiceSelected.checked) {
+            setPaymentsMethods(invoiceSelected.payments)
+            setReceiptConcepts(invoiceSelected.concepts)
+            setTaxesList(invoiceSelected.taxes)
+            setSelectedProvider(invoiceSelected.Provider)
+            setDetail(invoiceSelected.observations)
+            setConceptsAmounts()
+        } else {
+            setConceptsAmounts()
+        }
         // eslint-disable-next-line
     }, [receiptConcepts, paymentsMethods, taxesList])
 
+
+    useEffect(() => {
+        (invoiceSelected && importedReceipt) && completeFieldsImported();
+        // eslint-disable-next-line
+    }, [invoiceSelected, importedReceipt])
 
     return (
         <>
@@ -250,7 +338,7 @@ const PurchasesEntriesCharge = ({
                         <Form onSubmit={
                             e => {
                                 e.preventDefault()
-                                saveNewReceipt(e)
+                                submitForm(e)
                             }
                         }>
                             <ReceiptsChargeHeader
@@ -261,6 +349,7 @@ const PurchasesEntriesCharge = ({
                                 correctAmounts={correctAmounts}
                                 periodMonth={periodMonth}
                                 periodYear={periodYear}
+                                importedReceipt={importedReceipt}
                             />
                             <Row className="mt-3">
                                 <Col md="6">
@@ -292,9 +381,14 @@ const PurchasesEntriesCharge = ({
                                         id="saveBtn"
                                         type="submit"
                                     >
-                                        Cargar
+                                        {importedReceipt ? "Chequear" : "Cargar"}
                                     </Button>
-                                    <Button color="danger">
+                                    <Button
+                                        onClick={e => {
+                                            e.preventDefault()
+                                            importedReceipt && setInvoiceSelected(false)
+                                        }}
+                                        color="danger">
                                         Cancelar
                                     </Button>
                                 </Col>

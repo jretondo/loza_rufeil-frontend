@@ -12,7 +12,9 @@ const PurchasesEntriesOperations = ({
     accountSearchFn,
     hasAccountingModule,
     activePeriod,
-    refreshList
+    refreshList,
+    periodMonth,
+    periodYear
 }) => {
     const [importFile, setImportFile] = useState()
     const [purchaseImported, setPurchaseImported] = useState(false)
@@ -38,7 +40,12 @@ const PurchasesEntriesOperations = ({
         data.append("accountingPeriodId", activePeriod.id)
         const response = await axiosPost(API_ROUTES.purchasesDir.sub.cvsImport, data)
         if (!response.error) {
-            setPurchaseImported(response.data)
+            setPurchaseImported(response.data.map((receipt, key) => {
+                return {
+                    ...receipt,
+                    id: key
+                }
+            }))
             setImportDataModule(true)
         } else {
             newAlert("danger", "Hubo un error!", "Revise los datos colocados. Error: " + response.errorMsg)
@@ -53,9 +60,14 @@ const PurchasesEntriesOperations = ({
                         purchasePeriod={purchasePeriod}
                         setImportDataModule={setImportDataModule}
                         purchaseImported={purchaseImported}
+                        setPurchaseImported={setPurchaseImported}
                         setImportFile={setImportFile}
                         accountsList={accountsList}
-                        accountSearchFn={accountSearchFn}                        
+                        accountSearchFn={accountSearchFn}
+                        hasAccountingModule={hasAccountingModule}
+                        periodMonth={periodMonth}
+                        periodYear={periodYear}
+                        refreshListToggle={refreshList}
                     />
                     :
                     <Row>

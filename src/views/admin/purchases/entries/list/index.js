@@ -10,7 +10,7 @@ import CompleteCerosLeft from '../../../../../function/completeCeroLeft';
 import moment from 'moment';
 import { numberFormat } from '../../../../../function/numberFormat';
 
-const PurchasesEntriesList = ({ purchasePeriodId, refreshList, setRefreshList, purchasePeriod }) => {
+const PurchasesEntriesList = ({ purchasePeriodId, refreshList, setRefreshList, purchasePeriod, hasAccountingModule }) => {
     const [page, setPage] = useState(1)
     const [receiptInfo, setReceiptInfo] = useState()
     const [isOpenReceiptModal, setIsOpenReceiptModal] = useState(false)
@@ -38,7 +38,15 @@ const PurchasesEntriesList = ({ purchasePeriodId, refreshList, setRefreshList, p
     return (
         <>
             <Row className="mb-3">
-                <Col md="6" className="text-left">
+                <Col>
+                    <Button
+                        color="primary"
+                        onClick={() => setRefreshList(!refreshList)}
+                    >
+                        Listar
+                    </Button>
+                </Col>
+                <Col md="4" className="text-left">
                     <SearchFormComponent
                         setStringSearched={setReceiptSearch}
                         stringSearched={receiptSearch}
@@ -47,7 +55,7 @@ const PurchasesEntriesList = ({ purchasePeriodId, refreshList, setRefreshList, p
                         title="Buscar por comprobantes"
                     />
                 </Col>
-                <Col md="6">
+                <Col md="4">
                     <SearchFormComponent
                         setStringSearched={setProviderSearch}
                         stringSearched={providerSearch}
@@ -106,12 +114,12 @@ const PurchasesEntriesList = ({ purchasePeriodId, refreshList, setRefreshList, p
                         </Row>
                         <Row>
                             <Col md="12">
-                                <TableList titlesArray={["Concepto", "Cuenta", "Debe", "Haber"]}>
+                                <TableList titlesArray={hasAccountingModule ? ["Concepto", "Cuenta", "Debe", "Haber"] : ["Concepto", "Debe", "Haber"]}>
                                     {receiptInfo.PurchaseEntries.map((entry, key) => {
                                         return (
                                             <tr key={key}>
                                                 <td>{entry.description}</td>
-                                                <td>{entry.AccountChart.name} ({entry.AccountChart.code})</td>
+                                                {hasAccountingModule && <td>{entry.AccountChart.name} ({entry.AccountChart.code})</td>}
                                                 <td className="text-right">${numberFormat(entry.debit)}</td>
                                                 <td className="text-right">${numberFormat(entry.credit)}</td>
                                             </tr>

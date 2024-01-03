@@ -115,6 +115,7 @@ const purchasesDir = {
         paymentsMethods: purchases + "/paymentsMethods",
         receipt: purchases + "/receipt",
         receipts: purchases + "/receipts",
+        checkReceipts: purchases + "/receipt/check",
         receiptsTxt: purchases + "/receipts/txt",
         cvsImport: purchases + "/receipt/import",
         periodTotal: purchases + "/period/total",
