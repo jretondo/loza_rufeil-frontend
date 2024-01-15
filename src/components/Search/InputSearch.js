@@ -72,6 +72,7 @@ const InputSearch = ({ itemsList = [], itemSelected = {}, title = "", placeholde
                                 onClick={e => {
                                     e.preventDefault();
                                     setItemSelected(false);
+                                    setIsOpen(false)
                                 }}
                                 color="danger"
                             >X</Button>
@@ -84,7 +85,7 @@ const InputSearch = ({ itemsList = [], itemSelected = {}, title = "", placeholde
                     placeholder={placeholderInput}
                     value={textSearched}
                     onChange={changeText}
-                    //onBlur={leaveHandler}
+                    onBlur={() => setIsOpen(false)}
                     onFocus={(e) => {
                         e.target.select()
                         setIsOpen(true)

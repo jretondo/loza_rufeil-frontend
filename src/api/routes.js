@@ -93,6 +93,9 @@ const accountingDir = {
     accounting,
     sub: {
         period: accounting + "/period",
+        entries: accounting + "/entries",
+        lastEntryData: accounting + "/lastEntryData",
+        accountingEntry: accounting + "/accountingEntry",
         allowImport: accounting + "/allowImport",
         accountingCharts: accounting + "/accountingCharts",
         accountingChart: accounting + "/accountingChart",
