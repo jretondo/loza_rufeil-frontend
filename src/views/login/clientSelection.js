@@ -50,12 +50,9 @@ const ClientSelection = () => {
         if (!response.error) {
           const permissionsUser = activeClient.AdminPermissions
           const permissionsClient = response.data
-          const permissions = permissionsClient.filter((permission) => {
-            return permissionsUser.some((permissionUser) => {
-              return permissionUser.module_id === permission.module_id
-            })
-          })
-          localStorage.setItem("modules", JSON.stringify(permissions))
+
+          localStorage.setItem("modules", JSON.stringify(permissionsClient))
+          localStorage.setItem("user-modules", JSON.stringify(permissionsUser))
         }
         setDone(true)
       }

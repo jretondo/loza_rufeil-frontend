@@ -19,6 +19,7 @@ const users = host + "/user"
 const activity = host + "/activity"
 const clients = host + "/clients"
 const providers = host + "/providers"
+const customers = host + "/customers"
 const certificates = host + "/certificates"
 const accounting = host + "/accounting"
 const modules = host + "/modules"
@@ -65,6 +66,15 @@ const providersDir = {
         dataTax: providers + "/dataTax",
         dataTaxProof: providers + "/dataTaxProof",
         parameters: providers + "/parameters",
+    }
+}
+
+const customersDir = {
+    providers,
+    sub: {
+        dataTax: customers + "/dataTax",
+        dataTaxProof: customers + "/dataTaxProof",
+        parameters: customers + "/parameters",
     }
 }
 
@@ -137,7 +147,8 @@ const API_ROUTES = {
     providersDir,
     accountingDir,
     modulesDir,
-    purchasesDir
+    purchasesDir,
+    customersDir
 }
 
 export default API_ROUTES

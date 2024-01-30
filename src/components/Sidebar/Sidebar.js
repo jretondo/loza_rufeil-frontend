@@ -33,7 +33,7 @@ class Sidebar extends React.Component {
     isAdmin: localStorage.getItem("admin"),
     modalProfile: false,
     modalAct: false,
-    modules: JSON.parse(localStorage.getItem("modules")),
+    modules: JSON.parse(localStorage.getItem("user-modules")),
     activeClient: localStorage.getItem("activeClient"),
     activePeriod: localStorage.getItem("activePeriod")
   };

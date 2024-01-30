@@ -73,6 +73,9 @@ const ReceiptsConceptsTable = ({
                     }
                     <td className='text-center'>
                         <Input
+                            min="0.01"
+                            step="0.01"
+                            type="number"
                             value={receiptConcept.amount}
                             onChange={(e) => {
                                 const newAccountsArray = receiptConcepts.map((item) => {

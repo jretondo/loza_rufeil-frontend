@@ -5,11 +5,13 @@ import certificates from 'views/admin/certificates'
 import accountingEntries from 'views/admin/accounting/entries'
 import accountingAccounts from 'views/admin/accounting/accounts'
 import accountingReports from 'views/admin/accounting/reports'
-import sells from 'views/admin/sells'
+
 import purchasesEntries from 'views/admin/purchases/entries'
 import purchasesProvider from 'views/admin/purchases/providers'
 import purchasesReports from 'views/admin/purchases/reports'
-import purchaseParameters from 'views/admin/purchases/parameters';
+import purchaseParameters from 'views/admin/purchases/parameters'
+
+import sellClients from 'views/admin/sells/customers'
 
 var routes = [
   {
@@ -71,10 +73,30 @@ var routes = [
     id: 9
   },
   {
-    path: "/sells",
+    sub: [
+      {
+        name: "Comprobantes",
+        path: "/sells/entries",
+        component: purchasesEntries,
+      },
+      {
+        name: "Clientes",
+        path: "/sells/customers",
+        component: sellClients,
+      },
+      {
+        name: "Reportes",
+        path: "/sells/reports",
+        component: purchasesReports,
+      },
+      {
+        name: "Parametros",
+        path: "/sells/parameters",
+        component: purchaseParameters,
+      }
+    ],
     name: "Ventas",
     icon: "ni ni-money-coins text-red",
-    component: sells,
     layout: process.env.PUBLIC_URL + "/admin",
     id: 10
   },

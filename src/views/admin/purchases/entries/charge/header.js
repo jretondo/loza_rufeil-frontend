@@ -249,6 +249,8 @@ const ReceiptsChargeHeader = ({
                     <Label>Número</Label>
                     <Input
                         required
+                        step="1"
+                        min="1"
                         value={headerInvoice.number}
                         onChange={e => setHeaderInvoice({ ...headerInvoice, number: e.target.value })}
                         id="order_7"

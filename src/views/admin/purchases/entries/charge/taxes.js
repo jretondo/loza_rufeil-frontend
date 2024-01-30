@@ -13,6 +13,56 @@ const TaxesEntry = ({
 }) => {
     const [isOpenModalAdd, setIsOpenModalAdd] = useState(false)
     const toggleModalAdd = () => setIsOpenModalAdd(!isOpenModalAdd)
+
+    const calculateTotal = (recorded, taxType) => {
+        let total = 0
+        switch (taxType) {
+            case 4:
+                total = (recorded) * (0.105)
+                break;
+            case 5:
+                total = (recorded) * (0.21)
+                break;
+            case 6:
+                total = (recorded) * (0.27)
+                break;
+            case 8:
+                total = (recorded) * (0.05)
+                break;
+            case 9:
+                total = (recorded) * (0.025)
+                break;
+            default:
+                break;
+        }
+        return roundNumber(total)
+    }
+
+    const reverseCalculateTotal = (amount, taxType) => {
+        let total = 0
+        switch (taxType) {
+            case 4:
+                total = (amount) / (0.105)
+                break;
+            case 5:
+                total = (amount) / (0.21)
+                break;
+            case 6:
+                total = (amount) / (0.27)
+                break;
+            case 8:
+                total = (amount) / (0.05)
+                break;
+            case 9:
+                total = (amount) / (0.025)
+                break;
+            default:
+                break;
+        }
+        return roundNumber(total)
+    }
+
+
     return (<>
         <TableList titlesArray={hasAccountingModule ? ["Tipo", "Cuenta", "Grabado", "Importe", ""] : ["Tipo", "Grabado", "Importe", ""]} >
             {taxesList && taxesList.map((tax, key) => {
@@ -44,7 +94,13 @@ const TaxesEntry = ({
                     }
                     <td className='text-center'>
                         <Input
+                            type="number"
+                            step="0.01"
+                            min="0.01"
                             value={tax.recorded}
+                            onFocus={(e) => {
+                                e.target.select()
+                            }}
                             onChange={(e) => {
                                 const newTaxesArray = taxesList.map((item) => {
                                     if (item.id === tax.id) {
@@ -54,15 +110,39 @@ const TaxesEntry = ({
                                 })
                                 setTaxesList(newTaxesArray)
                             }}
+                            onBlur={() => {
+                                const newTaxesArray = taxesList.map((item) => {
+                                    if (item.id === tax.id) {
+                                        item.amount = calculateTotal(item.recorded, item.type)
+                                    }
+                                    return item
+                                })
+                                setTaxesList(newTaxesArray)
+                            }}
                         />
                     </td>
                     <td className='text-center'>
                         <Input
+                            type="number"
+                            step="0.01"
+                            min="0.01"
                             value={tax.amount}
+                            onFocus={(e) => {
+                                e.target.select()
+                            }}
                             onChange={(e) => {
                                 const newTaxesArray = taxesList.map((item) => {
                                     if (item.id === tax.id) {
                                         tax.amount = roundNumber(e.target.value)
+                                    }
+                                    return item
+                                })
+                                setTaxesList(newTaxesArray)
+                            }}
+                            onBlur={() => {
+                                const newTaxesArray = taxesList.map((item) => {
+                                    if (item.id === tax.id) {
+                                        item.recorded = reverseCalculateTotal(item.amount, item.type)
                                     }
                                     return item
                                 })
