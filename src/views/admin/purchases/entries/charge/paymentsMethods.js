@@ -66,6 +66,7 @@ const ReceiptPaymentsTable = ({
                                             const newOtherArray = paymentsArray.map((item) => {
                                                 if (item.id === payment.id) {
                                                     item.AccountChart = account
+                                                    item.account_chart_id = account.id
                                                 }
                                                 return item
                                             })
@@ -77,15 +78,22 @@ const ReceiptPaymentsTable = ({
                             }
 
                             <td className='text-center'>
-                                <Input type="number" step="0.01" min="0.01" value={payment.amount} onChange={e => {
-                                    const newPaymentArray = paymentsArray.map((item) => {
-                                        if (item.id === payment.id) {
-                                            item.amount = roundNumber(e.target.value)
-                                        }
-                                        return item
-                                    })
-                                    setPaymentsArray(newPaymentArray)
-                                }} />
+                                <Input
+                                    type="number"
+                                    step="0.01"
+                                    min="0.01"
+                                    onFocus={(e) => {
+                                        e.target.select()
+                                    }}
+                                    value={payment.amount} onChange={e => {
+                                        const newPaymentArray = paymentsArray.map((item) => {
+                                            if (item.id === payment.id) {
+                                                item.amount = roundNumber(e.target.value)
+                                            }
+                                            return item
+                                        })
+                                        setPaymentsArray(newPaymentArray)
+                                    }} />
                             </td>
                             <td className='text-center'>
                                 <Button className="py-0 px-3" color="danger"

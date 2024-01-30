@@ -298,7 +298,7 @@ const PurchasesEntriesCharge = ({
     useEffect(() => {
         (selectedProvider && receiptConcepts) && correctAmounts()
         // eslint-disable-next-line
-    }, [selectedProvider, headerInvoice.total, taxesList.filter((tax) => tax.active).length])
+    }, [selectedProvider, headerInvoice.total, taxesList.filter((tax) => (tax.active && tax.is_vat)).length])
 
     useEffect(() => {
         (selectedProvider && receiptConcepts.length > 0) && correctAmounts()

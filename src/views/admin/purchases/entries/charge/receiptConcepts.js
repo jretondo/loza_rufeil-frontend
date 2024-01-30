@@ -77,6 +77,9 @@ const ReceiptsConceptsTable = ({
                             step="0.01"
                             type="number"
                             value={receiptConcept.amount}
+                            onFocus={(e) => {
+                                e.target.select()
+                            }}
                             onChange={(e) => {
                                 const newAccountsArray = receiptConcepts.map((item) => {
                                     if (item.id === receiptConcept.id) {

@@ -104,8 +104,15 @@ const InputSearch = ({ itemsList = [], itemSelected = {}, title = "", placeholde
                                 onChange={(e) => {
                                     setItemSelected(JSON.parse(e.target.value));
                                 }}
+                                onClick={(e) => {
+                                    setItemSelected(JSON.parse(e.target.value));
+                                    setIsOpen(false)
+                                }}
                                 onKeyUp={e => KeyUp(e)}
-                                onBlur={() => setIsOpen(false)}
+                                onBlur={(e) => {
+                                    setItemSelected(JSON.parse(e.target.value));
+                                    setIsOpen(false)
+                                }}
 
                             >
                                 {filteredList.length > 0 && filteredList.map((item, key) => {

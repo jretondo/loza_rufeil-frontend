@@ -139,15 +139,6 @@ const TaxesEntry = ({
                                 })
                                 setTaxesList(newTaxesArray)
                             }}
-                            onBlur={() => {
-                                const newTaxesArray = taxesList.map((item) => {
-                                    if (item.id === tax.id) {
-                                        item.recorded = reverseCalculateTotal(item.amount, item.type)
-                                    }
-                                    return item
-                                })
-                                setTaxesList(newTaxesArray)
-                            }}
                         />
                     </td>
                     <td>
