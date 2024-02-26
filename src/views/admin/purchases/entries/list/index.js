@@ -116,6 +116,7 @@ const PurchasesEntriesList = ({ purchasePeriodId, refreshList, setRefreshList, p
                             <Col md="12">
                                 <TableList titlesArray={hasAccountingModule ? ["Concepto", "Cuenta", "Debe", "Haber"] : ["Concepto", "Debe", "Haber"]}>
                                     {receiptInfo.PurchaseEntries.map((entry, key) => {
+                                        console.log('entry :>> ', entry);
                                         return (
                                             <tr key={key}>
                                                 <td>{entry.description}</td>

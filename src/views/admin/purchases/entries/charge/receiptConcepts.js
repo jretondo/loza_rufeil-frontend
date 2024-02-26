@@ -62,6 +62,7 @@ const ReceiptsConceptsTable = ({
                                     const newAccountsArray = receiptConcepts.map((item) => {
                                         if (item.id === receiptConcept.id) {
                                             item.AccountChart = account
+                                            item.account_chart_id = account.id
                                         }
                                         return item
                                     })

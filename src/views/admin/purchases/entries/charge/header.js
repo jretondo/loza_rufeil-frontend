@@ -109,8 +109,6 @@ const ReceiptsChargeHeader = ({
     }
 
     useEffect(() => {
-        console.log('periodYear :>> ', periodYear);
-        console.log('periodMonth :>> ', periodMonth);
         const nextPeriod = moment(`${periodYear}-${periodMonth}-01`).add(1, "month")
         setDateLimitMax(moment(nextPeriod).format("YYYY-MM-DD"))
         const dateLimitMin = moment(`${periodYear}-${periodMonth}-01`).subtract(3, "month")

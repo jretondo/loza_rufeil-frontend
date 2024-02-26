@@ -28,8 +28,6 @@ const ImportData = ({
 
     const importData = async (e) => {
         e.preventDefault()
-        console.log('purchasePeriod :>> ', purchasePeriod);
-        console.log('purchaseImported :>> ', purchaseImported);
         const notCheck = purchaseImported.filter(item => !item.checked)
         if (notCheck.length > 0) {
             swal("Error", "Hay comprobantes sin chequear", "error")
@@ -62,6 +60,7 @@ const ImportData = ({
         <>
             {
                 invoiceSelected ? <InvoiceDataConcepts
+                    accountsList={accountsList}
                     setInvoiceSelected={setInvoiceSelected}
                     hasAccountingModule={hasAccountingModule}
                     accountSearchFn={accountSearchFn}

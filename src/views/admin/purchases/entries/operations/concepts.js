@@ -14,7 +14,7 @@ const InvoiceDataConcepts = ({
     setPurchaseImported,
     invoiceSelected
 }) => {
-    console.log('periodMonth :>> ', periodMonth);
+
     return (<>
         <PurchasesEntriesCharge
             accountsList={accountsList}
