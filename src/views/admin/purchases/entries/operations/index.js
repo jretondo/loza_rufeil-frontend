@@ -1,10 +1,11 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Button, Col, Row } from 'reactstrap';
 import ActionsBackend from '../../../../../context/actionsBackend';
 import AlertsContext from '../../../../../context/alerts';
 import API_ROUTES from '../../../../../api/routes';
 import ExcelPNG from 'assets/img/icons/excel.png';
 import ImportData from './importData';
+import LoadingContext from '../../../../../context/loading';
 
 const PurchasesEntriesOperations = ({
     purchasePeriod,
@@ -19,8 +20,9 @@ const PurchasesEntriesOperations = ({
     const [importFile, setImportFile] = useState()
     const [purchaseImported, setPurchaseImported] = useState(false)
     const [importDataModule, setImportDataModule] = useState(false)
-    const { axiosGetFile, axiosPost } = useContext(ActionsBackend)
+    const { axiosGetFile, axiosPost, loadingActions } = useContext(ActionsBackend)
     const { newAlert, newActivity } = useContext(AlertsContext)
+    const { setIsLoading } = useContext(LoadingContext)
 
     const importFromAFIP = async () => {
         const response = await axiosGetFile(API_ROUTES.purchasesDir.sub.receiptsTxt, purchasePeriod.id, "application/x-gzip")
@@ -35,6 +37,7 @@ const PurchasesEntriesOperations = ({
 
     const processCVS = async (e) => {
         e.preventDefault()
+
         const data = new FormData()
         data.append("file", importFile)
         data.append("accountingPeriodId", activePeriod.id)
@@ -51,6 +54,10 @@ const PurchasesEntriesOperations = ({
             newAlert("danger", "Hubo un error!", "Revise los datos colocados. Error: " + response.errorMsg)
         }
     }
+
+    useEffect(() => {
+        setIsLoading(loadingActions)
+    }, [loadingActions, setIsLoading])
 
     return (<>
         {

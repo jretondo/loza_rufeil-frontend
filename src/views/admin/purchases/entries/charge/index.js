@@ -114,7 +114,9 @@ const PurchasesEntriesCharge = ({
         }
         setHeaderInvoice(newHeader)
         invoiceSelected.Provider && setSelectedProvider(invoiceSelected.Provider)
+
     }
+
 
     const saveNewReceipt = async () => {
 
@@ -171,20 +173,58 @@ const PurchasesEntriesCharge = ({
         }
     }
 
+    const importedTaxes = (dataTaxes) => {
+        let vatRatesReceipts = []
+        invoiceSelected.VatRatesReceipts && (vatRatesReceipts = invoiceSelected.VatRatesReceipts.filter(vat => vat !== 0))
+        const newArray = dataTaxes.map((item) => {
+            const vat = vatRatesReceipts.find(vat => vat.vat_type_id === item.type)
+            if (vat) {
+                return {
+                    ...item,
+                    amount: vat.vat_amount,
+                    recorded: vat.recorded_net,
+                    active: true
+                }
+            } else {
+                return item
+            }
+        })
+
+        setTaxesList(newArray)
+    }
+
     const getTaxes = async (vat_condition) => {
         const response = await axiosGetQuery(API_ROUTES.purchasesDir.sub.params, [{ vat_condition }])
         if (!response.error) {
-            const arrayDataVat = response.data.vat.length > 0 ? response.data.vat.map((tax, key) => {
-                tax.id = key
-                tax.amount = 0
-                return tax
-            }) : []
-            const arrayDataOthers = response.data.others.length > 0 ? response.data.others.map((tax, key) => {
-                tax.id = arrayDataVat.length - 1 + key
-                tax.amount = 0
-                return tax
-            }) : []
-            setTaxesList([...arrayDataVat, ...arrayDataOthers])
+            if (importedReceipt) {
+                const arrayDataVat = response.data.vat.length > 0 ? response.data.vat.map((tax, key) => {
+                    tax.id = key
+                    tax.amount = 0
+                    return tax
+                }) : []
+                const arrayDataOthers = response.data.others.length > 0 ? response.data.others.map((tax, key) => {
+                    tax.id = arrayDataVat.length - 1 + key
+                    tax.amount = 0
+                    return tax
+                }) : []
+
+                const dataTaxes = [...arrayDataVat, ...arrayDataOthers]
+                importedTaxes(dataTaxes)
+            } else {
+                const arrayDataVat = response.data.vat.length > 0 ? response.data.vat.map((tax, key) => {
+                    tax.id = key
+                    tax.amount = 0
+                    return tax
+                }) : []
+                const arrayDataOthers = response.data.others.length > 0 ? response.data.others.map((tax, key) => {
+                    tax.id = arrayDataVat.length - 1 + key
+                    tax.amount = 0
+                    return tax
+                }) : []
+                setTaxesList([...arrayDataVat, ...arrayDataOthers])
+            }
+
+
         } else {
             newAlert("danger", "Error al cargar los impuestos del proveedor", response.errorMsg)
         }
@@ -195,36 +235,62 @@ const PurchasesEntriesCharge = ({
             if (roundNumber(totalAmount) > 0 && tax.active) {
                 switch (parseInt(tax.type)) {
                     case 4:
-                        tax.amount = !isRecorded ? (totalAmount - (totalAmount / (1.105))) : (totalAmount * 0.105)
-                        tax.recorded = tax.amount / 0.105
+                        if (tax.recorded) {
+                            tax.recorded = parseFloat(tax.recorded) > 0 ? tax.recorded : 0
+                            tax.amount = (tax.recorded * 0.105)
+                        } else {
+                            tax.amount = !isRecorded ? (totalAmount - (totalAmount / (1.105))) : (totalAmount * 0.105)
+                            tax.recorded = tax.amount / 0.105
+                        }
                         break;
                     case 5:
-                        tax.amount = !isRecorded ? (totalAmount - (totalAmount / (1.21))) : (totalAmount * 0.21)
-                        tax.recorded = tax.amount / 0.21
+                        if (tax.recorded) {
+                            tax.recorded = parseFloat(tax.recorded) > 0 ? tax.recorded : 0
+                            tax.amount = (tax.recorded * 0.21)
+                        } else {
+                            tax.amount = !isRecorded ? (totalAmount - (totalAmount / (1.21))) : (totalAmount * 0.21)
+                            tax.recorded = tax.amount / 0.21
+                        }
                         break;
                     case 6:
-                        tax.amount = !isRecorded ? (totalAmount - (totalAmount / (1.27))) : (totalAmount * 0.27)
-                        tax.recorded = tax.amount / 0.27
+                        if (tax.recorded) {
+                            tax.recorded = parseFloat(tax.recorded) > 0 ? tax.recorded : 0
+                            tax.amount = (tax.recorded * 0.27)
+                        } else {
+                            tax.amount = !isRecorded ? (totalAmount - (totalAmount / (1.27))) : (totalAmount * 0.27)
+                            tax.recorded = tax.amount / 0.27
+                        }
                         break;
                     case 8:
-                        tax.amount = !isRecorded ? (totalAmount - (totalAmount / (1.05))) : (totalAmount * 0.05)
-                        tax.recorded = tax.amount / 0.05
+                        if (tax.recorded) {
+                            tax.recorded = parseFloat(tax.recorded) > 0 ? tax.recorded : 0
+                            tax.amount = (tax.recorded * 0.05)
+                        } else {
+                            tax.amount = !isRecorded ? (totalAmount - (totalAmount / (1.05))) : (totalAmount * 0.05)
+                            tax.recorded = tax.amount / 0.05
+                        }
                         break;
                     case 9:
-                        tax.amount = !isRecorded ? (totalAmount - (totalAmount / (1.025))) : (totalAmount * 0.025)
-                        tax.recorded = tax.amount / 0.025
+                        if (tax.recorded) {
+                            tax.recorded = parseFloat(tax.recorded) > 0 ? tax.recorded : 0
+                            tax.amount = (tax.recorded * 0.025)
+                        } else {
+                            tax.amount = !isRecorded ? (totalAmount - (totalAmount / (1.025))) : (totalAmount * 0.025)
+                            tax.recorded = tax.amount / 0.025
+                        }
                         break;
                     default:
                         break;
                 }
             } else {
                 tax.amount = 0
+                tax.recorded = 0
             }
             tax.amount = roundNumber(tax.amount)
             tax.recorded = roundNumber(tax.recorded)
             return tax
         })
-        return { taxes: newTaxesArray, recorded: roundNumber(totalAmount - newTaxesArray.reduce((acc, tax) => acc + roundNumber(tax.amount), 0)) }
+        return { taxes: newTaxesArray, recorded: roundNumber(taxesList.reduce((acc, tax) => acc + roundNumber(tax.recorded), 0)) }
     }
 
     const setConceptsAmounts = () => {
@@ -272,7 +338,6 @@ const PurchasesEntriesCharge = ({
     const correctAmounts = () => {
         const { taxes, recorded } = getVatAmount(headerInvoice.total)
         setTaxesList(taxes)
-
         const newReceiptsArray = receiptConcepts.map((item, key) => {
             if (key === 0) {
                 item.amount = roundNumber(recorded)
@@ -298,7 +363,7 @@ const PurchasesEntriesCharge = ({
     useEffect(() => {
         (selectedProvider && receiptConcepts) && correctAmounts()
         // eslint-disable-next-line
-    }, [selectedProvider, headerInvoice.total, taxesList.filter((tax) => (tax.active && tax.is_vat)).length])
+    }, [selectedProvider, headerInvoice.total, taxesList.reduce((acc, tax) => acc + tax.amount, 0), taxesList.reduce((acc, tax) => acc + tax.active, 0)])
 
     useEffect(() => {
         (selectedProvider && receiptConcepts.length > 0) && correctAmounts()
@@ -318,7 +383,6 @@ const PurchasesEntriesCharge = ({
         }
         // eslint-disable-next-line
     }, [receiptConcepts, paymentsMethods, taxesList])
-
 
     useEffect(() => {
         (invoiceSelected && importedReceipt) && completeFieldsImported();

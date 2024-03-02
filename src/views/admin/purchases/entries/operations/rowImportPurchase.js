@@ -13,12 +13,20 @@ const RowImportPurchase = ({
     setPurchaseImported,
     setInvoiceSelected
 }) => {
+    const totalRecored = receipt.VatRatesReceipts.filter((vat) => vat !== 0).map((vat) => {
+        return vat.recorded_net
+    }).reduce((a, b) => a + b, 0)
+
+    const vatAmount = receipt.VatRatesReceipts.filter((vat) => vat !== 0).map((vat) => {
+        return vat.vat_amount
+    }).reduce((a, b) => a + b, 0)
+
     const othersImports = receipt.exempt_transactions + receipt.vat_withholdings + receipt.national_tax_withholdings + receipt.gross_income_withholdings + receipt.local_tax_withholdings + receipt.internal_tax
-    let unrecorded = receipt.total - (receipt.VatRatesReceipts[0].recorded_net + receipt.unrecorded + receipt.VatRatesReceipts[0].vat_amount + othersImports)
+    let unrecorded = receipt.total - (totalRecored + receipt.unrecorded + vatAmount + othersImports)
     unrecorded = Math.round(unrecorded * 100) / 100
 
     const totalCheck = () => {
-        let difference = receipt.total - (unrecorded + receipt.VatRatesReceipts[0].recorded_net + receipt.unrecorded + receipt.VatRatesReceipts[0].vat_amount + othersImports)
+        let difference = receipt.total - (unrecorded + totalRecored + receipt.unrecorded + vatAmount + othersImports)
         difference = Math.round(difference * 100) / 100
         if (difference === 0) {
             return true

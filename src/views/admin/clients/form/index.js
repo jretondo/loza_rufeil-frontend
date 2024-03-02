@@ -1,7 +1,6 @@
 import API_ROUTES from '../../../../api/routes';
 import ActionsBackend from 'context/actionsBackend';
 import AlertsContext from 'context/alerts';
-import { verifyDocumentNumber } from 'function/verifyDocumentNumber';
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, Card, CardBody, CardHeader, Col, Form, FormGroup, Input, InputGroup, InputGroupAddon, Label, Row, Tooltip } from 'reactstrap';
 

@@ -74,6 +74,7 @@ const ReceiptsConceptsTable = ({
                     }
                     <td className='text-center'>
                         <Input
+                            disabled={receiptConcept.recordType === 0}
                             min="0.01"
                             step="0.01"
                             type="number"
