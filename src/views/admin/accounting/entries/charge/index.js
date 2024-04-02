@@ -1,28 +1,36 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Button, Col, Form, FormGroup, Input, Label, Row } from 'reactstrap';
-import InputSearch from '../../../../../components/Search/InputSearch';
-import { numberFormat } from '../../../../../function/numberFormat';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
 import swal from 'sweetalert';
+import { numberFormat } from '../../../../../function/numberFormat';
 import AlertsContext from '../../../../../context/alerts';
 import ActionsBackend from '../../../../../context/actionsBackend';
 import API_ROUTES from '../../../../../api/routes';
 import LoadingContext from '../../../../../context/loading';
+import InputSearch2 from '../../../../../components/Search/InputSearch2';
 
 const ChargeEntriesComp = ({
     accountsList,
     entryDetails,
-    setEntryDetails
+    setEntryDetails,
+    activeTab
 }) => {
-    const [entryNumber, setEntryNumber] = useState(1)
-    const [dateEntry, setDateEntry] = useState(new Date())
+    const [idFocused, setIdFocused] = useState(0);
+    const [lastEntryActive, setLastEntryActive] = useState(false)
+    const [entryNumber, setEntryNumber] = useState(entryDetails ? entryDetails.number : 1)
+    const [dateEntry, setDateEntry] = useState(entryDetails ? entryDetails.date : new Date())
     const [datesLimits, setDatesLimits] = useState({
         min: "",
         max: ""
     })
-    const [detail, setDetail] = useState("")
-    const [entries, setEntries] = useState([{
+    const [detail, setDetail] = useState(entryDetails ? entryDetails.description : "")
+    const [entries, setEntries] = useState(entryDetails ? entryDetails.AccountingEntriesDetails.map((account, key) =>
+    ({
+        id: key + 1,
+        account: accountsList.find((item) => item.id === account.account_chart_id),
+        debit: account.debit,
+        credit: account.credit
+    })
+    ) : [{
         id: 1,
         account: false,
         debit: 0,
@@ -35,15 +43,12 @@ const ChargeEntriesComp = ({
 
     }])
 
+    const refDetailComp = useRef(null);
+    const refDateComp = useRef(null);
+
     const { newAlert, newActivity } = useContext(AlertsContext)
     const { axiosGetQuery, axiosPost, axiosPut, loadingActions } = useContext(ActionsBackend)
     const { setIsLoading } = useContext(LoadingContext)
-
-    const accountSearchFn = (account, searchedText) => {
-        if ((account.name).toLowerCase().includes(searchedText.toLowerCase()) || (account.code).toLowerCase().includes(searchedText.toLowerCase())) {
-            return account
-        }
-    }
 
     const getLastEntryNumber = async () => {
         const response = await axiosGetQuery(API_ROUTES.accountingDir.sub.lastEntryData, entryDetails ? [{ entryNumber: entryDetails.number }] : [])
@@ -144,6 +149,15 @@ const ChargeEntriesComp = ({
         }
     }
 
+    const handleFocus = (hashId, event) => {
+        setIdFocused(hashId);
+        try {
+            event.target && event.target.select();
+        } catch (error) {
+
+        }
+    };
+
     useEffect(() => {
         setIsLoading(loadingActions)
     }, [loadingActions, setIsLoading])
@@ -151,246 +165,236 @@ const ChargeEntriesComp = ({
     useEffect(() => {
         getLastEntryNumber()
         // eslint-disable-next-line
-    }, [])
+    }, [entryNumber, activeTab])
 
     useEffect(() => {
-        if (entryDetails) {
-            setEntryNumber(entryDetails.number)
-            setDateEntry(entryDetails.date)
-            setDetail(entryDetails.description)
-            setEntries(entryDetails.AccountingEntriesDetails.map((entry) => {
-                return {
-                    id: entry.id,
-                    account: entry.AccountChart,
-                    debit: entry.debit,
-                    credit: entry.credit
-                }
-            }))
-        }
-    }, [entryDetails])
+        setLastEntryActive(true)
+        // eslint-disable-next-line
+    }, [entries.length])
 
     return (
         <Form>
-            <h2 className='text-center'>{entryDetails ? "Detalles asiento Nº: " + entryDetails.number : "Nuevo Asiento"}</h2>
-            <Row className="mx-1">
-                <Col md="3" className="p-3 m-3" style={{ border: "4px #5d7d99 solid" }}>
+            <h2 className='text-center'>{entryDetails ? `Detalles asiento Nº: ${entryDetails.number}` : "Nuevo Asiento"}</h2>
+            <Row className="mx-0">
+                <Col md="4" className="p-2">
                     <FormGroup>
                         <Label>Nº Asiento</Label>
                         <Input style={{ fontWeight: "bold" }} value={entryNumber} type="text" disabled />
                     </FormGroup>
                 </Col>
-                <Col md="3" className="p-3 m-3" style={{ border: "4px #5d7d99 solid" }}>
+            </Row>
+            <hr className='m-0 mb-1' />
+            <Row className="mx-0">
+                <Col md="6" className="p-2">
+                    <FormGroup className="m-0">
+                        <Label>Cuenta</Label>
+                    </FormGroup>
+                </Col>
+                <Col md="2" className="p-2">
+                    <FormGroup className="m-0">
+                        <Label>Debe</Label>
+                    </FormGroup>
+                </Col>
+                <Col md="2" className="p-2">
+                    <FormGroup className="m-0">
+                        <Label>Haber</Label>
+                    </FormGroup>
+                </Col>
+                <Col md="4" className="p-2"></Col>
+            </Row>
+            {entries && entries.map((entry, key) => (
+                <Row key={key} className="mx-0">
+                    <Col md="6" className="p-2">
+                        <FormGroup className="m-0">
+                            <InputSearch2
+                                itemsList={accountsList}
+                                placeholderInput={"Busque una cuenta..."}
+                                getNameFn={(accountItem) => `${accountItem.name} (${accountItem.code})`}
+                                id={`account-${key}`}
+                                autoFocus={entries.length - 1 === key ? lastEntryActive : false}
+                                onFocus={(e) => handleFocus(`account-${key}`, e)}
+                                itemSelected={entry.account}
+                                setItemSelected={(item) => {
+                                    const newEntries = entries.map((entry, index) => {
+                                        if (index === key) {
+                                            entry.account = item
+                                        }
+                                        return entry
+                                    })
+                                    setEntries(newEntries)
+                                }}
+                            />
+                        </FormGroup>
+                    </Col>
+                    <Col md="2" className="p-2">
+                        <FormGroup className="m-0">
+                            <Input
+                                onFocus={(e) => handleFocus(`debit-${key}`, e)}
+                                type="number"
+                                value={entry.debit}
+                                onChange={(e) => {
+                                    const newEntries = entries.map((entry, index) => {
+                                        if (index === key) {
+                                            entry.debit = e.target.value
+                                            entry.credit = 0
+                                        }
+                                        return entry
+                                    })
+                                    setEntries(newEntries)
+                                }}
+                            />
+                        </FormGroup>
+                    </Col>
+                    <Col md="2" className="p-2">
+                        <FormGroup className="m-0">
+                            <Input
+                                onFocus={(e) => handleFocus(`credit-${key}`, e)}
+                                type="number"
+                                value={entry.credit}
+                                onChange={(e) => {
+                                    const newEntries = entries.map((entry, index) => {
+                                        if (index === key) {
+                                            entry.credit = e.target.value
+                                            entry.debit = 0
+                                        }
+                                        return entry
+                                    })
+                                    setEntries(newEntries)
+                                }}
+                            />
+                        </FormGroup>
+                    </Col>
+                    <Col md="2" className="p-2">
+                        <Button
+                            onFocus={(e) => handleFocus(`delete-${key}`, e)}
+                            color={idFocused === `delete-${key}` ? "primary" : "danger"}
+                            onClick={e => {
+                                e.preventDefault()
+                                setEntries(() => entries.filter((item) => item.id !== entry.id))
+                            }}
+                        >
+                            <i className="fas fa-trash"></i> Eliminar
+                        </Button>
+                    </Col>
+                </Row>
+            ))}
+            <Row className="mx-0">
+                <Col md="4" className="p-2">
+                    <Button
+                        onFocus={(e) => handleFocus(`add-button`, e)}
+                        color={idFocused === `add-button` ? "primary" : "secondary"}
+                        onClick={e => {
+                            e.preventDefault()
+                            setEntries([
+                                ...entries,
+                                { id: entries.length + 1, account: false, debit: 0, credit: 0 }
+                            ])
+                        }}
+                        onKeyDown={e => {
+                            if (e.keyCode === 9) {
+                                refDetailComp.current.focus();
+                            }
+                        }}
+                    >
+                        <i className="fas fa-plus"></i> Agregar nueva cuenta
+                    </Button>
+                </Col>
+                <Col md="2" className="p-2">
+                </Col>
+                <Col md="2" className="p-2">
+                    <FormGroup className="m-0">
+                        <Input
+                            type="text"
+                            value={numberFormat(entries.reduce((acc, entry) => {
+                                return acc + parseFloat(entry.debit)
+                            }, 0))}
+                            disabled
+                        />
+                    </FormGroup>
+                </Col>
+                <Col md="2" className="p-2">
+                    <FormGroup className="m-0">
+                        <Input
+                            type="text"
+                            value={numberFormat(entries.reduce((acc, entry) => {
+                                return acc + parseFloat(entry.credit)
+                            }, 0))}
+                            disabled
+                        />
+                    </FormGroup>
+                </Col>
+            </Row>
+            <Row className="mx-0">
+                <Col md="8" className="p-2">
+                    <FormGroup >
+                        <Label>Detalle</Label>
+                        <Input
+                            type="textarea"
+                            name="text"
+                            style={{ height: "180px" }}
+                            onFocus={(e) => handleFocus(`detail-component`, e)}
+                            id='detail-component'
+                            ref={refDetailComp}
+                            value={detail}
+                            onChange={(e) => setDetail(e.target.value)}
+                            onKeyDown={e => {
+                                if (e.keyCode === 9) {
+                                    refDateComp.current.focus();
+                                }
+                            }}
+                        />
+                    </FormGroup>
+                </Col>
+                <Col md="4" className="p-2">
                     <FormGroup>
                         <Label>Fecha</Label>
                         <Input
+                            onFocus={(e) => handleFocus(`date-entry`, e)}
+                            ref={refDateComp}
                             type="date"
+                            index="1"
                             min={datesLimits.min}
                             max={datesLimits.max}
                             value={dateEntry}
                             onChange={e => setDateEntry(e.target.value)}
-
+                            onKeyDown={e => {
+                                if (e.keyCode === 13) {
+                                    saveEntries()
+                                }
+                            }}
                         />
                     </FormGroup>
-                </Col>
-                <Col className="pt-5" md="5" style={{ textAlign: "right" }}>
                     <Button
-                        color="primary"
-                        className="ml-2 h-50"
+                        index="2"
+                        className="mt-2"
                         onClick={e => {
                             e.preventDefault()
                             saveEntries()
                         }}
+                        onFocus={(e) => handleFocus(`save-button`, e)}
+                        color={idFocused === `save-button` ? "primary" : "success"}
                     >
-                        Guardar Asiento <i className='fas fa-save'></i>
+                        {entryDetails ? "Modificar Asiento" : "Guardar Asiento"} <i className='fas fa-save'></i>
                     </Button>
                     <Button
-                        color="danger"
-                        className="ml-2 h-50"
+                        index="3"
+                        className="mt-2"
                         onClick={e => {
-                            if (dateEntry) {
-                                setEntryDetails(false)
-                            } else {
-                                setEntries([{
-                                    id: 1,
-                                    account: false,
-                                    debit: 0,
-                                    credit: 0
-                                }, {
-                                    id: 2,
-                                    account: false,
-                                    debit: 0,
-                                    credit: 0
-
-                                }])
-                                setDetail("")
-                                setDateEntry(new Date())
-                                getLastEntryNumber()
-                            }
+                            setEntries([])
+                            setDetail("")
+                            setDateEntry(new Date())
+                            getLastEntryNumber()
+                            entryDetails && setEntryDetails(false)
                         }}
+                        onFocus={(e) => handleFocus(`cancel-button`, e)}
+                        color={idFocused === `cancel-button` ? "primary" : "danger"}
                     >
                         Cancelar <i className='fas fa-times'></i>
                     </Button>
                 </Col>
-
-
-            </Row>
-            <Row className="pt-2 mx-3" style={{ borderTop: "4px #5d7d99 solid", borderRight: "4px #5d7d99 solid", borderLeft: "4px #5d7d99 solid" }}>
-                <Col md="5">
-                    <FormGroup>
-                        <Label>Cuenta</Label>
-                    </FormGroup>
-                </Col>
-                <Col md="3">
-                    <FormGroup>
-                        <Label>Debe</Label>
-                    </FormGroup>
-                </Col>
-                <Col md="3">
-                    <FormGroup>
-                        <Label>Haber</Label>
-                    </FormGroup>
-                </Col>
-            </Row>
-            {
-                entries && entries.map((entry, key) => {
-                    return (
-                        <Row key={key} className="px-3 mx-3" style={{ borderRight: "4px #5d7d99 solid", borderLeft: "4px #5d7d99 solid" }}>
-                            <Col md="5">
-                                <FormGroup>
-                                    <InputSearch
-                                        itemsList={accountsList}
-                                        setItemsList={() => { }}
-                                        itemSelected={entry.account}
-                                        placeholderInput={"Busque una cuenta..."}
-                                        getNameFn={(accountItem) => `${accountItem.name} (${accountItem.code})`}
-                                        setItemSelected={(item) => {
-                                            const newEntries = entries.map((entry, index) => {
-                                                if (index === key) {
-                                                    entry.account = item
-                                                }
-                                                return entry
-                                            })
-                                            setEntries(newEntries)
-                                        }}
-                                        searchFn={accountSearchFn}
-                                    />
-                                </FormGroup>
-                            </Col>
-                            <Col md="3">
-                                <FormGroup>
-                                    <Input
-                                        type="number"
-                                        value={entry.debit}
-                                        onChange={(e) => {
-                                            const newEntries = entries.map((entry, index) => {
-                                                if (index === key) {
-                                                    entry.debit = e.target.value
-                                                    entry.credit = 0
-                                                }
-                                                return entry
-                                            })
-                                            setEntries(newEntries)
-                                        }}
-                                    />
-                                </FormGroup>
-                            </Col>
-                            <Col md="3">
-                                <FormGroup>
-                                    <Input
-                                        type="number"
-                                        value={entry.credit}
-                                        onChange={(e) => {
-                                            const newEntries = entries.map((entry, index) => {
-                                                if (index === key) {
-                                                    entry.credit = e.target.value
-                                                    entry.debit = 0
-                                                }
-                                                return entry
-                                            })
-                                            setEntries(newEntries)
-                                        }}
-                                    />
-                                </FormGroup>
-                            </Col>
-                            <Col md="1">
-                                <Button
-                                    color="danger"
-                                    onClick={e => {
-                                        e.preventDefault()
-                                        setEntries((entries) => {
-                                            return entries.filter((item) => item.id !== entry.id)
-                                        })
-                                    }}
-                                >
-                                    <i className="fas fa-trash"></i>
-                                </Button>
-                            </Col>
-                        </Row>
-                    )
-                })
-            }
-            <Row className="pb-3 mx-3" style={{ borderRight: "4px #5d7d99 solid", borderLeft: "4px #5d7d99 solid", borderBottom: "4px #5d7d99 solid" }}>
-                <Col md="12" className="text-center">
-                    <Button
-                        color="primary"
-                        onClick={e => {
-                            e.preventDefault()
-                            setEntries([...entries,
-                            {
-                                id: entries.length + 1,
-                                account: false,
-                                debit: 0,
-                                credit: 0
-                            }])
-                        }}
-                    >
-                        <i className="fas fa-plus"></i>
-                    </Button>
-                </Col>
-            </Row>
-            <Row className="p-3 m-3" style={{ border: "4px #f5365c solid" }}>
-                <Col md="5">
-                    <h3>TOTAL:</h3>
-                </Col>
-                <Col md="3">
-                    <h3>$ {
-                        numberFormat(entries ? entries.reduce((acc, entry) => {
-                            return acc + parseFloat(entry.debit)
-                        }, 0) : 0)
-                    }</h3>
-                </Col>
-                <Col md="3">
-                    <h3>$ {
-                        numberFormat(entries ? entries.reduce((acc, entry) => {
-                            return acc + parseFloat(entry.credit)
-                        }, 0) : 0)
-                    }</h3>
-                </Col>
-                <Col md="1">
-
-                </Col>
-            </Row>
-            <Row className="mx-1 mr-4">
-                <Col md="12" className="p-3 m-3" style={{ border: "4px #5d7d99 solid" }}>
-                    <FormGroup>
-                        <Label>Detalle</Label>
-                        <ReactQuill
-                            theme="snow"
-                            value={detail}
-                            onChange={setDetail}
-                            modules={{
-                                toolbar: [
-                                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                                    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-                                    [{ 'list': 'ordered' }, { 'list': 'bullet' }]
-                                ]
-                            }}
-                            style={{ background: "#e8eaed", height: "200px" }}
-                        />
-                    </FormGroup>
-                </Col>
             </Row>
         </Form>
+
     )
 }
 

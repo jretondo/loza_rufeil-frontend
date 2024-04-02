@@ -69,11 +69,13 @@ const Index = () => {
                         <Collapse isOpen={activeTab === 0 ? true : false} >
                             <ChargeEntriesComp
                                 accountsList={accountsList}
+                                activeTab={activeTab}
                             />
                         </Collapse>
                         <Collapse isOpen={activeTab === 1 ? true : false} >
                             <EntriesList
                                 accountsList={accountsList}
+                                activeTab={activeTab}
                             />
                         </Collapse>
                         <Collapse isOpen={activeTab === 2 ? true : false} >

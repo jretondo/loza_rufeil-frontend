@@ -104,10 +104,15 @@ const accountingDir = {
     sub: {
         period: accounting + "/period",
         entries: accounting + "/entries",
+        journal: accounting + "/journal",
+        ledger: accounting + "/ledger",
+        balance: accounting + "/balance",
         lastEntryData: accounting + "/lastEntryData",
         accountingEntry: accounting + "/accountingEntry",
         allowImport: accounting + "/allowImport",
         accountingCharts: accounting + "/accountingCharts",
+        accountingChartsPDF: accounting + "/accountingCharts/PDF",
+        accountingChartsExcel: accounting + "/accountingCharts/Excel",
         accountingChart: accounting + "/accountingChart",
         attributableAccountingChart: accounting + "/attributableAccountingChart",
     }
@@ -132,6 +137,8 @@ const purchasesDir = {
         receiptsTxt: purchases + "/receipts/txt",
         cvsImport: purchases + "/receipt/import",
         periodTotal: purchases + "/period/total",
+        excelExport: purchases + "/receipts/export",
+        report: purchases + "/receipts/report",
     }
 }
 

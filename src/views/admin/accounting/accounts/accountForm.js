@@ -126,7 +126,7 @@ const AccountForm = ({ parentAccount, isOpen, toggle, toUpdate }) => {
                     <Col md="4">
                         <FormGroup check>
                             <Label check>
-                                <Input type="checkbox" onChange={e => {
+                                <Input type="checkbox" checked={formData.attributable} onChange={e => {
                                     setFormData({ ...formData, attributable: e.target.checked })
                                 }} />{' '}
                                 Imputable

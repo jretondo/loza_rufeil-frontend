@@ -3,14 +3,15 @@ import { TableList } from 'components/Lists/TableList';
 import LoadingContext from 'context/loading';
 import { useAxiosGetList } from 'hooks/useAxiosGetList';
 import React, { useContext, useEffect, useState } from 'react';
-import { Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Pagination, Row } from 'reactstrap';
+import { Button, Col, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
 import { SearchFormComponent } from '../../../../../components/Search/Search1';
 import ReceiptRow from './row';
 import CompleteCerosLeft from '../../../../../function/completeCeroLeft';
 import moment from 'moment';
 import { numberFormat } from '../../../../../function/numberFormat';
+import PaginationComp from '../../../../../components/Pagination/Pages';
 
-const PurchasesEntriesList = ({ purchasePeriodId, refreshList, setRefreshList, purchasePeriod, hasAccountingModule }) => {
+const PurchasesEntriesList = ({ purchasePeriodId, refreshList, setRefreshList, purchasePeriod, hasAccountingModule, setTotalInvoice }) => {
     const [page, setPage] = useState(1)
     const [receiptInfo, setReceiptInfo] = useState()
     const [isOpenReceiptModal, setIsOpenReceiptModal] = useState(false)
@@ -20,9 +21,10 @@ const PurchasesEntriesList = ({ purchasePeriodId, refreshList, setRefreshList, p
     const { setIsLoading } = useContext(LoadingContext)
     const {
         dataPage,
-        pageObj,
+        pagesQuantity,
         errorList,
-        loadingList
+        loadingList,
+        totalItems
     } = useAxiosGetList(
         API_ROUTES.purchasesDir.sub.receipts,
         page, refreshList, [
@@ -34,6 +36,10 @@ const PurchasesEntriesList = ({ purchasePeriodId, refreshList, setRefreshList, p
     useEffect(() => {
         setIsLoading(loadingList)
     }, [loadingList, setIsLoading])
+
+    useEffect(() => {
+        setTotalInvoice(totalItems)
+    }, [totalItems, setTotalInvoice])
 
     return (
         <>
@@ -116,7 +122,6 @@ const PurchasesEntriesList = ({ purchasePeriodId, refreshList, setRefreshList, p
                             <Col md="12">
                                 <TableList titlesArray={hasAccountingModule ? ["Concepto", "Cuenta", "Debe", "Haber"] : ["Concepto", "Debe", "Haber"]}>
                                     {receiptInfo.PurchaseEntries.map((entry, key) => {
-                                        console.log('entry :>> ', entry);
                                         return (
                                             <tr key={key}>
                                                 <td>{entry.description}</td>
@@ -150,11 +155,17 @@ const PurchasesEntriesList = ({ purchasePeriodId, refreshList, setRefreshList, p
                 </ModalFooter>
             </Modal>
             <Row>
-                <Col md="12" className="text-center">
-                    {!pageObj ? null : <Pagination
+                <Col md="4">
+                    <FormGroup>
+                        <Label>Total de Comprobantes:</Label>
+                        <Input disabled value={totalItems} />
+                    </FormGroup>
+                </Col>
+                <Col md="8" className="text-center">
+                    {!dataPage ? null : <PaginationComp
                         page={page}
                         setPage={setPage}
-                        dataPages={pageObj}
+                        pagesQuantity={pagesQuantity}
                     />}
                 </Col>
             </Row>

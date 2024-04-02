@@ -1,7 +1,7 @@
 import { TableList } from 'components/Lists/TableList';
 import InputSearch from 'components/Search/InputSearch';
 import React from 'react';
-import { Button, Col, Input } from 'reactstrap';
+import { Button, Col } from 'reactstrap';
 
 const OthersTableList = ({ othersArray, setOthersArray, accountsList, accountSearchFn, hasAccountingModule }) => {
 
@@ -36,28 +36,23 @@ const OthersTableList = ({ othersArray, setOthersArray, accountsList, accountSea
                         {
                             (hasAccountingModule() && other.is_tax) &&
                             <td>
-                                {
-                                    other.active ?
-                                        <InputSearch
-                                            itemsList={accountsList}
-                                            itemSelected={othersArray[key] ? othersArray[key].AccountChart : false}
-                                            title={""}
-                                            placeholderInput={"Busque una cuenta..."}
-                                            getNameFn={(accountItem) => `${accountItem.name} (${accountItem.code})`}
-                                            setItemSelected={(account) => {
-                                                const newOtherArray = othersArray.map((item) => {
-                                                    if (item.type === other.type) {
-                                                        item.AccountChart = account
-                                                    }
-                                                    return item
-                                                })
-                                                setOthersArray(newOtherArray)
-                                            }}
-                                            searchFn={accountSearchFn}
-                                        />
-                                        :
-                                        <Input disabled value={other.AccountChart ? `${other.AccountChart.name} (${other.AccountChart.code})` : ""} />
-                                }
+                                {<InputSearch
+                                    itemsList={accountsList}
+                                    itemSelected={othersArray[key] ? othersArray[key].AccountChart : false}
+                                    title={""}
+                                    placeholderInput={"Busque una cuenta..."}
+                                    getNameFn={(accountItem) => `${accountItem.name} (${accountItem.code})`}
+                                    setItemSelected={(account) => {
+                                        const newOtherArray = othersArray.map((item) => {
+                                            if (item.type === other.type) {
+                                                item.AccountChart = account
+                                            }
+                                            return item
+                                        })
+                                        setOthersArray(newOtherArray)
+                                    }}
+                                    searchFn={accountSearchFn}
+                                />}
                             </td>
                         }
                     </tr>

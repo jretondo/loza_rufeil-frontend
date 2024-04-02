@@ -8,7 +8,8 @@ import { numberFormat } from '../../../../../function/numberFormat';
 
 const PurchasePeriodSummary = ({
     purchasePeriod,
-    refreshList
+    refreshList,
+    totalInvoice
 }) => {
     const [summaryList, setSummaryList] = useState([])
 
@@ -53,7 +54,14 @@ const PurchasePeriodSummary = ({
                     )
                 })
             }
+            <Col md="4">
+                <FormGroup>
+                    <Label>Total de Comprobantes:</Label>
+                    <Input disabled value={totalInvoice} />
+                </FormGroup>
+            </Col>
         </Row>
+
     )
 }
 

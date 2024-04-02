@@ -23,6 +23,7 @@ const Index = () => {
     const [purchasePeriod, setPurchasePeriod] = useState()
     const [accountsList, setAccountsList] = useState([])
     const [refreshList, setRefreshList] = useState(false)
+    const [totalInvoice, setTotalInvoice] = useState(0)
 
     const { axiosGetQuery } = useContext(ActionsBackend)
     const { newAlert } = useContext(AlertsContext)
@@ -123,6 +124,7 @@ const Index = () => {
                                     refreshList={refreshList}
                                     setRefreshList={setRefreshList}
                                     hasAccountingModule={hasAccountingModule()}
+                                    setTotalInvoice={setTotalInvoice}
                                 />
                             </Collapse>
                             <Collapse isOpen={activeTab === 2 ? true : false} >
@@ -145,6 +147,7 @@ const Index = () => {
                                 <PurchasePeriodSummary
                                     purchasePeriod={purchasePeriod}
                                     refreshList={refreshList}
+                                    totalInvoice={totalInvoice}
                                 />
                             </CardBody>
                         </Card>

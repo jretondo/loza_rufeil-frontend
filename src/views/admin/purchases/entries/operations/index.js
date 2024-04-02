@@ -20,7 +20,7 @@ const PurchasesEntriesOperations = ({
     const [importFile, setImportFile] = useState()
     const [purchaseImported, setPurchaseImported] = useState(false)
     const [importDataModule, setImportDataModule] = useState(false)
-    const { axiosGetFile, axiosPost, loadingActions } = useContext(ActionsBackend)
+    const { axiosGetFile, axiosPost, loadingActions, axiosPostFile } = useContext(ActionsBackend)
     const { newAlert, newActivity } = useContext(AlertsContext)
     const { setIsLoading } = useContext(LoadingContext)
 
@@ -53,6 +53,18 @@ const PurchasesEntriesOperations = ({
         } else {
             newAlert("danger", "Hubo un error!", "Revise los datos colocados. Error: " + response.errorMsg)
         }
+    }
+
+    const getReport = async () => {
+        const response = await axiosPostFile(API_ROUTES.purchasesDir.sub.report, { purchasePeriodId: purchasePeriod.id }, 'application/pdf')
+        if (!response.error) {
+            newActivity("Se generó un reporte en PDF", "success")
+            newAlert("success", "Reporte generado con éxito!", "Revise su carpeta de descargas")
+        } else {
+            console.log(response.error)
+            newAlert("danger", "Hubo un error!", "Revise los datos colocados. Error: " + response.errorMsg)
+        }
+
     }
 
     useEffect(() => {
@@ -102,7 +114,7 @@ const PurchasesEntriesOperations = ({
                         </Col>
                     </Row>
                 : <Row>
-                    <Col md="4" className="text-center">
+                    <Col md="3" className="text-center">
                         <Button
                             disabled={purchasePeriod.closed}
                             color="primary"
@@ -115,15 +127,20 @@ const PurchasesEntriesOperations = ({
                             setImportFile(e.target.files[0])
                         }} />
                     </Col>
-                    <Col md="4" className="text-center">
+                    <Col md="3" className="text-center">
                         <Button
                             disabled={purchasePeriod.closed}
                             color="primary">Cerrar Periodo <i className='fas fa-window-close ml-2'></i></Button>
                     </Col>
-                    <Col md="4" className="text-center">
+                    <Col md="3" className="text-center">
                         <Button
                             onClick={() => importFromAFIP()}
                             color="primary">Exportar TXT para AFIP <i className='fas fa-upload ml-2'></i></Button>
+                    </Col>
+                    <Col md="3" className="text-center">
+                        <Button
+                            onClick={() => getReport()}
+                            color="primary">Importar PDF<i className='fas fa-download ml-2'></i></Button>
                     </Col>
                 </Row>
         }

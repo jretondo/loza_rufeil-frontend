@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 
 export const useAxiosGetList = (url, page, refresh, queries) => {
     const [pagesQuantity, setPagesQuantity] = useState(0)
+    const [totalItems, setTotalItems] = useState(0)
     const [dataPage, setDataPage] = useState([])
     const [errorList, setErrorList] = useState(null)
     const [loadingList, setLoadingList] = useState(false)
@@ -33,6 +34,7 @@ export const useAxiosGetList = (url, page, refresh, queries) => {
                         if (res.data.body.totalItems > 0) {
                             setDataPage(res.data.body.items)
                             const pagesQ = Math.ceil(res.data.body.totalItems / res.data.body.itemsPerPage)
+                            setTotalItems(res.data.body.totalItems)
                             setPagesQuantity(pagesQ)
                         } else {
                             setErrorList("No hay datos para mostrar")
@@ -55,5 +57,5 @@ export const useAxiosGetList = (url, page, refresh, queries) => {
         // eslint-disable-next-line
     }, [page, url, refresh])
 
-    return { pagesQuantity, dataPage, errorList, loadingList }
+    return { pagesQuantity, dataPage, errorList, loadingList, totalItems }
 }

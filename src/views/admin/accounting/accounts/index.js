@@ -11,6 +11,7 @@ import API_ROUTES from "../../../../api/routes";
 import { useAxiosGetList } from 'hooks/useAxiosGetList';
 import ImportAccounts from "./importAccount";
 import ActionsBackend from "../../../../context/actionsBackend";
+import AlertsContext from "../../../../context/alerts";
 
 const Index = () => {
     const accountingId = JSON.parse(localStorage.getItem("activePeriod")).id
@@ -25,9 +26,10 @@ const Index = () => {
     const [isOpenImportAccounts, setIsOpenImportAccounts] = useState(false)
     const [allowImport, setAllowImport] = useState(false)
 
-    const { loadingActions, axiosGetQuery } = useContext(ActionsBackend)
+    const { loadingActions, axiosGetQuery, axiosGetFile } = useContext(ActionsBackend)
     const { setUrlRoute } = useContext(secureContext)
     const { setIsLoading } = useContext(LoadingContext)
+    const { newAlert } = useContext(AlertsContext)
 
     const {
         dataPage,
@@ -132,6 +134,29 @@ const Index = () => {
         }
     }
 
+    const downloadAccountsExcel = async (e) => {
+        e.preventDefault()
+        const response = await axiosGetFile(API_ROUTES.accountingDir.sub.accountingChartsExcel, accountingId, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        if (!response.error) {
+            newAlert("success", "Archivo generado con éxito!", "Revise su carpeta de descargas")
+        } else {
+            console.log(response.error)
+            newAlert("danger", "Hubo un error!", "Revise los datos colocados. Error: " + response.errorMsg)
+        }
+    }
+
+
+    const downloadAccountsPDF = async (e) => {
+        e.preventDefault()
+        const response = await axiosGetFile(API_ROUTES.accountingDir.sub.accountingChartsPDF, accountingId, 'application/pdf')
+        if (!response.error) {
+            newAlert("success", "Reporte generado con éxito!", "Revise su carpeta de descargas")
+        } else {
+            console.log(response.error)
+            newAlert("danger", "Hubo un error!", "Revise los datos colocados. Error: " + response.errorMsg)
+        }
+    }
+
     const openNewForm = (parentAccount) => {
         setSelectedAccount(parentAccount)
         setIsOpenNewForm(true)
@@ -197,8 +222,18 @@ const Index = () => {
                                 <Button
                                     onClick={() => allowImport && setIsOpenImportAccounts(true)}
                                     disabled={!allowImport}
-                                    color="danger">
+                                    color="primary">
                                     Importar Cuenta <i className="fa fa-download"></i>
+                                </Button>
+                                <Button
+                                    onClick={downloadAccountsExcel}
+                                    color="success">
+                                    Descargar en Excel <i className="fa fa-download"></i>
+                                </Button>
+                                <Button
+                                    onClick={downloadAccountsPDF}
+                                    color="danger">
+                                    Descargar en PDF <i className="fa fa-download"></i>
                                 </Button>
                             </Col>
                         </Row>

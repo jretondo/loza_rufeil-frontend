@@ -1,8 +1,9 @@
 import React from 'react';
-import { Button, Col, FormGroup, Input, Label, Pagination, Row } from 'reactstrap';
+import { Button, Col, FormGroup, Input, Label, Row } from 'reactstrap';
 import InputSearch from '../../../../../components/Search/InputSearch';
 import { TableList } from '../../../../../components/Lists/TableList';
 import EntryRow from './row';
+import PaginationComp from '../../../../../components/Pagination/Pages';
 
 const EntriesListComponent = ({
     accountsList,
@@ -15,7 +16,7 @@ const EntriesListComponent = ({
     filters,
     setFilters,
     dataPage,
-    pageObj,
+    pagesQuantity,
     errorList,
     accountSearchFn,
     setEntryDetails
@@ -130,7 +131,7 @@ const EntriesListComponent = ({
         </Row>
         <Row>
             <Col md="12">
-                <TableList titlesArray={["Fecha", "Nº", "Detalle", "Cuentas", "Importe", ""]}>
+                <TableList titlesArray={["Fecha", "Nº", "Detalle", "Importe", ""]}>
                     {!errorList && dataPage.length > 0 ? dataPage.map((entry, key) => {
                         let first
                         if (key === 0) {
@@ -157,10 +158,10 @@ const EntriesListComponent = ({
         </Row>
         <Row>
             <Col md="12" className="text-center">
-                {!pageObj ? null : <Pagination
+                {!dataPage ? null : <PaginationComp
                     page={page}
                     setPage={setPage}
-                    dataPages={pageObj}
+                    pagesQuantity={pagesQuantity}
                 />}
             </Col>
         </Row>

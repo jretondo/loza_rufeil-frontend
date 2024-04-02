@@ -363,7 +363,7 @@ const PurchasesEntriesCharge = ({
     useEffect(() => {
         (selectedProvider && receiptConcepts) && correctAmounts()
         // eslint-disable-next-line
-    }, [selectedProvider, headerInvoice.total, taxesList.reduce((acc, tax) => acc + tax.amount, 0), taxesList.reduce((acc, tax) => acc + tax.active, 0)])
+    }, [selectedProvider, taxesList.reduce((acc, tax) => acc + tax.active, 0)])
 
     useEffect(() => {
         (selectedProvider && receiptConcepts.length > 0) && correctAmounts()
@@ -451,6 +451,18 @@ const PurchasesEntriesCharge = ({
                                         onClick={e => {
                                             e.preventDefault()
                                             importedReceipt && setInvoiceSelected(false)
+                                            !importedReceipt && setHeaderInvoice({
+                                                date: "",
+                                                total: 0,
+                                                type: 0,
+                                                word: "",
+                                                sellPoint: "",
+                                                number: ""
+                                            })
+                                            !importedReceipt && setPaymentsMethods([])
+                                            !importedReceipt && setReceiptConcepts([])
+                                            !importedReceipt && setTaxesList([])
+                                            !importedReceipt && setSelectedProvider(false)
                                         }}
                                         color="danger">
                                         Cancelar

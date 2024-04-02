@@ -1,11 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
-import API_ROUTES from '../../../../../api/routes';
-import LoadingContext from '../../../../../context/loading';
-import { useAxiosGetList } from '../../../../../hooks/useAxiosGetList';
+import API_ROUTES from '../../../../../../api/routes';
+import LoadingContext from '../../../../../../context/loading';
+import { useAxiosGetList } from '../../../../../../hooks/useAxiosGetList';
 import EntriesListComponent from './list';
-import ChargeEntriesComp from '../charge';
 
-const EntriesList = ({ accountsList, activeTab }) => {
+const JornalList = ({ accountsList, activeTab }) => {
     const [page, setPage] = useState(1)
     const [filtersActive, setFiltersActive] = useState(false)
     const [refreshList, setRefreshList] = useState(false)
@@ -28,7 +27,7 @@ const EntriesList = ({ accountsList, activeTab }) => {
         pagesQuantity,
         loadingList
     } = useAxiosGetList(
-        API_ROUTES.accountingDir.sub.entries,
+        API_ROUTES.accountingDir.sub.journal,
         page, refreshList, [
         { dateFrom: filters.dateFrom },
         { dateTo: filters.dateTo },
@@ -56,34 +55,25 @@ const EntriesList = ({ accountsList, activeTab }) => {
 
     return (
         <>
-            {
-                entryDetails ?
-                    <ChargeEntriesComp
-                        accountsList={accountsList}
-                        entryDetails={entryDetails}
-                        setEntryDetails={setEntryDetails}
-                    />
-                    :
-                    <EntriesListComponent
-                        accountsList={accountsList}
-                        page={page}
-                        setPage={setPage}
-                        dataPage={dataPage}
-                        pageObj={pageObj}
-                        errorList={errorList}
-                        refreshList={refreshList}
-                        setRefreshList={setRefreshList}
-                        filters={filters}
-                        setFilters={setFilters}
-                        filtersActive={filtersActive}
-                        setFiltersActive={setFiltersActive}
-                        accountSearchFn={accountSearchFn}
-                        setEntryDetails={setEntryDetails}
-                        pagesQuantity={pagesQuantity}
-                    />
-            }
+            <EntriesListComponent
+                accountsList={accountsList}
+                page={page}
+                setPage={setPage}
+                dataPage={dataPage}
+                pageObj={pageObj}
+                errorList={errorList}
+                refreshList={refreshList}
+                setRefreshList={setRefreshList}
+                filters={filters}
+                setFilters={setFilters}
+                filtersActive={filtersActive}
+                setFiltersActive={setFiltersActive}
+                accountSearchFn={accountSearchFn}
+                setEntryDetails={setEntryDetails}
+                pagesQuantity={pagesQuantity}
+            />
         </>
     );
 }
 
-export default EntriesList;
+export default JornalList;
