@@ -133,6 +133,7 @@ const purchasesDir = {
         paymentsMethods: purchases + "/paymentsMethods",
         receipt: purchases + "/receipt",
         receipts: purchases + "/receipts",
+        uncheckedReceipts: purchases + "/receipt/unchecked",
         checkReceipts: purchases + "/receipt/check",
         receiptsTxt: purchases + "/receipts/txt",
         cvsImport: purchases + "/receipt/import",

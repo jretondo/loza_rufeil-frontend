@@ -2,7 +2,7 @@ import API_ROUTES from '../../../../api/routes';
 import { useAxiosGetList } from 'hooks/useAxiosGetList';
 import React, { useEffect, useState } from 'react';
 import ClientRow from './row';
-import { Button, Card, CardBody, CardFooter, CardHeader, Col, Pagination, Row } from 'reactstrap';
+import { Button, Card, CardBody, CardFooter, CardHeader, Col, Row } from 'reactstrap';
 import { SearchFormComponent } from 'components/Search/Search1';
 import { TableList } from 'components/Lists/TableList';
 import PaginationComp from '../../../../components/Pagination/Pages';

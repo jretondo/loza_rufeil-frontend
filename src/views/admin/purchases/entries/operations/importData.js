@@ -23,7 +23,7 @@ const ImportData = ({
 }) => {
     const [invoiceSelected, setInvoiceSelected] = useState(false)
 
-    const { axiosPost, loadingActions } = useContext(ActionsBackend)
+    const { axiosPost, axiosPostFile, loadingActions } = useContext(ActionsBackend)
     const { setIsLoading } = useContext(LoadingContext)
 
     const importData = async (e) => {
@@ -48,14 +48,35 @@ const ImportData = ({
                 refreshListToggle()
 
             } else {
-                swal("Error", "Hubo un error al importar los datos: " + response.errorMsg.toString(), "error")
+                swal("Error", "Hubo un error al importar los datos: " + response.errorMsg, "error")
             }
+        }
+    }
+
+    const uncheckedReceiptsCVS = async (e) => {
+        e.preventDefault()
+        const uncheckedReceipts = purchaseImported.filter(item => !item.checked)
+        const checkedReceipts = purchaseImported.filter(item => item.checked)
+        if (uncheckedReceipts.length > 0) {
+            const data = {
+                receipts: uncheckedReceipts
+            }
+            const response = await axiosPostFile(API_ROUTES.purchasesDir.sub.uncheckedReceipts, data, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+            if (!response.error) {
+                swal("Éxito", "Se importaron los datos", "success")
+                setPurchaseImported(checkedReceipts)
+            } else {
+                swal("Error", "Hubo un error al importar los datos: " + response.errorMsg, "error")
+            }
+        } else {
+            swal("Error", "No hay comprobantes sin procesar", "error")
         }
     }
 
     useEffect(() => {
         setIsLoading(loadingActions)
     }, [loadingActions, setIsLoading])
+
     return (
         <>
             {
@@ -97,6 +118,12 @@ const ImportData = ({
                                     onClick={importData}
                                 >
                                     Insertar datos
+                                </Button>
+                                <Button
+                                    color="warning"
+                                    onClick={uncheckedReceiptsCVS}
+                                >
+                                    Separar compras sin procesar
                                 </Button>
                                 <Button
                                     color="danger"

@@ -134,7 +134,7 @@ const Index = () => {
                                     hasAccountingModule={hasAccountingModule()}
                                     accountSearchFn={accountSearchFn}
                                     activePeriod={activePeriod}
-                                    refreshListToggle={() => setRefreshList(!refreshList)}
+                                    refreshList={() => setRefreshList(!refreshList)}
                                     periodMonth={periodMonth}
                                     periodYear={periodYear}
                                 />

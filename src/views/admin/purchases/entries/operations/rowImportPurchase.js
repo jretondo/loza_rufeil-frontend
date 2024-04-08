@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
+import { Button } from 'reactstrap';
 import CompleteCerosLeft from '../../../../../function/completeCeroLeft';
 import { numberFormat } from '../../../../../function/numberFormat';
 import { invoiceTypeConvert } from '../../../../../function/invoiceType';
@@ -35,7 +35,8 @@ const RowImportPurchase = ({
         }
     }
 
-    const removeInvoice = () => {
+    const removeInvoice = (e) => {
+        e.preventDefault()
         setPurchaseImported(prevState => prevState.filter((item, key) => parseInt(key) !== parseInt(id)))
     }
 
@@ -69,27 +70,12 @@ const RowImportPurchase = ({
                     $ {numberFormat(receipt.total)}
                 </td>
                 <td className="text-right">
-                    <UncontrolledDropdown>
-                        <DropdownToggle
-                            className="btn-icon-only text-light"
-                            href="#pablo"
-                            role="button"
-                            size="sm"
-                            color=""
-                            onClick={e => e.preventDefault()}
-                        >
-                            <i className="fas fa-ellipsis-v" />
-                        </DropdownToggle>
-                        <DropdownMenu className="dropdown-menu-arrow" right>
-                            <DropdownItem
-                                href="#pablo"
-                                onClick={e => removeInvoice()}
-                            >
-                                <i className="fas fa-trash-alt"></i>
-                                Eliminar
-                            </DropdownItem>
-                        </DropdownMenu>
-                    </UncontrolledDropdown>
+                    <Button
+                        color="danger"
+                        onClick={removeInvoice}
+                    >
+                        <i className='fa fa-times'></i>
+                    </Button>
                 </td>
             </tr>
         </>
