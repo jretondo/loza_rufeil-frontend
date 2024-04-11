@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { numberFormat } from '../../../../../function/numberFormat';
 import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
 import moment from 'moment';
 import EntryModal from './entryModal';
+import AlertsContext from '../../../../../context/alerts';
+import ActionsBackend from '../../../../../context/actionsBackend';
+import API_ROUTES from '../../../../../api/routes';
+import swal from 'sweetalert';
+import ReorderEntry from './reorderEntry';
 
 const EntryRow = ({
     id,
@@ -13,10 +18,54 @@ const EntryRow = ({
     refreshToggle,
     setEntryDetails
 }) => {
-    const [entryModal, setEntryModal] = useState(false);
+    const businessData = JSON.parse(localStorage.getItem("activeClient"));
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = entry.description;
     const textContent = tempDiv.textContent || tempDiv.innerText;
+
+    const [entryModal, setEntryModal] = useState(false);
+    const [reOrderModal, setReOrderModal] = useState(false);
+
+    const { newAlert, newActivity } = useContext(AlertsContext)
+    const { axiosDelete, loadingActions } = useContext(ActionsBackend)
+
+
+
+    const entryDelete = async (e) => {
+        e.preventDefault()
+        swal({
+            title: "¿Está seguro de eliminar este comprobante? Esta desición es permanente.",
+            text: `Eliminar el asiento Nº:${entry.number} con fecha:${moment(entry.date).format("DD/MM/YYYY")}`,
+            icon: "warning",
+            buttons: {
+                cancel: "No",
+                Si: true
+            },
+            dangerMode: true,
+        })
+            .then(async (willDelete) => {
+                let backPage = false
+                if (willDelete) {
+                    const response = await axiosDelete(API_ROUTES.purchasesDir.sub.receipt, id)
+                    if (!response.error) {
+                        if (first) {
+                            if (page > 1) {
+                                backPage = true
+                            }
+                        }
+                        newActivity(`Se ha eliminado el asiento Nº ${entry.number}) con fecha ${moment(entry.date).format("DD/MM/YYYY")} de la empresa (${businessData.business_name} (CUIT: ${businessData.document_number})`)
+                        newAlert("success", "Comprobante de compra eliminado con éxito!", "")
+                        if (backPage) {
+                            setPage(parseInt(page - 1))
+                        } else {
+                            refreshToggle()
+                        }
+                    } else {
+                        newAlert("danger", "Hubo un error!", "Intentelo nuevamente. Error: " + response.errorMsg)
+                    }
+                }
+            });
+    }
 
     return (
         <>
@@ -54,6 +103,14 @@ const EntryRow = ({
                             </DropdownItem>
                             <DropdownItem
                                 href="#pablo"
+                                onClick={() => setReOrderModal(true)}
+                            >
+                                <i className="fas fa-edit"></i>
+                                Reordenar
+                            </DropdownItem>
+                            <DropdownItem
+                                href="#pablo"
+                                onClick={entryDelete}
                             >
                                 <i className="fas fa-trash-alt"></i>
                                 Eliminar
@@ -66,6 +123,11 @@ const EntryRow = ({
                 entry={entry}
                 toggle={() => setEntryModal(!entryModal)}
                 isOpen={entryModal}
+            />
+            <ReorderEntry
+                isOpen={reOrderModal}
+                toggle={() => setReOrderModal(!reOrderModal)}
+                entry={entry}
             />
         </>
     )
