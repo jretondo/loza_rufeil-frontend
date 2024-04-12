@@ -115,6 +115,8 @@ const accountingDir = {
         accountingChartsExcel: accounting + "/accountingCharts/Excel",
         accountingChart: accounting + "/accountingChart",
         attributableAccountingChart: accounting + "/attributableAccountingChart",
+        reorderCheckEntryNumber: accounting + "/accountingEntry/reorder/check",
+        reorderEntry: accounting + "/accountingEntry/reorder",
     }
 }
 

@@ -27,7 +27,7 @@ const EntryRow = ({
     const [reOrderModal, setReOrderModal] = useState(false);
 
     const { newAlert, newActivity } = useContext(AlertsContext)
-    const { axiosDelete, loadingActions } = useContext(ActionsBackend)
+    const { axiosDelete } = useContext(ActionsBackend)
 
 
 
@@ -105,7 +105,7 @@ const EntryRow = ({
                                 href="#pablo"
                                 onClick={() => setReOrderModal(true)}
                             >
-                                <i className="fas fa-edit"></i>
+                                <i className="fas fa-arrow-up"></i>
                                 Reordenar
                             </DropdownItem>
                             <DropdownItem
@@ -128,6 +128,7 @@ const EntryRow = ({
                 isOpen={reOrderModal}
                 toggle={() => setReOrderModal(!reOrderModal)}
                 entry={entry}
+                refreshToggle={refreshToggle}
             />
         </>
     )
