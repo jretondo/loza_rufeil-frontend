@@ -7,12 +7,16 @@ import ActionsBackend from '../../../../../context/actionsBackend';
 import API_ROUTES from '../../../../../api/routes';
 import LoadingContext from '../../../../../context/loading';
 import InputSearch2 from '../../../../../components/Search/InputSearch2';
+import roundNumber from '../../../../../function/roundNumber';
 
 const ChargeEntriesComp = ({
     accountsList,
     entryDetails,
     setEntryDetails,
-    activeTab
+    activeTab,
+    importedToggle,
+    purchasePeriodId,
+    sellsPeriodId
 }) => {
     const [idFocused, setIdFocused] = useState(0);
     const [lastEntryActive, setLastEntryActive] = useState(false)
@@ -76,10 +80,10 @@ const ChargeEntriesComp = ({
             }
             const debits = entries.reduce((acc, entry) => {
                 return acc + parseFloat(entry.debit)
-            }, 0)
+            }, 0).toFixed(2)
             const credits = entries.reduce((acc, entry) => {
                 return acc + parseFloat(entry.credit)
-            }, 0)
+            }, 0).toFixed(2)
             if (debits !== credits) {
                 errors.push("El debe y el haber no coinciden")
             }
@@ -104,22 +108,24 @@ const ChargeEntriesComp = ({
                 return acc + parseFloat(entry.credit)
             }, 0)
             let data = {
+                purchasePeriodId,
+                sellsPeriodId,
                 number: entryNumber,
                 date: dateEntry,
                 description: detail,
-                debit: totalDebit,
-                credit: totalCredit,
+                debit: roundNumber(totalDebit),
+                credit: roundNumber(totalCredit),
                 AccountingEntriesDetails: entries.map((entry) => {
                     return {
                         account_chart_id: entry.account.id,
-                        debit: parseFloat(entry.debit),
-                        credit: parseFloat(entry.credit)
+                        debit: roundNumber(parseFloat(entry.debit)),
+                        credit: roundNumber(parseFloat(entry.credit))
                     }
                 })
             }
             entryDetails ? (data.id = entryDetails.id) : (data.id = undefined)
             let response
-            if (entryDetails) {
+            if (entryDetails && !importedToggle) {
                 response = await axiosPut(API_ROUTES.accountingDir.sub.accountingEntry, data, true)
             } else {
                 response = await axiosPost(API_ROUTES.accountingDir.sub.accountingEntry, data)
@@ -143,6 +149,7 @@ const ChargeEntriesComp = ({
                 setDateEntry(new Date())
                 getLastEntryNumber()
                 entryDetails && setEntryDetails(false)
+                importedToggle && importedToggle()
             } else {
                 newAlert("danger", "Error al guardar el asiento", response.errorMsg)
             }
@@ -374,7 +381,10 @@ const ChargeEntriesComp = ({
                         onFocus={(e) => handleFocus(`save-button`, e)}
                         color={idFocused === `save-button` ? "primary" : "success"}
                     >
-                        {entryDetails ? "Modificar Asiento" : "Guardar Asiento"} <i className='fas fa-save'></i>
+                        {entryDetails && !importedToggle ?
+                            "Modificar Asiento"
+                            : "Guardar Asiento"
+                        } <i className='fas fa-save'></i>
                     </Button>
                     <Button
                         index="3"
@@ -385,6 +395,7 @@ const ChargeEntriesComp = ({
                             setDateEntry(new Date())
                             getLastEntryNumber()
                             entryDetails && setEntryDetails(false)
+                            importedToggle && importedToggle()
                         }}
                         onFocus={(e) => handleFocus(`cancel-button`, e)}
                         color={idFocused === `cancel-button` ? "primary" : "danger"}

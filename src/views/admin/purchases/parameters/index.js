@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import PurchasesLayout from "..";
 import { ButtonGroup, Card, CardBody, CardHeader, Collapse } from "reactstrap";
-import { useWindowSize } from "hooks/UseWindowSize";
+import { useWindowSize } from "hooks/useWindowSize";
 import ButtonOpenCollapse from "components/Buttons/buttonOpenCollapse";
 import PaymentMethods from "./payments";
 import VatTaxesOthers from "./vatTaxesOthers";

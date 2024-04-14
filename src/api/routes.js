@@ -116,7 +116,7 @@ const accountingDir = {
         accountingChart: accounting + "/accountingChart",
         attributableAccountingChart: accounting + "/attributableAccountingChart",
         reorderCheckEntryNumber: accounting + "/accountingEntry/reorder/check",
-        reorderEntry: accounting + "/accountingEntry/reorder",
+        reorderEntry: accounting + "/accountingEntry/reorder"
     }
 }
 
@@ -131,6 +131,7 @@ const purchasesDir = {
     purchases,
     sub: {
         period: purchases + "/period",
+        periods: purchases + "/periods",
         params: purchases + "/params",
         paymentsMethods: purchases + "/paymentsMethods",
         receipt: purchases + "/receipt",
@@ -142,6 +143,7 @@ const purchasesDir = {
         periodTotal: purchases + "/period/total",
         excelExport: purchases + "/receipts/export",
         report: purchases + "/receipts/report",
+        entries: purchases + "/entries",
     }
 }
 

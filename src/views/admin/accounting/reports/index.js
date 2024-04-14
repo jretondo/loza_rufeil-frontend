@@ -4,7 +4,7 @@ import secureContext from 'context/secureRoutes';
 import apiRoutes from "../../../../api/routes";
 import { ButtonGroup, Card, CardBody, Collapse, Container } from "reactstrap";
 import ButtonOpenCollapse from "../../../../components/Buttons/buttonOpenCollapse";
-import { useWindowSize } from "../../../../hooks/UseWindowSize";
+import { useWindowSize } from "../../../../hooks/useWindowSize";
 import JournalComponent from "./journal";
 import AlertsContext from "../../../../context/alerts";
 import ActionsBackend from "../../../../context/actionsBackend";

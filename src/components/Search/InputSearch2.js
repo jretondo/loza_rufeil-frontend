@@ -20,10 +20,7 @@ const InputSearch2 = ({
     return (
         <>
             <style>
-                {`
-                .basic-single {
-                    z-index: 9999;
-                }
+                {`              
                 .select__control {                    
                     border: 1px solid #ced4da;
                     height: calc(2.70rem + 2px);

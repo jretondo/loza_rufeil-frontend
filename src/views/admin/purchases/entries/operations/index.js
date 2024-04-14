@@ -6,6 +6,7 @@ import API_ROUTES from '../../../../../api/routes';
 import ExcelPNG from 'assets/img/icons/excel.png';
 import ImportData from './importData';
 import LoadingContext from '../../../../../context/loading';
+import swal from 'sweetalert';
 
 const PurchasesEntriesOperations = ({
     purchasePeriod,
@@ -15,12 +16,13 @@ const PurchasesEntriesOperations = ({
     activePeriod,
     refreshList,
     periodMonth,
-    periodYear
+    periodYear,
+    setConfirmedPeriod
 }) => {
     const [importFile, setImportFile] = useState()
     const [purchaseImported, setPurchaseImported] = useState(false)
     const [importDataModule, setImportDataModule] = useState(false)
-    const { axiosGetFile, axiosPost, loadingActions, axiosPostFile } = useContext(ActionsBackend)
+    const { axiosGetFile, axiosPost, axiosPut, axiosPostFile, loadingActions } = useContext(ActionsBackend)
     const { newAlert, newActivity } = useContext(AlertsContext)
     const { setIsLoading } = useContext(LoadingContext)
 
@@ -65,6 +67,36 @@ const PurchasesEntriesOperations = ({
             newAlert("danger", "Hubo un error!", "Revise los datos colocados. Error: " + response.errorMsg)
         }
 
+    }
+
+    const closePeriod = async (e) => {
+        e.preventDefault()
+        swal({
+            title: "¿Está seguro de cerrar este periodo? Esta desición es permanente.",
+            text: `Cerrar el periodo ${periodMonth}/${periodYear}. Una vez cerrado no se podrá modificar ni agregar nada nuevo.`,
+            icon: "warning",
+            buttons: {
+                cancel: "No",
+                Si: true
+            },
+            dangerMode: true,
+        })
+            .then(async (willDelete) => {
+                if (willDelete) {
+                    const response = await axiosPut(API_ROUTES.purchasesDir.sub.period + "/close", {
+                        purchasePeriodId: purchasePeriod.id,
+                        accountingPeriodId: activePeriod.id
+                    })
+                    if (!response.error) {
+                        newActivity("Se cerró un periodo", "success")
+                        newAlert("success", "Periodo cerrado con éxito!", "Recuerde que no podrá modificar los datos de este periodo")
+                        refreshList()
+                        setConfirmedPeriod(false)
+                    } else {
+                        newAlert("danger", "Hubo un error!", "Revise los datos colocados. Error: " + response.errorMsg)
+                    }
+                }
+            });
     }
 
     useEffect(() => {
@@ -129,18 +161,19 @@ const PurchasesEntriesOperations = ({
                     </Col>
                     <Col md="3" className="text-center">
                         <Button
+                            onClick={closePeriod}
                             disabled={purchasePeriod.closed}
                             color="primary">Cerrar Periodo <i className='fas fa-window-close ml-2'></i></Button>
                     </Col>
                     <Col md="3" className="text-center">
                         <Button
-                            onClick={() => importFromAFIP()}
+                            onClick={importFromAFIP}
                             color="primary">Exportar TXT para AFIP <i className='fas fa-upload ml-2'></i></Button>
                     </Col>
                     <Col md="3" className="text-center">
                         <Button
-                            onClick={() => getReport()}
-                            color="primary">Importar PDF<i className='fas fa-download ml-2'></i></Button>
+                            onClick={getReport}
+                            color="primary">Descargar PDF<i className='fas fa-download ml-2'></i></Button>
                     </Col>
                 </Row>
         }

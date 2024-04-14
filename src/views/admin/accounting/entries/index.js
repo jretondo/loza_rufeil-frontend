@@ -4,12 +4,13 @@ import secureContext from 'context/secureRoutes';
 import apiRoutes from "../../../../api/routes";
 import { ButtonGroup, Card, CardBody, Collapse, Container } from "reactstrap";
 import ButtonOpenCollapse from "../../../../components/Buttons/buttonOpenCollapse";
-import { useWindowSize } from "../../../../hooks/UseWindowSize";
+import { useWindowSize } from "../../../../hooks/useWindowSize";
 import ChargeEntriesComp from "./charge";
 import ActionsBackend from "../../../../context/actionsBackend";
 import AlertsContext from "../../../../context/alerts";
 import API_ROUTES from "../../../../api/routes";
 import EntriesList from "./list";
+import OperationsEntries from "./operations";
 
 const Index = () => {
     const activePeriod = JSON.parse(localStorage.getItem("activePeriod"))
@@ -79,7 +80,10 @@ const Index = () => {
                             />
                         </Collapse>
                         <Collapse isOpen={activeTab === 2 ? true : false} >
-
+                            <OperationsEntries
+                                accountsList={accountsList}
+                                activeTab={activeTab}
+                            />
                         </Collapse>
                     </CardBody>
                 </Card>

@@ -19,6 +19,7 @@ const EntryRow = ({
     setEntryDetails
 }) => {
     const businessData = JSON.parse(localStorage.getItem("activeClient"));
+    const activePeriod = JSON.parse(localStorage.getItem("activePeriod"));
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = entry.description;
     const textContent = tempDiv.textContent || tempDiv.innerText;
@@ -29,12 +30,10 @@ const EntryRow = ({
     const { newAlert, newActivity } = useContext(AlertsContext)
     const { axiosDelete } = useContext(ActionsBackend)
 
-
-
     const entryDelete = async (e) => {
         e.preventDefault()
         swal({
-            title: "¿Está seguro de eliminar este comprobante? Esta desición es permanente.",
+            title: "¿Está seguro de eliminar este asiento? Esta desición es permanente.",
             text: `Eliminar el asiento Nº:${entry.number} con fecha:${moment(entry.date).format("DD/MM/YYYY")}`,
             icon: "warning",
             buttons: {
@@ -46,7 +45,7 @@ const EntryRow = ({
             .then(async (willDelete) => {
                 let backPage = false
                 if (willDelete) {
-                    const response = await axiosDelete(API_ROUTES.purchasesDir.sub.receipt, id)
+                    const response = await axiosDelete(API_ROUTES.accountingDir.sub.accountingEntry, `${entry.id}/${activePeriod.id}`)
                     if (!response.error) {
                         if (first) {
                             if (page > 1) {
@@ -54,7 +53,7 @@ const EntryRow = ({
                             }
                         }
                         newActivity(`Se ha eliminado el asiento Nº ${entry.number}) con fecha ${moment(entry.date).format("DD/MM/YYYY")} de la empresa (${businessData.business_name} (CUIT: ${businessData.document_number})`)
-                        newAlert("success", "Comprobante de compra eliminado con éxito!", "")
+                        newAlert("success", "Asiento eliminado con éxito!", "")
                         if (backPage) {
                             setPage(parseInt(page - 1))
                         } else {

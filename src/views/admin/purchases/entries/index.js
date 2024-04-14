@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import PurchasesLayout from "..";
 import { ButtonGroup, Card, CardBody, Collapse, Input } from "reactstrap";
 import ButtonOpenCollapse from "components/Buttons/buttonOpenCollapse";
-import { useWindowSize } from "hooks/UseWindowSize";
+import { useWindowSize } from "hooks/useWindowSize";
 import PurchasesEntriesCharge from "./charge";
 import PurchasesEntriesList from "./list";
 import PurchasesEntriesChargeHeader from "./header";
@@ -16,6 +16,7 @@ const Index = () => {
     const modules = JSON.parse(localStorage.getItem("modules"))
     const activeClient = localStorage.getItem("activeClient")
     const activePeriod = JSON.parse(localStorage.getItem("activePeriod"))
+
     const [confirmedPeriod, setConfirmedPeriod] = useState(false)
     const [periodMonth, setPeriodMonth] = useState()
     const [periodYear, setPeriodYear] = useState()
@@ -137,6 +138,7 @@ const Index = () => {
                                     refreshList={() => setRefreshList(!refreshList)}
                                     periodMonth={periodMonth}
                                     periodYear={periodYear}
+                                    setConfirmedPeriod={setConfirmedPeriod}
                                 />
                             </Collapse>
                         </CardBody>
