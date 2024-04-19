@@ -122,7 +122,7 @@ const TaxesEntry = ({
                             color="danger"
                             onClick={() => {
                                 const newTaxesArray = taxesList.map((item) => {
-                                    if (item.id === tax.id) {
+                                    if (item.type === tax.type) {
                                         item.active = !item.active
                                         item.amount = 0
                                         item.recorded = 0
@@ -187,7 +187,7 @@ const TaxesEntry = ({
                                     color="primary"
                                     onClick={() => {
                                         const newTaxesArray = taxesList.map((item) => {
-                                            if (item.id === tax.id) {
+                                            if (item.type === tax.type) {
                                                 item.active = !item.active
                                             }
                                             return item
