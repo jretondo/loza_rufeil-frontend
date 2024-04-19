@@ -1,5 +1,6 @@
 import { TableList } from 'components/Lists/TableList';
 import InputSearch from 'components/Search/InputSearch';
+import roundNumber from 'function/roundNumber';
 import React from 'react';
 import { Button, Input } from 'reactstrap';
 
@@ -73,6 +74,7 @@ const ReceiptsConceptsTable = ({
                     }
                     <td className='text-center'>
                         <Input
+                            disabled={receiptConcept.recordType === 0}
                             min="0.01"
                             step="0.01"
                             type="number"
@@ -83,7 +85,7 @@ const ReceiptsConceptsTable = ({
                             onChange={(e) => {
                                 const newAccountsArray = receiptConcepts.map((item) => {
                                     if (item.id === receiptConcept.id) {
-                                        item.amount = (e.target.value)
+                                        item.amount = roundNumber(e.target.value)
                                     }
                                     return item
                                 })

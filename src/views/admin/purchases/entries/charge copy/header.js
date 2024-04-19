@@ -7,7 +7,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Button, Col, FormGroup, Input, Label, Modal, Row } from 'reactstrap';
 import ProviderForm from '../../providers/form';
 import moment from 'moment';
-import InputSearch2 from '../../../../../components/Search/InputSearch2';
 
 const ReceiptsChargeHeader = ({
     selectedProvider,
@@ -77,6 +76,12 @@ const ReceiptsChargeHeader = ({
         }
     }
 
+    const providerSearchFn = (provider, searchedText) => {
+        if ((`${provider.business_name} (${provider.document_number})`).toLowerCase().includes(searchedText.toLowerCase())) {
+            return provider
+        }
+    }
+
     const invoiceTypeSearchFn = (invoiceType, searchedText) => {
         if (invoiceType.name.toLowerCase().includes(searchedText.toLowerCase())) {
             return invoiceType
@@ -141,7 +146,8 @@ const ReceiptsChargeHeader = ({
                         }
                         id="order_1"
                         type="date"
-                    />
+                        onKeyDown={
+                            (e) => nextInput(e, 1)} />
                 </FormGroup>
             </Col>
             <Col md="6">
@@ -150,15 +156,19 @@ const ReceiptsChargeHeader = ({
                     className="p-0 px-1 ml-2"
                     color="primary"
                     onClick={() => setIsOpenNewProvider(true)}
-                    index="50"
                 ><i className='fas fa-plus'></i></Button>
-                <InputSearch2
+                <InputSearch
+                    id="order_2"
                     itemsList={providersList}
+                    itemSelected={selectedProvider}
+                    title={""}
                     placeholderInput={"Busque un proveedor..."}
                     getNameFn={(providerItem) => `${providerItem.business_name} (${providerItem.document_number})`}
-                    id="order_2"
-                    itemSelected={selectedProvider}
                     setItemSelected={setSelectedProvider}
+                    searchFn={providerSearchFn}
+                    strict={true}
+                    cbStrict={(text) => newAlert("danger", "Error", "No se encontró el proveedor: " + text)}
+                    nextFn={() => document.getElementById("order_3").focus()}
                 />
             </Col>
             <Col md="3">
@@ -169,7 +179,7 @@ const ReceiptsChargeHeader = ({
                         min={0.01}
                         step={0.01}
                         value={headerInvoice.total}
-                        onChange={e => setHeaderInvoice({ ...headerInvoice, total: e.target.value })}
+                        onChange={e => setHeaderInvoice({ ...headerInvoice, total: parseFloat(e.target.value) })}
                         type="number"
                         id="order_3"
                         onKeyDown={(e) => nextInput(e, 3)}

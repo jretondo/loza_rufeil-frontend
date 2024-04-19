@@ -57,7 +57,11 @@ const InputSearch2 = ({
                 })
                 }
                 onChange={(e) => {
-                    setItemSelected(e.value)
+                    try {
+                        setItemSelected(e.value)
+                    } catch (error) {
+
+                    }
                 }}
             />
         </>
