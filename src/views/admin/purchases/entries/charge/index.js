@@ -11,9 +11,9 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import PurchasesEntrySummary from './entry';
 import TaxesEntry from './taxes';
-import roundNumber from 'function/roundNumber';
 import moment from 'moment';
 import { invoiceTypeConvertObject } from '../../../../../function/invoiceType';
+import roundNumber from '../../../../../function/roundNumber';
 
 const PurchasesEntriesCharge = ({
     accountsList,
@@ -52,9 +52,9 @@ const PurchasesEntriesCharge = ({
     const saveImportedInvoice = async () => {
         const data = {
             header: headerInvoice,
-            payments: paymentsMethods.filter((payment) => payment.amount > 0),
-            concepts: receiptConcepts.filter((concept) => concept.amount > 0),
-            taxes: taxesList.filter((tax) => (tax.amount > 0 && tax.active)),
+            payments: paymentsMethods.filter((payment) => parseFloat(payment.amount) > 0).map(payment => { return { ...payment, amount: roundNumber(payment.amount) } }),
+            concepts: receiptConcepts.filter((concept) => parseFloat(concept.amount) > 0).map(concept => { return { ...concept, amount: roundNumber(concept.amount) } }),
+            taxes: taxesList.filter((tax) => (parseFloat(tax.amount) > 0 && tax.active)).map(tax => { return { ...tax, amount: roundNumber(tax.amount), recorded: roundNumber(tax.recorded) } }),
             purchasePeriodId: purchasePeriodId,
             provider: selectedProvider,
             observations: detail
@@ -67,9 +67,9 @@ const PurchasesEntriesCharge = ({
                         const newInvoice = {
                             ...item,
                             header: headerInvoice,
-                            payments: paymentsMethods.filter((payment) => payment.amount > 0).map((payment) => roundNumber(payment.amount)),
-                            concepts: receiptConcepts.filter((concept) => concept.amount > 0).map((concept) => roundNumber(concept.amount)),
-                            taxes: taxesList.filter((tax) => (tax.amount > 0 && tax.active)).map((tax) => roundNumber(tax.amount)).map((tax) => roundNumber(tax.recorded)),
+                            payments: paymentsMethods.filter((payment) => parseFloat(payment.amount) > 0).map(payment => { return { ...payment, amount: roundNumber(payment.amount) } }),
+                            concepts: receiptConcepts.filter((concept) => parseFloat(concept.amount) > 0).map(concept => { return { ...concept, amount: roundNumber(concept.amount) } }),
+                            taxes: taxesList.filter((tax) => (parseFloat(tax.amount) > 0 && tax.active)).map(tax => { return { ...tax, amount: roundNumber(tax.amount), recorded: roundNumber(tax.recorded) } }),
                             Provider: selectedProvider,
                             provider: selectedProvider,
                             observations: detail,
@@ -99,7 +99,6 @@ const PurchasesEntriesCharge = ({
     const completeFieldsImported = () => {
         const invoiceNumber = parseInt(invoiceSelected.receipt_type)
         const { word, type } = invoiceTypeConvertObject(invoiceNumber)
-
         const newHeader = {
             date: moment(new Date(invoiceSelected.date)).format("YYYY-MM-DD"),
             total: invoiceSelected.total,

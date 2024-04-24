@@ -58,6 +58,7 @@ const ReceiptsChargeHeader = ({
     }
 
     const changeWord = (w) => {
+        console.log(w)
         switch (w.toString()) {
             case "1":
                 setHeaderInvoice({ ...headerInvoice, word: "A" })
@@ -84,23 +85,22 @@ const ReceiptsChargeHeader = ({
     }
 
     const wordCalculator = (providerSelected, clientActive) => {
-        const providerVatCondition = providerSelected.iva_condition_id
-        const clientVatCondition = clientActive.iva_condition_id
+        const providerVatCondition = parseInt(providerSelected.iva_condition_id)
+        const clientVatCondition = parseInt(clientActive.iva_condition_id)
 
-        switch ([providerVatCondition, clientVatCondition]) {
-            case providerVatCondition === 30 && clientVatCondition === 30:
-                setHeaderInvoice({ ...headerInvoice, word: "A" })
-                break;
-            case clientVatCondition === 32 && providerVatCondition === 30:
-                setHeaderInvoice({ ...headerInvoice, word: "B" })
-                break;
-            case clientVatCondition === 20 && providerVatCondition === 30:
-                setHeaderInvoice({ ...headerInvoice, word: "B" })
-                break;
-            default:
-                setHeaderInvoice({ ...headerInvoice, word: "C" })
-                break;
+        if (providerVatCondition === 30 && clientVatCondition === 30) {
+            setHeaderInvoice({ ...headerInvoice, word: "A" })
+            return
         }
+        if (clientVatCondition === 32 && providerVatCondition === 30) {
+            setHeaderInvoice({ ...headerInvoice, word: "B" })
+            return
+        }
+        if (clientVatCondition === 20 && providerVatCondition === 30) {
+            setHeaderInvoice({ ...headerInvoice, word: "B" })
+            return
+        }
+        setHeaderInvoice({ ...headerInvoice, word: "C" })
     }
 
     useEffect(() => {
