@@ -100,7 +100,7 @@ const PurchasesEntriesCharge = ({
         const invoiceNumber = parseInt(invoiceSelected.receipt_type)
         const { word, type } = invoiceTypeConvertObject(invoiceNumber)
         const newHeader = {
-            date: moment(new Date(invoiceSelected.date)).format("YYYY-MM-DD"),
+            date: invoiceSelected.date,
             total: invoiceSelected.total,
             type: type,
             word: word,
