@@ -45,12 +45,13 @@ const PurchasesEntriesOperations = ({
         data.append("accountingPeriodId", activePeriod.id)
         const response = await axiosPost(API_ROUTES.purchasesDir.sub.cvsImport, data)
         if (!response.error) {
-            setPurchaseImported(response.data.map((receipt, key) => {
+            const processedData = await Promise.all(response.data.map(async (receipt, key) => {
                 return {
                     ...receipt,
                     id: key
                 }
             }))
+            setPurchaseImported(processedData)
             setImportDataModule(true)
         } else {
             newAlert("danger", "Hubo un error!", "Revise los datos colocados. Error: " + response.errorMsg)

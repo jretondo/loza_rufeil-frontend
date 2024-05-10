@@ -11,7 +11,6 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import PurchasesEntrySummary from './entry';
 import TaxesEntry from './taxes';
-import moment from 'moment';
 import { invoiceTypeConvertObject } from '../../../../../function/invoiceType';
 import roundNumber from '../../../../../function/roundNumber';
 
