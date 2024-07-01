@@ -16,7 +16,8 @@ const ReceiptsChargeHeader = ({
     setHeaderInvoice,
     correctAmounts,
     periodMonth,
-    periodYear
+    periodYear,
+    importedReceipt
 }) => {
     const activeClient = JSON.parse(localStorage.getItem("activeClient"))
     const [providersList, setProvidersList] = useState([])
@@ -106,7 +107,7 @@ const ReceiptsChargeHeader = ({
     useEffect(() => {
         const nextPeriod = moment(`${periodYear}-${periodMonth}-01`).add(1, "month")
         setDateLimitMax(moment(nextPeriod).format("YYYY-MM-DD"))
-        const dateLimitMin = moment(`${periodYear}-${periodMonth}-01`).subtract(3, "month")
+        const dateLimitMin = moment(`${periodYear}-${periodMonth}-01`).subtract(6, "month")
         setDateLimitMin(moment(dateLimitMin).format("YYYY-MM-DD"))
     }, [periodMonth, periodYear])
 
@@ -120,7 +121,7 @@ const ReceiptsChargeHeader = ({
     }, [loadingActions, setIsLoading])
 
     useEffect(() => {
-        selectedProvider && wordCalculator(selectedProvider, activeClient)
+        (selectedProvider && !importedReceipt )&& wordCalculator(selectedProvider, activeClient)
         // eslint-disable-next-line
     }, [selectedProvider])
 

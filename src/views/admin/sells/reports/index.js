@@ -1,25 +1,20 @@
 import React, { useContext, useEffect } from "react";
 import Header from "components/Headers/Header.js";
 import secureContext from 'context/secureRoutes';
-import apiRoutes from "../../../api/routes";
-import { Container } from "reactstrap";
+import apiRoutes from "../../../../api/routes";
 
-
-const PurchasesLayout = ({ children }) => {
+const Index = () => {
     const { setUrlRoute } = useContext(secureContext)
 
     useEffect(() => {
-        setUrlRoute(apiRoutes.routesDir.sub.purchases)
+        setUrlRoute(apiRoutes.routesDir.sub.dashboard)
     }, [setUrlRoute])
 
     return (
         <>
             <Header />
-            <Container className="mt--9" fluid>
-                {children}
-            </Container>
         </>
     )
 }
 
-export default PurchasesLayout;
+export default Index;

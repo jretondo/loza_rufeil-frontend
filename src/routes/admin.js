@@ -12,6 +12,9 @@ import purchasesReports from 'views/admin/purchases/reports'
 import purchaseParameters from 'views/admin/purchases/parameters'
 
 import sellClients from 'views/admin/sells/customers'
+import sellsEntries from 'views/admin/sells/entries'
+import sellsReports from 'views/admin/sells/reports'
+import sellsParameters from 'views/admin/sells/parameters'
 
 var routes = [
   {
@@ -77,7 +80,7 @@ var routes = [
       {
         name: "Comprobantes",
         path: "/sells/entries",
-        component: purchasesEntries,
+        component: sellsEntries,
       },
       {
         name: "Clientes",
@@ -87,12 +90,12 @@ var routes = [
       {
         name: "Reportes",
         path: "/sells/reports",
-        component: purchasesReports,
+        component: sellsReports,
       },
       {
         name: "Parametros",
         path: "/sells/parameters",
-        component: purchaseParameters,
+        component: sellsParameters,
       }
     ],
     name: "Ventas",

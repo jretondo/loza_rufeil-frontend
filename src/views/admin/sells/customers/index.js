@@ -1,16 +1,17 @@
-import React, { useContext, useEffect, useState } from 'react';
-import SellsLayout from '..';
-import AlertsContext from '../../../../context/alerts';
-import LoadingContext from '../../../../context/loading';
-import ActionsBackend from '../../../../context/actionsBackend';
-import API_ROUTES from '../../../../api/routes';
-import CustomersListComponent from './list';
+import React, { useContext, useEffect, useState } from "react";
+import PurchasesLayout from "..";
+import ProvidersList from "./list";
+import LoadingContext from "context/loading";
+import ProviderForm from "./form";
+import AlertsContext from "context/alerts";
+import ActionsBackend from "context/actionsBackend";
+import API_ROUTES from "../../../../api/routes";
 
-const SellClientsComponent = () => {
+const Providers = () => {
     const accountPeriod = JSON.parse(localStorage.getItem("activePeriod"))
     const modules = JSON.parse(localStorage.getItem("modules"))
-    const [isOpenClientForm, setIsOpenClientForm] = useState(false)
-    const [clientInfo, setClientInfo] = useState(false)
+    const [isOpenProviderForm, setIsOpenProviderForm] = useState(false)
+    const [providerInfo, setProviderInfo] = useState(false)
     const [accountsList, setAccountsList] = useState([])
 
     const { axiosGetQuery, loadingActions } = useContext(ActionsBackend)
@@ -50,25 +51,30 @@ const SellClientsComponent = () => {
         setIsLoading(loadingActions)
     }, [loadingActions, setIsLoading])
 
-
-    return (<>
-        <SellsLayout>
-            {
-                isOpenClientForm ?
-                    <></> :
-                    <CustomersListComponent
-                        setClientInfo={setClientInfo}
-                        setIsOpenClientForm={setIsOpenClientForm}
-                        setIsLoading={setIsLoading}
-                        clientInfo={clientInfo}
-                        accountsList={accountsList}
-                        accountSearchFn={accountSearchFn}
-                        hasAccountingModule={hasAccountingModule}
-                        accountPeriod={accountPeriod}
-                    />
-            }
-        </SellsLayout>
-    </>)
+    return (
+        <>
+            <PurchasesLayout >
+                {
+                    isOpenProviderForm ?
+                        <ProviderForm
+                            providerInfo={providerInfo}
+                            setIsOpenProviderForm={setIsOpenProviderForm}
+                            setIsLoading={setIsLoading}
+                        /> :
+                        <ProvidersList
+                            setProviderInfo={setProviderInfo}
+                            setIsOpenProviderForm={setIsOpenProviderForm}
+                            setIsLoading={setIsLoading}
+                            providerInfo={providerInfo}
+                            accountsList={accountsList}
+                            accountSearchFn={accountSearchFn}
+                            hasAccountingModule={hasAccountingModule}
+                            accountPeriod={accountPeriod}
+                        />
+                }
+            </PurchasesLayout>
+        </>
+    )
 }
 
-export default SellClientsComponent;
+export default Providers;

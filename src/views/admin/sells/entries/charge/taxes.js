@@ -9,7 +9,8 @@ const TaxesEntry = ({
     setTaxesList,
     hasAccountingModule,
     accountsList,
-    accountSearchFn
+    accountSearchFn,
+    correctAmounts
 }) => {
     const [isOpenModalAdd, setIsOpenModalAdd] = useState(false)
     const toggleModalAdd = () => setIsOpenModalAdd(!isOpenModalAdd)
@@ -36,6 +37,30 @@ const TaxesEntry = ({
                 break;
         }
         return roundNumber(total)
+    }
+
+    const reverseCalculate = (amount, taxType) => {
+        let recorded = 0
+        switch (taxType) {
+            case 4:
+                recorded = (amount) / (0.105)
+                break;
+            case 5:
+                recorded = (amount) / (0.21)
+                break;
+            case 6:
+                recorded = (amount) / (0.27)
+                break;
+            case 8:
+                recorded = (amount) / (0.05)
+                break;
+            case 9:
+                recorded = (amount) / (0.025)
+                break;
+            default:
+                break;
+        }
+        return roundNumber(recorded)
     }
 
     return (<>
@@ -79,20 +104,23 @@ const TaxesEntry = ({
                             onChange={(e) => {
                                 const newTaxesArray = taxesList.map((item) => {
                                     if (item.id === tax.id) {
-                                        tax.recorded = roundNumber(e.target.value)
+                                        tax.recorded = (e.target.value)
                                     }
                                     return item
                                 })
                                 setTaxesList(newTaxesArray)
                             }}
-                            onBlur={() => {
-                                const newTaxesArray = taxesList.map((item) => {
-                                    if (item.id === tax.id) {
-                                        item.amount = calculateTotal(item.recorded, item.type)
-                                    }
-                                    return item
-                                })
-                                setTaxesList(newTaxesArray)
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    const newTaxesArray = taxesList.map((item) => {
+                                        if (item.id === tax.id) {
+                                            item.amount = calculateTotal(tax.recorded, tax.type)
+                                        }
+                                        return item
+                                    })
+                                    setTaxesList(newTaxesArray)
+                                    correctAmounts()
+                                }
                             }}
                         />
                     </td>
@@ -108,12 +136,24 @@ const TaxesEntry = ({
                             onChange={(e) => {
                                 const newTaxesArray = taxesList.map((item) => {
                                     if (item.id === tax.id) {
-                                        tax.amount = roundNumber(e.target.value)
-                                        item.amount = roundNumber(e.target.value)
+                                        tax.amount = (e.target.value)
+                                        item.amount = (e.target.value)
                                     }
                                     return item
                                 })
                                 setTaxesList(newTaxesArray)
+                            }}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    const newTaxesArray = taxesList.map((item) => {
+                                        if (item.id === tax.id) {
+                                            item.recorded = reverseCalculate(tax.amount, tax.type)
+                                        }
+                                        return item
+                                    })
+                                    setTaxesList(newTaxesArray)
+                                    correctAmounts()
+                                }
                             }}
                         />
                     </td>

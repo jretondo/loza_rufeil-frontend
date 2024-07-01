@@ -11,9 +11,8 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import PurchasesEntrySummary from './entry';
 import TaxesEntry from './taxes';
-import roundNumber from 'function/roundNumber';
-import moment from 'moment';
 import { invoiceTypeConvertObject } from '../../../../../function/invoiceType';
+import roundNumber from '../../../../../function/roundNumber';
 
 const PurchasesEntriesCharge = ({
     accountsList,
@@ -39,26 +38,22 @@ const PurchasesEntriesCharge = ({
         sellPoint: "",
         number: "",
     })
+
     const [paymentsMethods, setPaymentsMethods] = useState([])
     const [receiptConcepts, setReceiptConcepts] = useState([])
     const [taxesList, setTaxesList] = useState([])
+
     const [detail, setDetail] = useState("")
-    const [entryAmounts, setEntryAmounts] = useState({
-        recorded: 0,
-        unrecorded: 0,
-        exempt: 0,
-        payments: 0,
-        taxes: 0,
-    })
+
     const { axiosGetQuery, axiosPost } = useContext(ActionsBackend)
     const { newAlert, newActivity } = useContext(AlertsContext)
 
     const saveImportedInvoice = async () => {
         const data = {
             header: headerInvoice,
-            payments: paymentsMethods.filter((payment) => payment.amount > 0),
-            concepts: receiptConcepts.filter((concept) => concept.amount > 0),
-            taxes: taxesList.filter((tax) => (tax.amount > 0 && tax.active)),
+            payments: paymentsMethods.filter((payment) => parseFloat(payment.amount) > 0).map(payment => { return { ...payment, amount: roundNumber(payment.amount) } }),
+            concepts: receiptConcepts.filter((concept) => parseFloat(concept.amount) > 0).map(concept => { return { ...concept, amount: roundNumber(concept.amount) } }),
+            taxes: taxesList.filter((tax) => (parseFloat(tax.amount) > 0 && tax.active)).map(tax => { return { ...tax, amount: roundNumber(tax.amount), recorded: roundNumber(tax.recorded) } }),
             purchasePeriodId: purchasePeriodId,
             provider: selectedProvider,
             observations: detail
@@ -71,9 +66,9 @@ const PurchasesEntriesCharge = ({
                         const newInvoice = {
                             ...item,
                             header: headerInvoice,
-                            payments: paymentsMethods.filter((payment) => payment.amount > 0),
-                            concepts: receiptConcepts.filter((concept) => concept.amount > 0),
-                            taxes: taxesList.filter((tax) => (tax.amount > 0 && tax.active)),
+                            payments: paymentsMethods.filter((payment) => parseFloat(payment.amount) > 0).map(payment => { return { ...payment, amount: roundNumber(payment.amount) } }),
+                            concepts: receiptConcepts.filter((concept) => parseFloat(concept.amount) > 0).map(concept => { return { ...concept, amount: roundNumber(concept.amount) } }),
+                            taxes: taxesList.filter((tax) => (parseFloat(tax.amount) > 0 && tax.active)).map(tax => { return { ...tax, amount: roundNumber(tax.amount), recorded: roundNumber(tax.recorded) } }),
                             Provider: selectedProvider,
                             provider: selectedProvider,
                             observations: detail,
@@ -103,9 +98,8 @@ const PurchasesEntriesCharge = ({
     const completeFieldsImported = () => {
         const invoiceNumber = parseInt(invoiceSelected.receipt_type)
         const { word, type } = invoiceTypeConvertObject(invoiceNumber)
-
         const newHeader = {
-            date: moment(new Date(invoiceSelected.date)).format("YYYY-MM-DD"),
+            date: invoiceSelected.date,
             total: invoiceSelected.total,
             type: type,
             word: word,
@@ -114,20 +108,17 @@ const PurchasesEntriesCharge = ({
         }
         setHeaderInvoice(newHeader)
         invoiceSelected.Provider && setSelectedProvider(invoiceSelected.Provider)
-
     }
 
-
     const saveNewReceipt = async () => {
-
         const data = {
             header: headerInvoice,
-            payments: paymentsMethods.filter((payment) => payment.amount > 0),
-            concepts: receiptConcepts.filter((concept) => concept.amount > 0),
-            taxes: taxesList.filter((tax) => (tax.amount > 0 && tax.active)),
-            purchasePeriodId: purchasePeriodId,
+            payments: paymentsMethods.filter((payment) => payment.amount > 0).map(payment => { return { ...payment, amount: roundNumber(payment.amount) } }),
+            concepts: receiptConcepts.filter((concept) => concept.amount > 0).map(concept => { return { ...concept, amount: roundNumber(concept.amount) } }),
+            taxes: taxesList.filter((tax) => (tax.amount > 0 && tax.active)).map(tax => { return { ...tax, amount: roundNumber(tax.amount), recorded: roundNumber(tax.recorded) } }),
             provider: selectedProvider,
-            observations: detail
+            observations: detail,
+            purchasePeriodId: purchasePeriodId,
         }
         const response = await axiosPost(API_ROUTES.purchasesDir.sub.receipt, data)
         if (!response.error) {
@@ -293,41 +284,6 @@ const PurchasesEntriesCharge = ({
         return { taxes: newTaxesArray, recorded: roundNumber(taxesList.reduce((acc, tax) => acc + roundNumber(tax.recorded), 0)) }
     }
 
-    const setConceptsAmounts = () => {
-        const newAmounts = {
-            recorded: 0,
-            unrecorded: 0,
-            exempt: 0,
-            payments: 0,
-            taxes: 0
-        }
-        if (receiptConcepts.length > 0) {
-            receiptConcepts.forEach((concept) => {
-                if (concept.recordType === 0 && concept.amount > 0) {
-                    newAmounts.recorded += roundNumber(concept.amount)
-                } else if (concept.recordType === 1 && concept.amount > 0) {
-                    newAmounts.unrecorded += roundNumber(concept.amount)
-                } else if (concept.recordType === 2 && concept.amount > 0) {
-                    newAmounts.exempt += roundNumber(concept.amount)
-                }
-            })
-        }
-        if (paymentsMethods.length > 0) {
-            paymentsMethods.forEach((payment) => {
-                if (payment.amount > 0) {
-                    newAmounts.payments += roundNumber(payment.amount)
-                }
-            })
-        }
-        if (taxesList.length > 0) {
-            taxesList.forEach((tax) => {
-                if (tax.amount > 0) {
-                    newAmounts.taxes += roundNumber(tax.amount)
-                }
-            })
-        }
-        setEntryAmounts(newAmounts)
-    }
 
     const getAllData = async (vat_condition) => {
         await getPaymentsMethods()
@@ -370,19 +326,6 @@ const PurchasesEntriesCharge = ({
         // eslint-disable-next-line
     }, [receiptConcepts.length])
 
-    useEffect(() => {
-        if (invoiceSelected && invoiceSelected.checked) {
-            setPaymentsMethods(invoiceSelected.payments)
-            setReceiptConcepts(invoiceSelected.concepts)
-            setTaxesList(invoiceSelected.taxes)
-            setSelectedProvider(invoiceSelected.Provider)
-            setDetail(invoiceSelected.observations)
-            setConceptsAmounts()
-        } else {
-            setConceptsAmounts()
-        }
-        // eslint-disable-next-line
-    }, [receiptConcepts, paymentsMethods, taxesList])
 
     useEffect(() => {
         (invoiceSelected && importedReceipt) && completeFieldsImported();
@@ -433,7 +376,9 @@ const PurchasesEntriesCharge = ({
                                 </Col>
                                 <Col md="6" className="text-center" style={{ border: "2px solid #073863" }}>
                                     <PurchasesEntrySummary
-                                        entryAmounts={entryAmounts}
+                                        paymentsMethods={paymentsMethods}
+                                        receiptConcepts={receiptConcepts}
+                                        taxesList={taxesList}
                                     />
                                 </Col>
                             </Row>
@@ -478,7 +423,7 @@ const PurchasesEntriesCharge = ({
                                     className={classNames({ active: activeTab === 0 })}
                                     onClick={() => setActiveTab(0)}
                                 >
-                                    Conceptos de gasto
+                                    Impuestos
                                 </NavLink>
                             </NavItem>
                             <NavItem style={{ cursor: "pointer" }}>
@@ -487,7 +432,7 @@ const PurchasesEntriesCharge = ({
                                     className={classNames({ active: activeTab === 1 })}
                                     onClick={() => setActiveTab(1)}
                                 >
-                                    Metodos de pago
+                                    Conceptos de gasto
                                 </NavLink>
                             </NavItem>
                             <NavItem style={{ cursor: "pointer" }}>
@@ -496,38 +441,38 @@ const PurchasesEntriesCharge = ({
                                     className={classNames({ active: activeTab === 2 })}
                                     onClick={() => setActiveTab(2)}
                                 >
-                                    Impuestos
+                                    Metodos de pago
                                 </NavLink>
                             </NavItem>
                         </Nav>
                         <TabContent activeTab={activeTab}>
                             <TabPane tabId={0} className="p-5" style={{ background: "gray", fontWeight: "bold", color: "#073863" }}>
-                                <ReceiptsConceptsTable
-                                    receiptConcepts={receiptConcepts}
-                                    setReceiptConcepts={setReceiptConcepts}
-                                    accountsList={accountsList}
-                                    accountSearchFn={accountSearchFn}
-                                    hasAccountingModule={hasAccountingModule}
-                                />
-                            </TabPane>
-                            <TabPane tabId={1} className="p-5" style={{ background: "gray", fontWeight: "bold", color: "#073863" }} >
-                                <ReceiptPaymentsTable
-                                    paymentsArray={paymentsMethods}
-                                    setPaymentsArray={setPaymentsMethods}
-                                    accountsList={accountsList}
-                                    accountSearchFn={accountSearchFn}
-                                    hasAccountingModule={hasAccountingModule}
-                                    setEntryAmounts={setEntryAmounts}
-                                    entryAmounts={entryAmounts}
-                                />
-                            </TabPane>
-                            <TabPane tabId={2} className="p-5" style={{ background: "gray", fontWeight: "bold", color: "#073863" }}>
                                 <TaxesEntry
                                     taxesList={taxesList}
                                     setTaxesList={setTaxesList}
                                     hasAccountingModule={hasAccountingModule}
                                     accountsList={accountsList}
                                     accountSearchFn={accountSearchFn}
+                                    correctAmounts={correctAmounts}
+                                />
+                            </TabPane>
+                            <TabPane tabId={1} className="p-5" style={{ background: "gray", fontWeight: "bold", color: "#073863" }}>
+                                <ReceiptsConceptsTable
+                                    receiptConcepts={receiptConcepts}
+                                    setReceiptConcepts={setReceiptConcepts}
+                                    accountsList={accountsList}
+                                    accountSearchFn={accountSearchFn}
+                                    hasAccountingModule={hasAccountingModule}
+                                    correctAmounts={correctAmounts}
+                                />
+                            </TabPane>
+                            <TabPane tabId={2} className="p-5" style={{ background: "gray", fontWeight: "bold", color: "#073863" }} >
+                                <ReceiptPaymentsTable
+                                    paymentsArray={paymentsMethods}
+                                    setPaymentsArray={setPaymentsMethods}
+                                    accountsList={accountsList}
+                                    accountSearchFn={accountSearchFn}
+                                    hasAccountingModule={hasAccountingModule}
                                 />
                             </TabPane>
                         </TabContent>
