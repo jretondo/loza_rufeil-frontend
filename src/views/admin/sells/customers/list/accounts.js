@@ -54,7 +54,7 @@ const ProvidersListAccounts = ({
         customer_id: providerData.id,
       };
     });
-    const response = await axiosPost(API_ROUTES.customersDir.sub.parameters, {
+    const response = await axiosPost(API_ROUTES.sellsDir.sub.parameters, {
       params: accountsToSave,
       providerId: providerData.id,
     });

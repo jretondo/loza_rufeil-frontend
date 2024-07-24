@@ -35,7 +35,7 @@ const ReceiptsChargeHeader = ({
   const { newAlert } = useContext(AlertsContext);
 
   const getProviders = async () => {
-    const response = await axiosGetQuery(API_ROUTES.providersDir.providers, []);
+    const response = await axiosGetQuery(API_ROUTES.customersDir.customers, []);
     if (!response.error) {
       setProvidersList(response.data);
     } else {
