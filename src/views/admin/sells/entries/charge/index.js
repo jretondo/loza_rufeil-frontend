@@ -59,6 +59,21 @@ const PurchasesEntriesCharge = ({
   const { axiosGetQuery, axiosPost } = useContext(ActionsBackend);
   const { newAlert, newActivity } = useContext(AlertsContext);
 
+  const getDefaultParams = async (total) => {
+    const response = await axiosGetQuery(
+      API_ROUTES.sellsDir.sub.defaultParams,
+      [],
+    );
+    if (!response.error) {
+      const arrayData = response.data.map((account, key) => {
+        return { ...account, id: key, amount: total, recordType: 0 };
+      });
+      return arrayData;
+    } else {
+      return [];
+    }
+  };
+
   const saveImportedInvoice = async () => {
     const data = {
       header: headerInvoice,
@@ -245,7 +260,11 @@ const PurchasesEntriesCharge = ({
               return account;
             })
           : [];
-      setReceiptConcepts(arrayData);
+      if (arrayData.length === 0) {
+        setReceiptConcepts(await getDefaultParams(headerInvoice.total));
+      } else {
+        setReceiptConcepts(arrayData);
+      }
     } else {
       newAlert(
         'danger',

@@ -7,6 +7,7 @@ import swal from 'sweetalert';
 import ActionsBackend from '../../../../../context/actionsBackend';
 import API_ROUTES from '../../../../../api/routes';
 import LoadingContext from '../../../../../context/loading';
+import MassiveCheck from './massiveCheck';
 
 const ImportData = ({
   purchasePeriod,
@@ -142,6 +143,15 @@ const ImportData = ({
               <Button color="warning" onClick={uncheckedReceiptsCVS}>
                 Separar compras sin procesar
               </Button>
+              <MassiveCheck
+                purchaseImported={purchaseImported}
+                setPurchaseImported={setPurchaseImported}
+                accountsList={accountsList}
+                periodMonth={periodMonth}
+                periodYear={periodYear}
+                purchasePeriod={purchasePeriod}
+                hasAccountingModule={hasAccountingModule}
+              />
               <Button
                 color="danger"
                 onClick={(e) => {

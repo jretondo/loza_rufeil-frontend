@@ -9,6 +9,7 @@ import ActionsBackend from 'context/actionsBackend';
 import LoadingContext from 'context/loading';
 import AlertsContext from 'context/alerts';
 import API_ROUTES from 'api/routes';
+import DefaultSellParameter from './default';
 
 const ParametersComp = () => {
   const accountPeriod = JSON.parse(localStorage.getItem('activePeriod'));
@@ -75,6 +76,11 @@ const ParametersComp = () => {
               active={activeTab === 0 ? true : false}
             />
             <ButtonOpenCollapse
+              action={() => setActiveTab(2)}
+              tittle={'Concepto por Default'}
+              active={activeTab === 2 ? true : false}
+            />
+            <ButtonOpenCollapse
               action={() => setActiveTab(1)}
               tittle={'Imp. y Otros'}
               active={activeTab === 1 ? true : false}
@@ -86,6 +92,14 @@ const ParametersComp = () => {
         <CardBody>
           <Collapse isOpen={activeTab === 0 ? true : false}>
             <PaymentMethods
+              hasAccountingModule={hasAccountingModule}
+              accountsList={accountsList}
+              accountSearchFn={accountSearchFn}
+              activeClient={activeClient}
+            />
+          </Collapse>
+          <Collapse isOpen={activeTab === 2 ? true : false}>
+            <DefaultSellParameter
               hasAccountingModule={hasAccountingModule}
               accountsList={accountsList}
               accountSearchFn={accountSearchFn}
